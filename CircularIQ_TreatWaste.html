@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CircularIQ — Treat My Wastewater</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g950:#06120A;--g900:#0A1A0F;--g800:#0F2518;--g700:#163320;
+  --g600:#1E4529;--g500:#2D7D46;--g400:#3DA05C;--g300:#5DC278;
+  --g200:#A8E4BC;--g100:#D4F5E0;--g50:#EEF9F2;
+  --blue:#1A6FA8;--blue-dark:#155E8F;--blue-l:#D4EAF8;
+  --amber:#D97706;--amber-l:#FEF3C7;
+  --red:#DC2626;--red-l:#FEE2E2;
+  --purple:#7C3AED;--purple-l:#EDE9FE;
+  --bg:#F0F4F1;--card:#fff;
+  --txt:#0F2518;--txt2:#4A5C4A;--muted:#6B7C6B;
+  --border:#D9DDD9;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:68px;padding:0 40px;display:flex;align-items:center;gap:20px;background:rgba(6,18,10,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(8,145,178,.12);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.nav-logo-icon{width:34px;height:34px;background:var(--blue);border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.nav-logo-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:-.3px;}
+.nav-spacer{flex:1;}
+.nav-back{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.6);font-size:13.5px;padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:all .18s;}
+.nav-back:hover{color:#fff;border-color:rgba(255,255,255,.3);}
+.nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;cursor:pointer;padding:8px;flex-shrink:0;}
+.nav-hamburger span{display:block;height:2px;background:rgba(255,255,255,.8);border-radius:2px;transition:all .25s;}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-hamburger.open span:nth-child(2){opacity:0;}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mob-overlay{display:none;position:fixed;inset:0;z-index:98;background:rgba(0,0,0,.4);}
+.mob-overlay.show{display:block;}
+.mob-nav{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(6,18,10,.97);border-top:1px solid rgba(255,255,255,.08);padding:16px;flex-direction:column;gap:4px;z-index:99;}
+.mob-nav.show{display:flex;}
+.mob-nav a{color:rgba(255,255,255,.7);font-size:14px;padding:11px 14px;border-radius:8px;text-decoration:none;transition:background .15s;}
+.mob-nav a:hover{background:rgba(255,255,255,.08);color:#fff;}
+
+/* ── HERO ── */
+.hero{padding:100px 40px 52px;background:linear-gradient(155deg,#060E1A 0%,#0A1628 40%,#0C1A2C 75%,#0F2038 100%);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 700px 400px at 60% 130%,rgba(26,111,168,.18) 0%,transparent 65%);pointer-events:none;}
+.hero::after{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(8,145,178,.07) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;}
+.hero-inner{position:relative;z-index:1;max-width:760px;margin:0 auto;text-align:center;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(8,145,178,.12);border:1px solid rgba(8,145,178,.25);border-radius:20px;padding:5px 14px;font-size:11px;color:#67E8F9;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:16px;}
+.hero-dot{width:6px;height:6px;background:#67E8F9;border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(32px,4.5vw,50px);font-weight:800;color:#fff;letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px;}
+.hero h1 span{color:#67E8F9;}
+.hero p{font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;max-width:560px;margin:0 auto 28px;}
+/* tabs */
+.hero-tabs{display:inline-flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:4px;gap:4px;}
+.htab{padding:8px 20px;border-radius:9px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.5);cursor:pointer;transition:all .2s;border:none;background:none;font-family:'DM Sans',sans-serif;}
+.htab.active{background:var(--blue);color:#fff;box-shadow:0 4px 12px rgba(26,111,168,.4);}
+
+/* ── LAYOUT ── */
+.page-layout{max-width:1020px;margin:0 auto;padding:40px 40px 80px;display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start;}
+
+/* ── SHARED FORM STYLES (same as SellWaste) ── */
+.form-card{background:var(--card);border:1.5px solid var(--border);border-radius:20px;overflow:hidden;}
+.form-section{padding:28px 32px;border-bottom:1px solid var(--border);}
+.form-section:last-child{border:none;}
+.fs-header{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+.fs-icon{width:40px;height:40px;border-radius:10px;background:var(--blue-l);border:1px solid rgba(26,111,168,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fs-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--txt);}
+.fs-sub{font-size:12.5px;color:var(--muted);margin-top:2px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.form-row.single{grid-template-columns:1fr;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+label{font-size:13px;font-weight:600;color:var(--txt2);}
+.req{color:var(--red);margin-left:2px;}
+.form-hint{font-size:11.5px;color:var(--muted);margin-top:3px;}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--txt);background:var(--card);transition:border-color .18s,box-shadow .18s;outline:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,111,168,.1);}
+input.error,select.error,textarea.error{border-color:var(--red);box-shadow:0 0 0 3px rgba(220,38,38,.08);}
+.error-msg{font-size:11.5px;color:var(--red);margin-top:3px;display:none;}
+.error-msg.show{display:block;}
+textarea{resize:vertical;min-height:90px;line-height:1.55;}
+
+/* ── SCORING TOOL ── */
+.scoring-section{background:linear-gradient(135deg,#0A1628 0%,#0F2038 100%);border-radius:16px;padding:28px;margin-bottom:0;position:relative;overflow:hidden;}
+.scoring-section::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(8,145,178,.06) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;}
+.scoring-inner{position:relative;z-index:1;}
+.scoring-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:6px;}
+.scoring-sub{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:22px;line-height:1.5;}
+.param-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.param-box{border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 12px;background:rgba(255,255,255,.05);}
+.param-label{font-size:10.5px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;}
+.param-input-row{display:flex;align-items:center;gap:6px;}
+.param-input-row input{flex:1;min-width:0;padding:7px 9px;font-size:13px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;border-radius:7px;}
+.param-input-row input:focus{border-color:rgba(8,145,178,.6);outline:none;box-shadow:none;}
+.param-input-row input::placeholder{color:rgba(255,255,255,.3);}
+.param-unit{font-size:11px;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;white-space:nowrap;}
+/* live checks */
+.live-hints{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px;margin-bottom:16px;min-height:48px;}
+.hint-row{font-size:12.5px;color:rgba(255,255,255,.7);padding:3px 0;line-height:1.5;}
+.hint-row strong{color:#fff;}
+/* run button */
+.run-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .22s;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:16px;}
+.run-btn:hover{background:var(--blue-dark);box-shadow:0 6px 20px rgba(26,111,168,.4);}
+/* results */
+.score-result{display:none;animation:fadeUp .4s ease;}
+.score-result.show{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.result-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px;}
+.result-pathway{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;}
+.result-desc{font-size:12.5px;color:rgba(255,255,255,.5);margin-top:4px;line-height:1.5;}
+.score-big{font-family:'Syne',sans-serif;font-size:42px;font-weight:900;color:#67E8F9;line-height:1;text-align:right;flex-shrink:0;}
+.score-label{font-size:11px;color:rgba(255,255,255,.4);text-align:right;margin-top:2px;}
+.axes-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.axis-row{background:rgba(255,255,255,.05);border-radius:9px;padding:10px 12px;}
+.axis-label{display:flex;justify-content:space-between;margin-bottom:6px;}
+.axis-name{font-size:11.5px;color:rgba(255,255,255,.6);font-weight:500;}
+.axis-val{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#fff;}
+.axis-track{height:5px;background:rgba(255,255,255,.12);border-radius:10px;overflow:hidden;}
+.axis-fill{height:100%;border-radius:10px;transition:width .8s cubic-bezier(.4,0,.2,1);}
+.revenue-bar{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.rev-item{}
+.rev-label{font-size:10.5px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+.rev-val{font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:#4ADE80;}
+
+/* ── FILE UPLOAD ── */
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .22s;background:var(--bg);position:relative;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--blue-l);}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{width:44px;height:44px;border-radius:11px;background:var(--blue-l);border:1.5px solid rgba(26,111,168,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 11px;}
+.upload-title{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:4px;}
+.upload-sub{font-size:12px;color:var(--muted);}
+.upload-types{display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+.upload-type{font-size:11px;padding:3px 9px;border-radius:12px;background:var(--blue-l);color:var(--blue);border:1px solid rgba(26,111,168,.2);font-weight:600;}
+.file-list{display:flex;flex-direction:column;gap:7px;margin-top:12px;}
+.file-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;}
+.file-icon{width:28px;height:28px;border-radius:7px;background:var(--blue-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.file-name{font-size:13px;color:var(--txt);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-size{font-size:11.5px;color:var(--muted);font-family:'DM Mono',monospace;flex-shrink:0;}
+.file-del{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:5px;transition:color .15s;flex-shrink:0;}
+.file-del:hover{color:var(--red);}
+
+/* consultation options */
+.consult-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.co-card{border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;position:relative;}
+.co-card:hover{border-color:var(--blue);background:var(--blue-l);}
+.co-card.selected{border-color:var(--blue);background:var(--blue-l);}
+.co-card input[type=radio]{position:absolute;opacity:0;width:0;height:0;}
+.co-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:10px;transition:all .2s;}
+.co-card.selected .co-check{background:var(--blue);border-color:var(--blue);}
+.co-title{font-size:13.5px;font-weight:700;color:var(--txt);margin-bottom:4px;}
+.co-sub{font-size:12px;color:var(--muted);line-height:1.45;}
+.co-badge{display:inline-block;font-size:10.5px;padding:2px 8px;border-radius:10px;font-weight:700;margin-top:8px;}
+.co-badge.free{background:var(--g50);color:var(--g600);border:1px solid var(--g200);}
+.co-badge.premium{background:var(--amber-l);color:#92400E;border:1px solid #FDE68A;}
+
+/* consent */
+.consent-row{display:flex;align-items:flex-start;gap:10px;padding:14px;background:var(--blue-l);border:1.5px solid rgba(26,111,168,.2);border-radius:10px;cursor:pointer;margin-bottom:10px;}
+.consent-row input[type=checkbox]{width:17px;height:17px;margin-top:2px;accent-color:var(--blue);cursor:pointer;flex-shrink:0;}
+.consent-text{font-size:13px;color:var(--txt2);line-height:1.55;}
+.consent-text a{color:var(--blue);text-decoration:none;}
+
+/* submit */
+.submit-btn{width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .22s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px;}
+.submit-btn:hover{background:var(--blue-dark);box-shadow:0 8px 28px rgba(26,111,168,.35);transform:translateY(-1px);}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* ── SIDEBAR ── */
+.sidebar{display:flex;flex-direction:column;gap:16px;position:sticky;top:90px;}
+.side-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:20px;}
+.side-card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--txt);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.process-step{display:flex;gap:12px;margin-bottom:14px;}
+.process-step:last-child{margin:0;}
+.ps-dot{width:28px;height:28px;border-radius:50%;border:2px solid rgba(26,111,168,.3);background:var(--blue-l);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--blue);flex-shrink:0;margin-top:1px;}
+.ps-title{font-size:13px;font-weight:600;color:var(--txt);}
+.ps-sub{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.45;}
+.privacy-card{background:var(--blue-l);border:1.5px solid rgba(26,111,168,.2);border-radius:16px;padding:20px;}
+.privacy-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--blue-dark);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.privacy-item{display:flex;align-items:flex-start;gap:9px;margin-bottom:10px;font-size:12.5px;color:var(--txt2);line-height:1.5;}
+.privacy-item:last-child{margin:0;}
+.privacy-item svg{color:var(--blue);flex-shrink:0;margin-top:1px;}
+.gdpr-badge{margin-top:14px;padding:8px 12px;background:rgba(26,111,168,.1);border:1px solid rgba(26,111,168,.2);border-radius:8px;display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--blue-dark);font-weight:600;}
+
+/* ── SUCCESS MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.modal-overlay.show{display:flex;animation:fadeIn .22s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.success-box{background:#fff;border-radius:22px;padding:44px 40px;max-width:480px;width:calc(100% - 32px);text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.2);animation:fadeUp .3s ease;}
+.success-icon{width:72px;height:72px;border-radius:50%;background:var(--blue-l);border:3px solid rgba(26,111,168,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.success-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--txt);margin-bottom:10px;}
+.success-sub{font-size:14.5px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.success-detail{background:var(--blue-l);border:1.5px solid rgba(26,111,168,.2);border-radius:12px;padding:16px;text-align:left;margin-bottom:20px;}
+.sd-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid rgba(26,111,168,.1);}
+.sd-row:last-child{border:none;}
+.sd-row span:first-child{color:var(--muted);}
+.sd-row span:last-child{font-weight:600;color:var(--txt);}
+.success-ref{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);background:var(--bg);padding:8px 16px;border-radius:8px;border:1px solid var(--border);margin-bottom:22px;display:inline-block;}
+.success-timer{display:flex;align-items:center;gap:8px;background:var(--amber-l);border:1px solid #FDE68A;border-radius:10px;padding:11px 16px;margin-bottom:22px;font-size:13.5px;font-weight:600;color:#92400E;}
+.success-btn{width:100%;background:var(--blue);color:#fff;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+.success-btn:hover{background:var(--blue-dark);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{padding:0 20px;}
+  .nav-hamburger{display:flex;}
+  .page-layout{grid-template-columns:1fr;padding:28px 20px 60px;gap:20px;}
+  .sidebar{position:static;}
+  .hero{padding:88px 20px 44px;}
+  .form-section{padding:22px 20px;}
+  .param-grid{grid-template-columns:1fr 1fr;}
+  .consult-options{grid-template-columns:1fr;}
+  .axes-grid{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr;}
+  .param-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:480px){
+  .page-layout{padding:20px 14px 60px;}
+  .param-grid{grid-template-columns:1fr;}
+  .consult-options{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="CircularIQ_Landing.html" class="nav-logo">
+    <div class="nav-logo-icon"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M9 2L14.196 5V11L9 14L3.804 11V5L9 2Z" fill="white" fill-opacity=".9"/><path d="M9 5.5L11.5 7V10L9 11.5L6.5 10V7L9 5.5Z" fill="#0A1628"/></svg></div>
+    <span class="nav-logo-name">CircularIQ</span>
+  </a>
+  <div class="nav-spacer"></div>
+  <a href="CircularIQ_WhatToDo.html" class="nav-back">
+    <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
+    <span>Back</span>
+  </a>
+  <button class="nav-hamburger" id="nav-hamburger" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+<div class="mob-overlay" id="mob-overlay" onclick="closeNav()"></div>
+<div class="mob-nav" id="mob-nav">
+  <a href="CircularIQ_Landing.html" onclick="closeNav()">← Home</a>
+  <a href="CircularIQ_WhatToDo.html" onclick="closeNav()">← Back to choices</a>
+  <a href="CircularIQ_Customer_Dashboard.html" onclick="closeNav()">Full Dashboard →</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span class="hero-dot"></span>Treat My Wastewater</div>
+    <h1>Get Your <span>Circular Assessment</span></h1>
+    <p>Fill in your wastewater parameters, try our live scoring tool, and request a full consultation. A CircularIQ engineer will respond within 48 hours with your personalised valorisation roadmap.</p>
+    <div class="hero-tabs">
+      <button class="htab active" onclick="scrollTo('s-details')">1 · Details</button>
+      <button class="htab" onclick="scrollTo('s-scoring')">2 · Scoring Tool</button>
+      <button class="htab" onclick="scrollTo('s-consult')">3 · Consultation</button>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="page-layout">
+
+  <!-- FORM -->
+  <div>
+
+    <!-- SECTION 1: Details -->
+    <div class="form-card" id="s-details" style="margin-bottom:24px;">
+
+      <div class="form-section">
+        <div class="fs-header">
+          <div class="fs-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+          <div><div class="fs-title">Your Contact Details</div><div class="fs-sub">Who should receive your CircularIQ assessment report?</div></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name<span class="req">*</span></label>
+            <input type="text" id="f-firstname" placeholder="e.g. Lucia">
+            <div class="error-msg" id="err-firstname">Please enter your first name.</div>
+          </div>
+          <div class="form-group">
+            <label>Last Name<span class="req">*</span></label>
+            <input type="text" id="f-lastname" placeholder="e.g. Mancini">
+            <div class="error-msg" id="err-lastname">Please enter your last name.</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Company / Organisation<span class="req">*</span></label>
+            <input type="text" id="f-company" placeholder="e.g. Aquafarm Taranto S.r.l.">
+            <div class="error-msg" id="err-company">Please enter your company name.</div>
+          </div>
+          <div class="form-group">
+            <label>Industry Sector<span class="req">*</span></label>
+            <select id="f-sector">
+              <option value="">Select sector…</option>
+              <option>Aquaculture / RAS</option>
+              <option>Dairy / Cheese production</option>
+              <option>Olive oil / Agri-food</option>
+              <option>Winery / Beverage</option>
+              <option>Meat / Slaughterhouse</option>
+              <option>Municipal wastewater</option>
+              <option>Industrial / Chemical</option>
+              <option>Other</option>
+            </select>
+            <div class="error-msg" id="err-sector">Please select your sector.</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email Address<span class="req">*</span></label>
+            <input type="email" id="f-email" placeholder="you@company.it">
+            <div class="error-msg" id="err-email">Please enter a valid email address.</div>
+          </div>
+          <div class="form-group">
+            <label>Phone Number<span class="req">*</span></label>
+            <input type="tel" id="f-phone" placeholder="+39 099 000 0000">
+            <div class="error-msg" id="err-phone">Please enter your phone number.</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Site Location<span class="req">*</span></label>
+            <input type="text" id="f-location" placeholder="e.g. Taranto, Puglia">
+            <div class="error-msg" id="err-location">Please enter the site location.</div>
+          </div>
+          <div class="form-group">
+            <label>Primary Goal</label>
+            <select id="f-goal">
+              <option value="">What matters most to you?</option>
+              <option>Reduce treatment costs</option>
+              <option>Generate revenue from waste</option>
+              <option>EU regulatory compliance</option>
+              <option>Sustainability certification</option>
+              <option>All of the above</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="form-group">
+            <label>Current Treatment Situation</label>
+            <textarea id="f-situation" placeholder="Describe your current discharge or treatment setup, any existing permits, regulatory pressures, or challenges you face…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lab Documents Upload -->
+      <div class="form-section">
+        <div class="fs-header">
+          <div class="fs-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></div>
+          <div><div class="fs-title">Lab Analysis Documents</div><div class="fs-sub">Upload water quality reports, discharge consents, or any effluent characterisation data.</div></div>
+        </div>
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" id="file-input" multiple accept=".pdf,.xlsx,.xls,.csv,.doc,.docx,.jpg,.png" onchange="handleFiles(this.files)">
+          <div class="upload-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
+          <div class="upload-title">Drop lab reports, permits, flow data here</div>
+          <div class="upload-sub">Helps our engineers pre-score your streams before the call</div>
+          <div class="upload-types"><span class="upload-type">PDF</span><span class="upload-type">Excel</span><span class="upload-type">CSV</span><span class="upload-type">Word</span><span class="upload-type">Images</span></div>
+        </div>
+        <div class="file-list" id="file-list"></div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: Scoring Tool -->
+    <div id="s-scoring" style="margin-bottom:24px;">
+      <div class="scoring-section">
+        <div class="scoring-inner">
+          <div class="scoring-title">⚡ Try the CircularIQ Scoring Tool</div>
+          <div class="scoring-sub">Enter your approximate wastewater parameters below. The engine will instantly score your stream across 4 valorisation pathways — Economic 40% · Technical 30% · Regulatory 20% · Logistics 10%.</div>
+          <div class="param-grid">
+            <div class="param-box"><div class="param-label">Volume</div><div class="param-input-row"><input type="number" id="p-vol" placeholder="e.g. 35" oninput="liveScore()"><span class="param-unit">m³/day</span></div></div>
+            <div class="param-box"><div class="param-label">COD</div><div class="param-input-row"><input type="number" id="p-cod" placeholder="e.g. 380" oninput="liveScore()"><span class="param-unit">mg/L</span></div></div>
+            <div class="param-box"><div class="param-label">Total Nitrogen</div><div class="param-input-row"><input type="number" id="p-tn" placeholder="e.g. 55" oninput="liveScore()"><span class="param-unit">mg/L</span></div></div>
+            <div class="param-box"><div class="param-label">Total Phosphorus</div><div class="param-input-row"><input type="number" id="p-tp" placeholder="e.g. 12" oninput="liveScore()"><span class="param-unit">mg/L</span></div></div>
+            <div class="param-box"><div class="param-label">pH</div><div class="param-input-row"><input type="number" id="p-ph" placeholder="e.g. 7.2" step="0.1" oninput="liveScore()"><span class="param-unit">–</span></div></div>
+            <div class="param-box"><div class="param-label">NaCl</div><div class="param-input-row"><input type="number" id="p-nacl" placeholder="e.g. 0.5" step="0.1" oninput="liveScore()"><span class="param-unit">g/L</span></div></div>
+          </div>
+          <div class="live-hints" id="live-hints"><div class="hint-row" style="color:rgba(255,255,255,.35);font-style:italic;">Enter your parameters above to see live guidance…</div></div>
+          <button class="run-btn" onclick="runScore()">
+            <svg width="15" height="15" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
+            Run Full CircularIQ Analysis
+          </button>
+          <div class="score-result" id="score-result">
+            <div class="result-header">
+              <div><div class="result-pathway" id="r-name">—</div><div class="result-desc" id="r-desc">—</div></div>
+              <div><div class="score-big" id="r-score">—</div><div class="score-label">/10</div></div>
+            </div>
+            <div class="axes-grid">
+              <div class="axis-row"><div class="axis-label"><span class="axis-name">Economic (40%)</span><span class="axis-val" id="rv-eco">—</span></div><div class="axis-track"><div class="axis-fill" id="rb-eco" style="width:0%;background:#4ADE80;"></div></div></div>
+              <div class="axis-row"><div class="axis-label"><span class="axis-name">Technical (30%)</span><span class="axis-val" id="rv-tec">—</span></div><div class="axis-track"><div class="axis-fill" id="rb-tec" style="width:0%;background:#60A5FA;"></div></div></div>
+              <div class="axis-row"><div class="axis-label"><span class="axis-name">Regulatory (20%)</span><span class="axis-val" id="rv-reg">—</span></div><div class="axis-track"><div class="axis-fill" id="rb-reg" style="width:0%;background:#FBBF24;"></div></div></div>
+              <div class="axis-row"><div class="axis-label"><span class="axis-name">Logistics (10%)</span><span class="axis-val" id="rv-log">—</span></div><div class="axis-track"><div class="axis-fill" id="rb-log" style="width:0%;background:#C084FC;"></div></div></div>
+            </div>
+            <div class="revenue-bar">
+              <div class="rev-item"><div class="rev-label">Est. Revenue</div><div class="rev-val" id="r-rev">—</div></div>
+              <div class="rev-item"><div class="rev-label">Disposal Savings</div><div class="rev-val" id="r-disp">—</div></div>
+              <div class="rev-item"><div class="rev-label">Payback</div><div class="rev-val" id="r-pb">—</div></div>
+              <div class="rev-item"><div class="rev-label">Best Pathway</div><div class="rev-val" id="r-pathway" style="font-size:12px;">—</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: Consultation -->
+    <div class="form-card" id="s-consult">
+      <div class="form-section">
+        <div class="fs-header">
+          <div class="fs-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><path d="M17 20h5v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2h5"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div><div class="fs-title">Request Your Consultation</div><div class="fs-sub">Choose how you'd like to work with CircularIQ.</div></div>
+        </div>
+        <div class="consult-options" id="consult-options">
+          <label class="co-card selected" onclick="selectConsult(this,'video')">
+            <input type="radio" name="consult" value="video" checked>
+            <div class="co-check"><svg width="10" height="10" fill="none" viewBox="0 0 12 12" stroke="white" stroke-width="2.5"><path d="M2 6l3 3 5-5"/></svg></div>
+            <div class="co-title">Video Call + Assessment</div>
+            <div class="co-sub">45-min call with a CircularIQ engineer. We present your scored pathways and ROI model.</div>
+            <span class="co-badge free">Free</span>
+          </label>
+          <label class="co-card" onclick="selectConsult(this,'site')">
+            <input type="radio" name="consult" value="site">
+            <div class="co-check"></div>
+            <div class="co-title">On-Site Pilot Visit</div>
+            <div class="co-sub">Full day site visit. Stream sampling, measurements, and BioLink pilot design proposal.</div>
+            <span class="co-badge free">Free</span>
+          </label>
+          <label class="co-card" onclick="selectConsult(this,'report')">
+            <input type="radio" name="consult" value="report">
+            <div class="co-check"></div>
+            <div class="co-title">Full Written Report</div>
+            <div class="co-sub">Detailed 20-page CircularIQ assessment report with regulation matrix, ROI waterfall, and funding guidance.</div>
+            <span class="co-badge premium">€490 + VAT</span>
+          </label>
+          <label class="co-card" onclick="selectConsult(this,'fast')">
+            <input type="radio" name="consult" value="fast">
+            <div class="co-check"></div>
+            <div class="co-title">Express 24h Scoring</div>
+            <div class="co-sub">Submit your data today and receive a scored assessment PDF by tomorrow morning.</div>
+            <span class="co-badge free">Free</span>
+          </label>
+        </div>
+        <div class="form-row single" style="margin-bottom:14px;">
+          <div class="form-group">
+            <label>Preferred Date & Time</label>
+            <input type="text" id="f-datetime" placeholder="e.g. Next week, mornings — or any Monday after 10:00">
+            <div class="form-hint">We'll confirm within 24 hours. Massafra CET timezone (UTC+1/+2).</div>
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="form-group">
+            <label>Any other information or questions?</label>
+            <textarea id="f-notes" placeholder="Regulatory pressure you're facing, budget constraints, existing equipment, partners you've already approached…" style="min-height:80px;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Consent & Submit -->
+      <div class="form-section">
+        <div class="fs-header">
+          <div class="fs-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div><div class="fs-title">Privacy & Data Protection</div><div class="fs-sub">Your wastewater data is treated as commercially sensitive and protected under GDPR.</div></div>
+        </div>
+        <div style="margin-bottom:22px;">
+          <label class="consent-row">
+            <input type="checkbox" id="c-gdpr">
+            <div class="consent-text">I agree to the <a href="#">Privacy Policy</a> and consent to CircularIQ securely processing my wastewater data for the purpose of providing a valorisation assessment. <span class="req">*</span></div>
+          </label>
+          <div class="error-msg" id="err-gdpr" style="margin-bottom:8px;">Please accept the privacy policy to continue.</div>
+          <label class="consent-row" style="margin-top:8px;">
+            <input type="checkbox" id="c-contact">
+            <div class="consent-text">I consent to CircularIQ contacting me by phone or email to schedule the consultation and follow up on my assessment. (Optional)</div>
+          </label>
+        </div>
+        <button class="submit-btn" id="submit-btn" onclick="submitForm()">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg>
+          Request Consultation — Answer guaranteed within 48 hours
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="side-card">
+      <div class="side-card-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        What happens next
+      </div>
+      <div class="process-step">
+        <div class="ps-dot">1</div>
+        <div><div class="ps-title">Instant acknowledgement</div><div class="ps-sub">You receive a confirmation email with your reference and a summary of your inputs.</div></div>
+      </div>
+      <div class="process-step">
+        <div class="ps-dot">2</div>
+        <div><div class="ps-title">Pre-scoring (same day)</div><div class="ps-sub">Our engineers run your stream through the CircularIQ formula across 4–6 pathways.</div></div>
+      </div>
+      <div class="process-step">
+        <div class="ps-dot">3</div>
+        <div><div class="ps-title">Contact within 48 h max</div><div class="ps-sub">A CircularIQ specialist calls or emails with your scored assessment and next step proposal.</div></div>
+      </div>
+      <div class="process-step">
+        <div class="ps-dot">4</div>
+        <div><div class="ps-title">Pilot design & funding</div><div class="ps-sub">If you proceed: BioLink unit design, capex quote, PRIMA/LIFE funding guidance, and WasteMap listing.</div></div>
+      </div>
+    </div>
+
+    <div class="privacy-card">
+      <div class="privacy-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--blue-dark)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Your Data is Protected
+      </div>
+      <div class="privacy-item"><svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M5.5 8l2 2 3-3"/><circle cx="8" cy="8" r="6"/></svg>Lab data and parameters encrypted AES-256 at rest</div>
+      <div class="privacy-item"><svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M5.5 8l2 2 3-3"/><circle cx="8" cy="8" r="6"/></svg>Your company identity is never disclosed to third parties without consent</div>
+      <div class="privacy-item"><svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M5.5 8l2 2 3-3"/><circle cx="8" cy="8" r="6"/></svg>Documents stored in EU-based servers only</div>
+      <div class="privacy-item"><svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M5.5 8l2 2 3-3"/><circle cx="8" cy="8" r="6"/></svg>Right to erasure: delete all your data anytime (Art. 17 GDPR)</div>
+      <div class="privacy-item"><svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M5.5 8l2 2 3-3"/><circle cx="8" cy="8" r="6"/></svg>NDA available upon request before sharing sensitive data</div>
+      <div class="gdpr-badge">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        GDPR · ISO 27001 · EU Data Residency
+      </div>
+    </div>
+
+    <div class="side-card">
+      <div class="side-card-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Contact us directly
+      </div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px;">Prefer a direct conversation before filling the form?</p>
+      <a href="mailto:assessment@circulariq.io" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--blue);text-decoration:none;font-weight:600;margin-bottom:7px;">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        assessment@circulariq.io
+      </a>
+      <a href="tel:+39099000000" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--blue);text-decoration:none;font-weight:600;">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.69 12a19.79 19.79 0 01-3.07-8.67A2 2 0 013.6 1.18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.91 8.91a16 16 0 006 6l.91-.91a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        +39 099 XXX XXXX
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="success-modal">
+  <div class="success-box">
+    <div class="success-icon">
+      <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div class="success-title">Consultation Requested ✓</div>
+    <p class="success-sub">Your assessment request has been received. A CircularIQ engineer will contact you personally with your scored valorisation pathways.</p>
+    <div class="success-timer">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      Guaranteed response: <strong style="margin-left:4px;">within 48 hours</strong>
+    </div>
+    <div class="success-detail">
+      <div class="sd-row"><span>Reference</span><span id="s-ref">CIQ-ASSESS-2025-0000</span></div>
+      <div class="sd-row"><span>Consultation type</span><span id="s-consult-type">Video Call + Assessment</span></div>
+      <div class="sd-row"><span>Assessment cost</span><span style="color:var(--g500);">Free — no obligation</span></div>
+      <div class="sd-row"><span>Your data</span><span>GDPR protected · AES-256</span></div>
+    </div>
+    <div class="success-ref" id="s-ref-display">REF: CIQ-ASSESS-2025-0000</div>
+    <button class="success-btn" onclick="document.getElementById('success-modal').classList.remove('show');document.body.style.overflow=''">Done</button>
+  </div>
+</div>
+
+<script>
+// ── SCORING ENGINE ──
+const W = {eco:.4,tec:.3,reg:.2,log:.1};
+const MKT = {algae:850,struvite:420,biogas:.08,water:.80,disposal:20};
+
+function score(params){
+  const {vol,cod,tn,tp,ph,nacl}=params;
+  if(nacl>10) return {name:'NaCl Hard Gate Triggered',desc:`NaCl ${nacl} g/L exceeds 10 g/L limit — all biological pathways blocked. Brine isolation required.`,score:0,eco:0,tec:0,reg:0,log:0,rev:0,disp:0,pb:'N/A'};
+  let best=null,bestScore=-1;
+  const pathways=[
+    {n:'Microalgae Production',test:()=>cod<1500&&tn>15&&ph>=6&&ph<=9,
+     eco:Math.min(10,(cod<600?9.5:cod<1200?7:5)*.4+(tn>50?9.5:tn>30?8:6)*.35+(vol>20?9:vol>10?7:5)*.25),
+     tec:Math.min(10,((ph>=6.5&&ph<=8.0?9:ph>=6&&ph<=9?7:4)+(cod<600?9:cod<1200?6.5:4))/2),
+     reg:nacl<1?9:nacl<5?8:7,log:Math.min(10,(tn>50?9:tn>30?7.5:6+7)/2),
+     rev:()=>Math.round(vol*365*.7*(MKT.algae/1000)),pb:()=>vol>30?'3–4 yr':vol>15?'4–5 yr':'5–7 yr'},
+    {n:'Struvite Fertiliser',test:()=>tp>10,
+     eco:Math.min(10,5+(tp>80?4:tp>40?3:1.5)),tec:tp>60?8.5:tp>30?7:5.5,reg:9,log:6.5,
+     rev:()=>Math.round(vol*.07*365*.6*MKT.struvite),pb:()=>'4–6 yr'},
+    {n:'Biogas / Biomethane',test:()=>cod>=2000,
+     eco:Math.min(10,(cod>30000?9.5:cod>10000?8.5:cod>5000?7:5.5+vol>10?8:6.5)/2),
+     tec:cod>10000?8:7,reg:8,log:6.5,
+     rev:()=>Math.round((cod/1000)*vol*.35*10*.7*365*MKT.biogas),pb:()=>'4–6 yr'},
+    {n:'Water Reclamation',test:()=>cod<2000&&ph>=5&&ph<=12,
+     eco:Math.min(10,(vol>20?8:vol>10?6.5:5)*.8+2),tec:cod<500?8.5:cod<1500?7:5.5,reg:8,log:ph>=6.5&&ph<=8.5?7:5.5,
+     rev:()=>Math.round(vol*.8*365*MKT.water),pb:()=>'5–8 yr'},
+  ];
+  for(const p of pathways){
+    if(!p.test()) continue;
+    const s=+(p.eco*W.eco+p.tec*W.tec+p.reg*W.reg+p.log*W.log).toFixed(1);
+    if(s>bestScore){bestScore=s;best={name:p.n,eco:p.eco,tec:p.tec,reg:p.reg,log:p.log,score:s,rev:p.rev(),pb:p.pb(),disp:Math.round(vol*365*MKT.disposal)};}
+  }
+  if(!best) return {name:'Insufficient Parameters',desc:'Enter more complete parameters to score your stream.',score:0,eco:0,tec:0,reg:0,log:0,rev:0,disp:0,pb:'N/A'};
+  best.desc=`${vol} m³/day stream — ${best.name} pathway recommended · disposal savings at €${MKT.disposal}/m³`;
+  return best;
+}
+
+function getParams(){
+  return {
+    vol:parseFloat(document.getElementById('p-vol').value)||0,
+    cod:parseFloat(document.getElementById('p-cod').value)||0,
+    tn:parseFloat(document.getElementById('p-tn').value)||0,
+    tp:parseFloat(document.getElementById('p-tp').value)||0,
+    ph:parseFloat(document.getElementById('p-ph').value)||7,
+    nacl:parseFloat(document.getElementById('p-nacl').value)||0,
+  };
+}
+
+function liveScore(){
+  const p=getParams();
+  const hints=document.getElementById('live-hints');
+  const rows=[];
+  if(p.nacl>10) rows.push('🚫 <strong>NaCl '+p.nacl+' g/L</strong> exceeds 10 g/L gate — all biological pathways blocked');
+  else{
+    if(p.vol>0) rows.push('💶 Disposal savings: <strong>€'+Math.round(p.vol*365*MKT.disposal).toLocaleString()+'/yr</strong> at €'+MKT.disposal+'/m³');
+    if(p.cod>0&&p.cod<600&&p.tn>30&&p.ph>=6.5&&p.ph<=8.5) rows.push('✅ <strong>Microalgae: ideal</strong> — COD '+p.cod+' mg/L + TN '+p.tn+' mg/L + pH '+p.ph+' all in optimal range');
+    else if(p.cod>0&&p.cod<1500&&p.tn>15) rows.push('⚡ Microalgae: <strong>viable</strong> — moderate COD, TN '+p.tn+' mg/L supports cultivation');
+    if(p.cod>=2000) rows.push('⚡ Biogas: <strong>strong candidate</strong> — COD '+p.cod.toLocaleString()+' mg/L yields high energy');
+    if(p.tp>40) rows.push('✅ Struvite: <strong>viable</strong> — TP '+p.tp+' mg/L above 40 mg/L threshold');
+    if(p.ph<6.5||p.ph>8.5) rows.push('⚠️ pH '+p.ph+' — neutralisation needed before algae/struvite pathways');
+  }
+  hints.innerHTML=rows.length?rows.map(r=>`<div class="hint-row">${r}</div>`).join(''):'<div class="hint-row" style="color:rgba(255,255,255,.35);font-style:italic;">Enter your parameters above to see live guidance…</div>';
+}
+
+function runScore(){
+  const p=getParams();
+  if(!p.vol&&!p.cod){alert('Please enter at least Volume and COD to run the scoring.');return;}
+  const btn=document.querySelector('.run-btn');
+  btn.innerHTML='<span style="display:inline-block;animation:spin .8s linear infinite;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;width:15px;height:15px;"></span> Analysing…';
+  btn.disabled=true;
+  setTimeout(()=>{
+    btn.innerHTML='<svg width="15" height="15" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg> Run Full CircularIQ Analysis';
+    btn.disabled=false;
+    const r=score(p);
+    document.getElementById('r-name').textContent=r.name;
+    document.getElementById('r-desc').textContent=r.desc;
+    document.getElementById('r-score').textContent=r.score;
+    [['eco',r.eco,'#4ADE80'],['tec',r.tec,'#60A5FA'],['reg',r.reg,'#FBBF24'],['log',r.log,'#C084FC']].forEach(([k,v,c])=>{
+      document.getElementById('rb-'+k).style.width=(v*10)+'%';
+      document.getElementById('rb-'+k).style.background=c;
+      document.getElementById('rv-'+k).textContent=v.toFixed(1);
+    });
+    document.getElementById('r-rev').textContent=r.rev?'+€'+Math.round(r.rev/1000)+'K/yr':'—';
+    document.getElementById('r-disp').textContent=r.disp?'+€'+Math.round(r.disp/1000)+'K/yr':'—';
+    document.getElementById('r-pb').textContent=r.pb;
+    document.getElementById('r-pathway').textContent=r.name;
+    document.getElementById('score-result').classList.add('show');
+    document.getElementById('score-result').scrollIntoView({behavior:'smooth',block:'nearest'});
+  },1600);
+}
+
+// ── CONSULT SELECTION ──
+function selectConsult(card, val){
+  document.querySelectorAll('.co-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+
+// ── FILE UPLOAD ──
+let uploadedFiles=[];
+function handleFiles(files){
+  Array.from(files).forEach(f=>{if(!uploadedFiles.find(x=>x.name===f.name))uploadedFiles.push(f);});
+  renderFiles();
+}
+function renderFiles(){
+  document.getElementById('file-list').innerHTML=uploadedFiles.map((f,i)=>`
+    <div class="file-item">
+      <div class="file-icon"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
+      <span class="file-name">${f.name}</span>
+      <span class="file-size">${(f.size/1024).toFixed(0)} KB</span>
+      <button class="file-del" onclick="removeFile(${i})"><svg width="13" height="13" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><line x1="12" y1="4" x2="4" y2="12"/><line x1="4" y1="4" x2="12" y2="12"/></svg></button>
+    </div>`).join('');
+}
+function removeFile(i){uploadedFiles.splice(i,1);renderFiles();}
+const zone=document.getElementById('upload-zone');
+zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag');});
+zone.addEventListener('dragleave',()=>zone.classList.remove('drag'));
+zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag');handleFiles(e.dataTransfer.files);});
+
+// ── VALIDATION & SUBMIT ──
+function v(id,errId,test){const el=document.getElementById(id);const ok=test(el.value);el.classList.toggle('error',!ok);document.getElementById(errId).classList.toggle('show',!ok);return ok;}
+function submitForm(){
+  let ok=true;
+  ok&=v('f-firstname','err-firstname',x=>x.trim().length>0);
+  ok&=v('f-lastname','err-lastname',x=>x.trim().length>0);
+  ok&=v('f-company','err-company',x=>x.trim().length>0);
+  ok&=v('f-sector','err-sector',x=>x!=='');
+  ok&=v('f-email','err-email',x=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x));
+  ok&=v('f-phone','err-phone',x=>x.trim().length>6);
+  ok&=v('f-location','err-location',x=>x.trim().length>0);
+  const gdpr=document.getElementById('c-gdpr').checked;
+  document.getElementById('err-gdpr').classList.toggle('show',!gdpr);
+  ok&=gdpr;
+  if(!ok){document.querySelector('.error-msg.show')?.closest('.form-section,.form-card')?.scrollIntoView({behavior:'smooth',block:'center'});return;}
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true;
+  btn.innerHTML='<span style="display:inline-block;animation:spin .8s linear infinite;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;width:16px;height:16px;"></span> Sending…';
+  setTimeout(()=>{
+    btn.disabled=false;
+    btn.innerHTML='<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg> Request Consultation — Answer guaranteed within 48 hours';
+    const ref='CIQ-ASSESS-2025-'+Math.floor(1000+Math.random()*9000);
+    const sel=document.querySelector('.co-card.selected .co-title')?.textContent||'Video Call + Assessment';
+    document.getElementById('s-ref').textContent=ref;
+    document.getElementById('s-ref-display').textContent='REF: '+ref;
+    document.getElementById('s-consult-type').textContent=sel;
+    document.getElementById('success-modal').classList.add('show');
+    document.body.style.overflow='hidden';
+  },1800);
+}
+document.getElementById('success-modal').addEventListener('click',e=>{if(e.target.id==='success-modal'){e.target.classList.remove('show');document.body.style.overflow='';}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('success-modal').classList.remove('show');document.body.style.overflow='';closeNav();}});
+
+// ── SCROLL TABS ──
+function scrollTo(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});}
+
+// ── NAV ──
+function toggleNav(){const n=document.getElementById('mob-nav'),o=document.getElementById('mob-overlay'),b=document.getElementById('nav-hamburger');const open=n.classList.contains('show');n.classList.toggle('show',!open);o.classList.toggle('show',!open);b.classList.toggle('open',!open);}
+function closeNav(){document.getElementById('mob-nav').classList.remove('show');document.getElementById('mob-overlay').classList.remove('show');document.getElementById('nav-hamburger').classList.remove('open');}
+window.addEventListener('resize',()=>{if(window.innerWidth>900)closeNav();});
+</script>
+<style>@keyframes spin{to{transform:rotate(360deg);}}</style>
+</body>
+</html>

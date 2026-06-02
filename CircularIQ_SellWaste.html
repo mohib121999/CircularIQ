@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CircularIQ — Sell My Wastewater</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g950:#06120A;--g900:#0A1A0F;--g800:#0F2518;--g700:#163320;
+  --g600:#1E4529;--g500:#2D7D46;--g400:#3DA05C;--g300:#5DC278;
+  --g200:#A8E4BC;--g100:#D4F5E0;--g50:#EEF9F2;
+  --blue:#1A6FA8;--blue-l:#D4EAF8;
+  --amber:#D97706;--amber-l:#FEF3C7;
+  --red:#DC2626;--red-l:#FEE2E2;
+  --bg:#F0F4F1;--card:#fff;
+  --txt:#0F2518;--txt2:#4A5C4A;--muted:#6B7C6B;
+  --border:#D9DDD9;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:68px;padding:0 40px;display:flex;align-items:center;gap:20px;background:rgba(6,18,10,.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(93,194,120,.1);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.nav-logo-icon{width:34px;height:34px;background:var(--g500);border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.nav-logo-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:-.3px;}
+.nav-spacer{flex:1;}
+.nav-back{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.6);font-size:13.5px;padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:all .18s;}
+.nav-back:hover{color:#fff;border-color:rgba(255,255,255,.3);}
+.nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;cursor:pointer;padding:8px;flex-shrink:0;}
+.nav-hamburger span{display:block;height:2px;background:rgba(255,255,255,.8);border-radius:2px;transition:all .25s;}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-hamburger.open span:nth-child(2){opacity:0;}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mob-overlay{display:none;position:fixed;inset:0;z-index:98;background:rgba(0,0,0,.4);}
+.mob-overlay.show{display:block;}
+.mob-nav{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(6,18,10,.97);border-top:1px solid rgba(255,255,255,.08);padding:16px;flex-direction:column;gap:4px;z-index:99;}
+.mob-nav.show{display:flex;}
+.mob-nav a{color:rgba(255,255,255,.7);font-size:14px;padding:11px 14px;border-radius:8px;text-decoration:none;transition:background .15s;}
+.mob-nav a:hover{background:rgba(255,255,255,.08);color:#fff;}
+
+/* ── HERO STRIP ── */
+.hero{padding:100px 40px 52px;background:linear-gradient(155deg,var(--g950) 0%,var(--g900) 40%,#0C2014 75%,var(--g800) 100%);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 700px 400px at 60% 120%,rgba(45,125,70,.15) 0%,transparent 65%);pointer-events:none;}
+.hero::after{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(93,194,120,.06) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;}
+.hero-inner{position:relative;z-index:1;max-width:720px;margin:0 auto;text-align:center;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(93,194,120,.12);border:1px solid rgba(93,194,120,.22);border-radius:20px;padding:5px 14px;font-size:11px;color:var(--g300);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:16px;}
+.hero-dot{width:6px;height:6px;background:var(--g300);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(32px,4.5vw,50px);font-weight:800;color:#fff;letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px;}
+.hero h1 span{color:var(--g300);}
+.hero p{font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;max-width:520px;margin:0 auto 28px;}
+/* progress steps */
+.steps-strip{display:flex;align-items:center;justify-content:center;gap:0;}
+.step-item{display:flex;align-items:center;gap:8px;}
+.step-num{width:28px;height:28px;border-radius:50%;background:rgba(93,194,120,.15);border:1.5px solid rgba(93,194,120,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--g300);}
+.step-num.active{background:var(--g500);border-color:var(--g500);color:#fff;}
+.step-num.done{background:var(--g600);border-color:var(--g500);color:var(--g300);}
+.step-lbl{font-size:12px;color:rgba(255,255,255,.45);font-weight:500;}
+.step-lbl.active{color:rgba(255,255,255,.85);}
+.step-sep{width:36px;height:1px;background:rgba(255,255,255,.12);margin:0 10px;}
+
+/* ── LAYOUT ── */
+.page-layout{max-width:960px;margin:0 auto;padding:40px 40px 80px;display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start;}
+
+/* ── FORM CARD ── */
+.form-card{background:var(--card);border:1.5px solid var(--border);border-radius:20px;overflow:hidden;}
+.form-section{padding:28px 32px;border-bottom:1px solid var(--border);}
+.form-section:last-child{border:none;}
+.fs-header{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+.fs-icon{width:40px;height:40px;border-radius:10px;background:var(--g50);border:1px solid var(--g200);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fs-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--txt);}
+.fs-sub{font-size:12.5px;color:var(--muted);margin-top:2px;}
+
+/* form grid */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.form-row.single{grid-template-columns:1fr;}
+.form-row.triple{grid-template-columns:1fr 1fr 1fr;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+label{font-size:13px;font-weight:600;color:var(--txt2);}
+label .req{color:var(--red);margin-left:2px;}
+.form-hint{font-size:11.5px;color:var(--muted);margin-top:3px;}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{
+  width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:9px;
+  font-size:14px;font-family:'DM Sans',sans-serif;color:var(--txt);background:var(--card);
+  transition:border-color .18s,box-shadow .18s;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(45,125,70,.1);}
+input.error,select.error,textarea.error{border-color:var(--red);box-shadow:0 0 0 3px rgba(220,38,38,.08);}
+.error-msg{font-size:11.5px;color:var(--red);margin-top:3px;display:none;}
+.error-msg.show{display:block;}
+textarea{resize:vertical;min-height:90px;line-height:1.55;}
+select{cursor:pointer;}
+
+/* param grid */
+.param-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.param-box{border:1.5px solid var(--border);border-radius:10px;padding:12px;background:var(--bg);}
+.param-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;}
+.param-input-row{display:flex;align-items:center;gap:6px;}
+.param-input-row input{flex:1;min-width:0;padding:7px 9px;font-size:13px;}
+.param-unit{font-size:11.5px;color:var(--muted);font-family:'DM Mono',monospace;white-space:nowrap;}
+
+/* stream adder */
+.stream-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.stream-item{border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;background:var(--bg);display:flex;align-items:center;gap:12px;}
+.stream-num{width:24px;height:24px;border-radius:50%;background:var(--g500);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.stream-fields{flex:1;display:grid;grid-template-columns:1fr 80px 80px;gap:8px;}
+.stream-fields input,stream-fields select{font-size:13px;}
+.remove-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .15s;flex-shrink:0;}
+.remove-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-l);}
+.add-stream-btn{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--g500);background:var(--g50);border:1.5px dashed var(--g300);border-radius:9px;padding:9px 14px;cursor:pointer;transition:all .18s;font-family:'DM Sans',sans-serif;width:100%;}
+.add-stream-btn:hover{background:var(--g100);border-color:var(--g400);}
+
+/* file upload */
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:28px;text-align:center;cursor:pointer;transition:all .22s;background:var(--bg);position:relative;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--g400);background:var(--g50);}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{width:48px;height:48px;border-radius:12px;background:var(--g50);border:1.5px solid var(--g200);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+.upload-title{font-size:14.5px;font-weight:600;color:var(--txt);margin-bottom:4px;}
+.upload-sub{font-size:12.5px;color:var(--muted);line-height:1.5;}
+.upload-types{display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+.upload-type{font-size:11px;padding:3px 9px;border-radius:12px;background:var(--blue-l);color:var(--blue);border:1px solid rgba(26,111,168,.2);font-weight:600;}
+.file-list{display:flex;flex-direction:column;gap:7px;margin-top:12px;}
+.file-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;}
+.file-icon{width:28px;height:28px;border-radius:7px;background:var(--blue-l);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.file-name{font-size:13px;color:var(--txt);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-size{font-size:11.5px;color:var(--muted);font-family:'DM Mono',monospace;flex-shrink:0;}
+.file-del{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:5px;transition:color .15s;flex-shrink:0;}
+.file-del:hover{color:var(--red);}
+
+/* consent */
+.consent-row{display:flex;align-items:flex-start;gap:10px;padding:14px;background:var(--g50);border:1.5px solid var(--g200);border-radius:10px;cursor:pointer;}
+.consent-row input[type=checkbox]{width:17px;height:17px;margin-top:2px;accent-color:var(--g500);cursor:pointer;flex-shrink:0;}
+.consent-text{font-size:13px;color:var(--txt2);line-height:1.55;}
+.consent-text a{color:var(--g500);text-decoration:none;}
+.consent-text a:hover{text-decoration:underline;}
+
+/* submit */
+.submit-btn{width:100%;padding:16px;background:var(--g500);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .22s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px;}
+.submit-btn:hover{background:var(--g400);box-shadow:0 8px 28px rgba(45,125,70,.35);transform:translateY(-1px);}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* ── SIDEBAR ── */
+.sidebar{display:flex;flex-direction:column;gap:16px;position:sticky;top:90px;}
+.side-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:20px;}
+.side-card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--txt);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.process-step{display:flex;gap:12px;margin-bottom:14px;}
+.process-step:last-child{margin:0;}
+.ps-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--g200);background:var(--g50);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--g500);flex-shrink:0;margin-top:1px;}
+.ps-body{}
+.ps-title{font-size:13px;font-weight:600;color:var(--txt);}
+.ps-sub{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.45;}
+
+/* privacy card */
+.privacy-card{background:var(--g50);border:1.5px solid var(--g200);border-radius:16px;padding:20px;}
+.privacy-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--g700);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.privacy-item{display:flex;align-items:flex-start;gap:9px;margin-bottom:10px;font-size:12.5px;color:var(--txt2);line-height:1.5;}
+.privacy-item:last-child{margin:0;}
+.privacy-item svg{color:var(--g500);flex-shrink:0;margin-top:1px;}
+.gdpr-badge{margin-top:14px;padding:8px 12px;background:rgba(45,125,70,.08);border:1px solid var(--g200);border-radius:8px;display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--g600);font-weight:600;}
+
+/* ── SUCCESS MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.modal-overlay.show{display:flex;animation:fadeIn .22s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.success-box{background:#fff;border-radius:22px;padding:44px 40px;max-width:460px;width:calc(100% - 32px);text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.2);animation:fadeUp .3s ease;}
+.success-icon{width:72px;height:72px;border-radius:50%;background:var(--g50);border:3px solid var(--g200);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.success-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--txt);margin-bottom:10px;}
+.success-sub{font-size:14.5px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.success-detail{background:var(--g50);border:1.5px solid var(--g200);border-radius:12px;padding:16px;text-align:left;margin-bottom:20px;}
+.sd-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid rgba(45,125,70,.1);}
+.sd-row:last-child{border:none;}
+.sd-row span:first-child{color:var(--muted);}
+.sd-row span:last-child{font-weight:600;color:var(--txt);}
+.success-ref{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);background:var(--bg);padding:8px 16px;border-radius:8px;border:1px solid var(--border);margin-bottom:22px;display:inline-block;}
+.success-timer{display:flex;align-items:center;gap:8px;background:var(--amber-l);border:1px solid #FDE68A;border-radius:10px;padding:11px 16px;margin-bottom:22px;font-size:13.5px;font-weight:600;color:#92400E;}
+.success-btn{width:100%;background:var(--g500);color:#fff;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;}
+.success-btn:hover{background:var(--g400);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{padding:0 20px;}
+  .nav-back span{display:none;}
+  .nav-hamburger{display:flex;}
+  .page-layout{grid-template-columns:1fr;padding:28px 20px 60px;gap:20px;}
+  .sidebar{position:static;}
+  .hero{padding:88px 20px 44px;}
+  .form-section{padding:22px 20px;}
+  .form-row.triple{grid-template-columns:1fr 1fr;}
+  .param-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr;}
+  .form-row.triple{grid-template-columns:1fr;}
+  .param-grid{grid-template-columns:1fr 1fr;}
+  .steps-strip{gap:0;}
+  .step-sep{width:20px;}
+  .step-lbl{display:none;}
+  .stream-fields{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .page-layout{padding:20px 14px 60px;}
+  .param-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="CircularIQ_Landing.html" class="nav-logo">
+    <div class="nav-logo-icon"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M9 2L14.196 5V11L9 14L3.804 11V5L9 2Z" fill="white" fill-opacity=".9"/><path d="M9 5.5L11.5 7V10L9 11.5L6.5 10V7L9 5.5Z" fill="#0A1628"/></svg></div>
+    <span class="nav-logo-name">CircularIQ</span>
+  </a>
+  <div class="nav-spacer"></div>
+  <a href="CircularIQ_WhatToDo.html" class="nav-back">
+    <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
+    <span>Back</span>
+  </a>
+  <button class="nav-hamburger" id="nav-hamburger" onclick="toggleNav()" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+<div class="mob-overlay" id="mob-overlay" onclick="closeNav()"></div>
+<div class="mob-nav" id="mob-nav">
+  <a href="CircularIQ_Landing.html" onclick="closeNav()">← Home</a>
+  <a href="CircularIQ_WhatToDo.html" onclick="closeNav()">← Back to choices</a>
+  <a href="CircularIQ_WasteMap.html" onclick="closeNav()">Browse WasteMap</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span class="hero-dot"></span>Sell My Wastewater</div>
+    <h1>List Your <span>Waste Streams</span><br>on WasteMap</h1>
+    <p>Tell us about your wastewater. We'll evaluate your streams using CircularIQ scoring and connect you with certified buyers — within 48 hours.</p>
+    <div class="steps-strip">
+      <div class="step-item"><div class="step-num active">1</div><span class="step-lbl active">Your details</span></div>
+      <div class="step-sep"></div>
+      <div class="step-item"><div class="step-num">2</div><span class="step-lbl">Waste streams</span></div>
+      <div class="step-sep"></div>
+      <div class="step-item"><div class="step-num">3</div><span class="step-lbl">Documents</span></div>
+      <div class="step-sep"></div>
+      <div class="step-item"><div class="step-num">4</div><span class="step-lbl">Submit</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="page-layout">
+
+  <!-- FORM -->
+  <div class="form-card" id="main-form">
+
+    <!-- SECTION 1: Contact -->
+    <div class="form-section">
+      <div class="fs-header">
+        <div class="fs-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--g500)" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+        <div><div class="fs-title">Contact Information</div><div class="fs-sub">Who should we contact about your waste streams?</div></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name<span class="req">*</span></label>
+          <input type="text" id="f-firstname" placeholder="e.g. Marco">
+          <div class="error-msg" id="err-firstname">Please enter your first name.</div>
+        </div>
+        <div class="form-group">
+          <label>Last Name<span class="req">*</span></label>
+          <input type="text" id="f-lastname" placeholder="e.g. Rossi">
+          <div class="error-msg" id="err-lastname">Please enter your last name.</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Company / Farm Name<span class="req">*</span></label>
+          <input type="text" id="f-company" placeholder="e.g. Latteria Pugliese S.r.l.">
+          <div class="error-msg" id="err-company">Please enter your company name.</div>
+        </div>
+        <div class="form-group">
+          <label>VAT / P.IVA</label>
+          <input type="text" id="f-vat" placeholder="IT12345678901">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email Address<span class="req">*</span></label>
+          <input type="email" id="f-email" placeholder="you@company.it">
+          <div class="error-msg" id="err-email">Please enter a valid email.</div>
+        </div>
+        <div class="form-group">
+          <label>Phone Number<span class="req">*</span></label>
+          <input type="tel" id="f-phone" placeholder="+39 099 000 0000">
+          <div class="error-msg" id="err-phone">Please enter your phone number.</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Site Location<span class="req">*</span></label>
+          <input type="text" id="f-location" placeholder="e.g. Massafra, Puglia">
+          <div class="error-msg" id="err-location">Please enter the site location.</div>
+        </div>
+        <div class="form-group">
+          <label>Industry Sector<span class="req">*</span></label>
+          <select id="f-sector">
+            <option value="">Select sector…</option>
+            <option>Dairy / Cheese production</option>
+            <option>Aquaculture / RAS</option>
+            <option>Olive oil / Agri-food processing</option>
+            <option>Winery / Beverage</option>
+            <option>Meat / Slaughterhouse</option>
+            <option>Municipal wastewater</option>
+            <option>Industrial / Chemical</option>
+            <option>Other agri-food</option>
+          </select>
+          <div class="error-msg" id="err-sector">Please select your sector.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: Waste Streams -->
+    <div class="form-section">
+      <div class="fs-header">
+        <div class="fs-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--g500)" stroke-width="2"><path d="M12 2C12 2 5 8 5 13a7 7 0 0014 0C19 8 12 2 12 2Z"/><path d="M9 13a3 3 0 006 0"/></svg></div>
+        <div><div class="fs-title">Waste Stream Details</div><div class="fs-sub">Describe the streams you want to list. Add up to 5.</div></div>
+      </div>
+      <div class="stream-list" id="stream-list">
+        <div class="stream-item" id="stream-1">
+          <div class="stream-num">1</div>
+          <div class="stream-fields">
+            <input type="text" placeholder="Stream name (e.g. RAS effluent)" id="sn-1">
+            <input type="number" placeholder="Vol. m³/day" id="sv-1">
+            <select id="ss-1"><option value="">Type…</option><option>Liquid effluent</option><option>Sludge</option><option>Brine</option><option>Whey</option><option>CIP washdown</option><option>Mixed</option></select>
+          </div>
+        </div>
+      </div>
+      <button class="add-stream-btn" onclick="addStream()" id="add-btn">
+        <svg width="15" height="15" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v6M5 8h6"/></svg>
+        Add another stream
+      </button>
+      <div style="margin-top:20px;">
+        <div class="fs-title" style="font-size:14px;margin-bottom:14px;">Key Water Quality Parameters <span style="font-size:12px;font-weight:400;color:var(--muted);">(approximate values are fine)</span></div>
+        <div class="param-grid">
+          <div class="param-box">
+            <div class="param-label">COD</div>
+            <div class="param-input-row"><input type="number" id="p-cod" placeholder="e.g. 380"><span class="param-unit">mg/L</span></div>
+          </div>
+          <div class="param-box">
+            <div class="param-label">Total Nitrogen</div>
+            <div class="param-input-row"><input type="number" id="p-tn" placeholder="e.g. 55"><span class="param-unit">mg/L</span></div>
+          </div>
+          <div class="param-box">
+            <div class="param-label">Total Phosphorus</div>
+            <div class="param-input-row"><input type="number" id="p-tp" placeholder="e.g. 12"><span class="param-unit">mg/L</span></div>
+          </div>
+          <div class="param-box">
+            <div class="param-label">pH</div>
+            <div class="param-input-row"><input type="number" id="p-ph" placeholder="e.g. 7.2" step="0.1"><span class="param-unit">–</span></div>
+          </div>
+          <div class="param-box">
+            <div class="param-label">NaCl (Salt)</div>
+            <div class="param-input-row"><input type="number" id="p-nacl" placeholder="e.g. 0.5" step="0.1"><span class="param-unit">g/L</span></div>
+          </div>
+          <div class="param-box">
+            <div class="param-label">Temperature</div>
+            <div class="param-input-row"><input type="number" id="p-temp" placeholder="e.g. 18"><span class="param-unit">°C</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-row single" style="margin-top:4px;">
+        <div class="form-group">
+          <label>Preferred Valorisation Interest</label>
+          <select id="f-interest">
+            <option value="">Not sure yet — let CircularIQ recommend</option>
+            <option>Sell as-is to treatment partners</option>
+            <option>Microalgae production partnership</option>
+            <option>Struvite / fertiliser recovery</option>
+            <option>Biogas / biomethane valorisation</option>
+            <option>Water reclamation & reuse</option>
+            <option>Multiple pathways — full assessment</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row single" style="margin-top:4px;">
+        <div class="form-group">
+          <label>Additional Notes</label>
+          <textarea id="f-notes" placeholder="Any seasonal variation, access constraints, existing treatment, discharge permits…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: Documents -->
+    <div class="form-section">
+      <div class="fs-header">
+        <div class="fs-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--g500)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></div>
+        <div><div class="fs-title">Supporting Documents</div><div class="fs-sub">Upload lab reports, discharge permits, or flow measurement data. Optional but speeds evaluation.</div></div>
+      </div>
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" id="file-input" multiple accept=".pdf,.xlsx,.xls,.csv,.doc,.docx,.jpg,.png" onchange="handleFiles(this.files)">
+        <div class="upload-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="var(--g500)" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
+        <div class="upload-title">Drop files here or click to browse</div>
+        <div class="upload-sub">Lab analysis reports · Discharge permits · Flow measurements · Photos of site</div>
+        <div class="upload-types">
+          <span class="upload-type">PDF</span><span class="upload-type">Excel</span><span class="upload-type">CSV</span><span class="upload-type">Word</span><span class="upload-type">JPG/PNG</span>
+        </div>
+      </div>
+      <div class="file-list" id="file-list"></div>
+    </div>
+
+    <!-- SECTION 4: Consent & Submit -->
+    <div class="form-section">
+      <div class="fs-header">
+        <div class="fs-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--g500)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div><div class="fs-title">Privacy & Consent</div><div class="fs-sub">Your data is protected under GDPR and never sold to third parties.</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px;">
+        <label class="consent-row">
+          <input type="checkbox" id="c-gdpr">
+          <div class="consent-text">I agree to the <a href="#">Privacy Policy</a> and consent to CircularIQ processing my wastewater data to provide an evaluation and buyer matching service. <span class="req" style="color:var(--red);">*</span></div>
+        </label>
+        <div class="error-msg" id="err-gdpr">Please accept the privacy policy to continue.</div>
+        <label class="consent-row">
+          <input type="checkbox" id="c-commercial">
+          <div class="consent-text">I agree to be contacted by CircularIQ and verified marketplace buyers regarding my listed waste streams. (Optional — you can opt out anytime)</div>
+        </label>
+        <label class="consent-row">
+          <input type="checkbox" id="c-newsletter">
+          <div class="consent-text">Send me CircularIQ market price updates and circular economy news. (Optional)</div>
+        </label>
+      </div>
+      <button class="submit-btn" id="submit-btn" onclick="submitForm()">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg>
+        Submit — We'll contact you within 48 hours
+      </button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <!-- Process -->
+    <div class="side-card">
+      <div class="side-card-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--g500)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        What happens next
+      </div>
+      <div class="process-step">
+        <div class="ps-dot">1</div>
+        <div class="ps-body"><div class="ps-title">We receive your submission</div><div class="ps-sub">Instant confirmation email with your reference number.</div></div>
+      </div>
+      <div class="process-step">
+        <div class="ps-dot">2</div>
+        <div class="ps-body"><div class="ps-title">CircularIQ scoring (free)</div><div class="ps-sub">Our engineers score your streams across 6 valorisation pathways.</div></div>
+      </div>
+      <div class="process-step">
+        <div class="ps-dot">3</div>
+        <div class="ps-body"><div class="ps-title">Contact within 48 h</div><div class="ps-sub">A CircularIQ advisor calls you with your scored assessment and buyer matches.</div></div>
+      </div>
+      <div class="process-step">
+        <div class="ps-dot">4</div>
+        <div class="ps-body"><div class="ps-title">WasteMap listing</div><div class="ps-sub">Your streams appear on WasteMap with a Circular Passport for verified buyers.</div></div>
+      </div>
+    </div>
+
+    <!-- Privacy -->
+    <div class="privacy-card">
+      <div class="privacy-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--g600)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Your Data is Protected
+      </div>
+      <div class="privacy-item">
+        <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M5.5 8l2 2 3-3"/><circle cx="8" cy="8" r="6"/></svg>
+        All data is encrypted in transit (TLS 1.3) and at rest (AES-256)
+      </div>
+      <div class="privacy-item">
+        <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M5.5 8l2 2 3-3"/><circle cx="8" cy="8" r="6"/></svg>
+        We never sell or share your data without explicit consent
+      </div>
+      <div class="privacy-item">
+        <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M5.5 8l2 2 3-3"/><circle cx="8" cy="8" r="6"/></svg>
+        Buyers see only anonymised stream parameters until you approve sharing
+      </div>
+      <div class="privacy-item">
+        <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M5.5 8l2 2 3-3"/><circle cx="8" cy="8" r="6"/></svg>
+        You can delete your data anytime — Art. 17 GDPR right to erasure
+      </div>
+      <div class="privacy-item">
+        <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M5.5 8l2 2 3-3"/><circle cx="8" cy="8" r="6"/></svg>
+        Documents stored in EU-based servers, retained for 24 months max
+      </div>
+      <div class="gdpr-badge">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        GDPR Compliant · EU Data Residency · ISO 27001
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="side-card">
+      <div class="side-card-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--g500)" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.69 12a19.79 19.79 0 01-3.07-8.67A2 2 0 013.6 1.18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.91 8.91a16 16 0 006 6l.91-.91a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        Prefer to talk first?
+      </div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px;">Call or email the CircularIQ team directly. We're based in Massafra, Puglia.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a href="mailto:info@circulariq.io" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--g500);text-decoration:none;font-weight:600;">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          info@circulariq.io
+        </a>
+        <a href="tel:+39099000000" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--g500);text-decoration:none;font-weight:600;">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.69 12a19.79 19.79 0 01-3.07-8.67A2 2 0 013.6 1.18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.91 8.91a16 16 0 006 6l.91-.91a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          +39 099 XXX XXXX
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="success-modal">
+  <div class="success-box">
+    <div class="success-icon">
+      <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="var(--g500)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div class="success-title">Submission Received! ✓</div>
+    <p class="success-sub">Your waste stream listing request has been sent to the CircularIQ team. A qualified advisor will contact you personally.</p>
+    <div class="success-timer">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      Maximum response time: <strong style="margin-left:4px;">48 hours</strong>
+    </div>
+    <div class="success-detail">
+      <div class="sd-row"><span>Reference</span><span id="s-ref">WM-SELL-2025-0000</span></div>
+      <div class="sd-row"><span>Service</span><span>WasteMap Listing + Scoring</span></div>
+      <div class="sd-row"><span>Cost</span><span style="color:var(--g500);">Free — no obligation</span></div>
+      <div class="sd-row"><span>Data protection</span><span>GDPR · AES-256 encrypted</span></div>
+    </div>
+    <div class="success-ref" id="s-ref-display">REF: WM-SELL-2025-0000</div>
+    <button class="success-btn" onclick="document.getElementById('success-modal').classList.remove('show');document.body.style.overflow=''">Done</button>
+  </div>
+</div>
+
+<script>
+// ── STREAMS ──
+let streamCount = 1;
+function addStream() {
+  if (streamCount >= 5) { document.getElementById('add-btn').textContent = 'Maximum 5 streams reached'; return; }
+  streamCount++;
+  const list = document.getElementById('stream-list');
+  const div = document.createElement('div');
+  div.className = 'stream-item';
+  div.id = 'stream-' + streamCount;
+  div.innerHTML = `
+    <div class="stream-num">${streamCount}</div>
+    <div class="stream-fields">
+      <input type="text" placeholder="Stream name" id="sn-${streamCount}">
+      <input type="number" placeholder="Vol. m³/day" id="sv-${streamCount}">
+      <select id="ss-${streamCount}"><option value="">Type…</option><option>Liquid effluent</option><option>Sludge</option><option>Brine</option><option>Whey</option><option>CIP washdown</option><option>Mixed</option></select>
+    </div>
+    <button class="remove-btn" onclick="removeStream(${streamCount})" title="Remove">
+      <svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><line x1="12" y1="4" x2="4" y2="12"/><line x1="4" y1="4" x2="12" y2="12"/></svg>
+    </button>`;
+  list.appendChild(div);
+}
+function removeStream(n) {
+  document.getElementById('stream-' + n)?.remove();
+}
+
+// ── FILE UPLOAD ──
+let uploadedFiles = [];
+function handleFiles(files) {
+  Array.from(files).forEach(f => {
+    if (uploadedFiles.find(x => x.name === f.name)) return;
+    uploadedFiles.push(f);
+  });
+  renderFiles();
+}
+function renderFiles() {
+  const list = document.getElementById('file-list');
+  list.innerHTML = uploadedFiles.map((f, i) => `
+    <div class="file-item">
+      <div class="file-icon"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
+      <span class="file-name">${f.name}</span>
+      <span class="file-size">${(f.size/1024).toFixed(0)} KB</span>
+      <button class="file-del" onclick="removeFile(${i})" title="Remove">
+        <svg width="13" height="13" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><line x1="12" y1="4" x2="4" y2="12"/><line x1="4" y1="4" x2="12" y2="12"/></svg>
+      </button>
+    </div>`).join('');
+}
+function removeFile(i) {
+  uploadedFiles.splice(i, 1);
+  renderFiles();
+}
+
+// drag & drop
+const zone = document.getElementById('upload-zone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag'); handleFiles(e.dataTransfer.files); });
+
+// ── VALIDATION ──
+function validateField(id, errId, test) {
+  const el = document.getElementById(id);
+  const ok = test(el.value);
+  el.classList.toggle('error', !ok);
+  document.getElementById(errId).classList.toggle('show', !ok);
+  return ok;
+}
+function submitForm() {
+  let valid = true;
+  valid &= validateField('f-firstname','err-firstname', v => v.trim().length > 0);
+  valid &= validateField('f-lastname','err-lastname', v => v.trim().length > 0);
+  valid &= validateField('f-company','err-company', v => v.trim().length > 0);
+  valid &= validateField('f-email','err-email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+  valid &= validateField('f-phone','err-phone', v => v.trim().length > 6);
+  valid &= validateField('f-location','err-location', v => v.trim().length > 0);
+  valid &= validateField('f-sector','err-sector', v => v !== '');
+  const gdpr = document.getElementById('c-gdpr');
+  const gdprOk = gdpr.checked;
+  document.getElementById('err-gdpr').classList.toggle('show', !gdprOk);
+  valid &= gdprOk;
+  if (!valid) { document.querySelector('.error-msg.show')?.closest('.form-section')?.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:inline-block;animation:spin .8s linear infinite;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;width:16px;height:16px;"></span> Sending…';
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg> Submit — We\'ll contact you within 48 hours';
+    const ref = 'WM-SELL-2025-' + Math.floor(1000 + Math.random() * 9000);
+    document.getElementById('s-ref').textContent = ref;
+    document.getElementById('s-ref-display').textContent = 'REF: ' + ref;
+    document.getElementById('success-modal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }, 1800);
+}
+document.getElementById('success-modal').addEventListener('click', e => { if (e.target.id==='success-modal') { e.target.classList.remove('show'); document.body.style.overflow=''; } });
+document.addEventListener('keydown', e => { if (e.key==='Escape') { document.getElementById('success-modal').classList.remove('show'); document.body.style.overflow=''; closeNav(); } });
+@keyframes spin{to{transform:rotate(360deg);}}
+
+// ── NAV ──
+function toggleNav(){const n=document.getElementById('mob-nav'),o=document.getElementById('mob-overlay'),b=document.getElementById('nav-hamburger');const open=n.classList.contains('show');n.classList.toggle('show',!open);o.classList.toggle('show',!open);b.classList.toggle('open',!open);}
+function closeNav(){document.getElementById('mob-nav').classList.remove('show');document.getElementById('mob-overlay').classList.remove('show');document.getElementById('nav-hamburger').classList.remove('open');}
+window.addEventListener('resize',()=>{if(window.innerWidth>900)closeNav();});
+</script>
+<style>@keyframes spin{to{transform:rotate(360deg);}}</style>
+</body>
+</html>

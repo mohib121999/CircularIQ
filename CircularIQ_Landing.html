@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CircularIQ — Wastewater Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════ */
+:root{
+  --g950:#06120A;--g900:#0A1A0F;--g800:#0F2518;--g700:#163320;
+  --g600:#1E4529;--g500:#2D7D46;--g400:#3DA05C;--g300:#5DC278;
+  --g200:#A8E4BC;--g100:#D4F5E0;--g50:#EEF9F2;
+  --aqua:#0891B2;--aqua-l:#CFFAFE;
+  --blue:#1A6FA8;--blue-l:#D4EAF8;
+  --amber:#D97706;--amber-l:#FEF3C7;
+  --red:#DC2626;--red-l:#FEE2E2;
+  --cream:#F7F6F0;--bg:#F0F4F1;--card:#fff;
+  --txt:#0F2518;--txt2:#4A5C4A;--muted:#6B7C6B;
+  --border:#D9DDD9;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;}
+
+/* ═══════════════════════════════════════
+   NAVBAR
+═══════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:0 40px;height:68px;
+  display:flex;align-items:center;gap:32px;
+  background:rgba(6,18,10,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(93,194,120,.12);
+  transition:all .3s;
+}
+nav.scrolled{background:rgba(6,18,10,.97);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;margin-right:8px;}
+.nav-logo-icon{width:34px;height:34px;background:var(--g500);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nav-logo-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:-.3px;}
+.nav-links{display:flex;align-items:center;gap:4px;flex:1;}
+.nav-link{color:rgba(255,255,255,.55);font-size:13.5px;padding:6px 12px;border-radius:7px;text-decoration:none;transition:all .15s;cursor:pointer;white-space:nowrap;}
+.nav-link:hover{color:rgba(255,255,255,.9);background:rgba(255,255,255,.06);}
+.nav-spacer{flex:1;}
+.nav-login{color:rgba(255,255,255,.7);font-size:13.5px;padding:7px 16px;border:1px solid rgba(255,255,255,.15);border-radius:8px;cursor:pointer;transition:all .15s;background:transparent;font-family:'DM Sans',sans-serif;}
+.nav-login:hover{border-color:rgba(255,255,255,.35);color:#fff;}
+.nav-cta{background:var(--g500);color:#fff;font-size:13.5px;padding:8px 18px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.nav-cta:hover{background:var(--g400);}
+
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+.hero{
+  min-height:100vh;
+  background:linear-gradient(160deg,var(--g950) 0%,var(--g900) 30%,#0D2818 60%,var(--g800) 100%);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;
+  padding:100px 40px 60px;
+}
+/* animated mesh background */
+.hero-mesh{position:absolute;inset:0;opacity:.4;}
+.hero-mesh svg{width:100%;height:100%;}
+/* grain overlay */
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1;
+}
+.hero-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:2;width:100%;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(93,194,120,.12);border:1px solid rgba(93,194,120,.25);border-radius:20px;padding:5px 14px;font-size:12px;color:var(--g300);font-weight:600;letter-spacing:.8px;text-transform:uppercase;margin-bottom:20px;}
+.hero-eyebrow-dot{width:6px;height:6px;background:var(--g300);border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(42px,5.5vw,72px);font-weight:800;color:#fff;line-height:1.05;letter-spacing:-2px;margin-bottom:18px;}
+.hero-title em{color:var(--g300);font-style:normal;position:relative;}
+.hero-title em::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--g300),transparent);}
+.hero-sub{font-size:17px;color:rgba(255,255,255,.55);line-height:1.7;max-width:480px;margin-bottom:32px;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:40px;}
+.btn-hero-p{background:var(--g500);color:#fff;padding:13px 26px;border-radius:10px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;border:none;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.btn-hero-p:hover{background:var(--g400);box-shadow:0 8px 30px rgba(45,125,70,.4);transform:translateY(-1px);}
+.btn-hero-s{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8);padding:12px 24px;border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;border:1px solid rgba(255,255,255,.15);cursor:pointer;transition:all .2s;}
+.btn-hero-s:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);}
+.hero-trust{display:flex;flex-wrap:wrap;gap:8px;}
+.trust-item{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.4);background:rgba(255,255,255,.04);padding:5px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.07);}
+
+/* Hero right — 3D ecosystem */
+.hero-visual{position:relative;display:flex;align-items:center;justify-content:center;}
+.eco-ring{
+  width:460px;height:460px;border-radius:50%;
+  border:1px solid rgba(93,194,120,.12);
+  position:relative;display:flex;align-items:center;justify-content:center;
+  animation:spinSlow 40s linear infinite;
+}
+.eco-ring-inner{
+  width:340px;height:340px;border-radius:50%;
+  border:1px solid rgba(93,194,120,.08);
+  position:absolute;
+  animation:spinSlow 25s linear infinite reverse;
+}
+@keyframes spinSlow{to{transform:rotate(360deg);}}
+.eco-center{
+  position:absolute;width:180px;height:180px;
+  background:linear-gradient(135deg,var(--g700),var(--g600));
+  border-radius:28px;border:1px solid rgba(93,194,120,.2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:0 0 60px rgba(45,125,70,.3),0 0 120px rgba(45,125,70,.1);
+  animation:floatSlow 6s ease-in-out infinite;
+  z-index:10;
+}
+@keyframes floatSlow{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.eco-node{
+  position:absolute;width:72px;height:72px;
+  background:var(--g800);border:1px solid rgba(93,194,120,.2);
+  border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  font-size:22px;cursor:default;
+  box-shadow:0 8px 24px rgba(0,0,0,.3);
+  transition:transform .2s,box-shadow .2s;
+}
+.eco-node:hover{transform:scale(1.12);box-shadow:0 12px 32px rgba(45,125,70,.3);}
+.eco-node span{font-size:8.5px;color:var(--g300);font-weight:600;letter-spacing:.3px;text-align:center;}
+.eco-node:nth-child(1){top:0;left:50%;transform:translate(-50%,-100%);}
+.eco-node:nth-child(2){top:50%;right:0;transform:translate(100%,-50%);}
+.eco-node:nth-child(3){bottom:0;left:50%;transform:translate(-50%,100%);}
+.eco-node:nth-child(4){top:50%;left:0;transform:translate(-100%,-50%);}
+.eco-node:nth-child(5){top:14%;right:14%;transform:translate(50%,-50%);}
+.eco-node:nth-child(6){bottom:14%;left:14%;transform:translate(-50%,50%);}
+
+/* Floating KPI cards */
+.kpi-float{
+  position:absolute;
+  background:rgba(15,37,24,.85);
+  border:1px solid rgba(93,194,120,.2);
+  border-radius:12px;padding:12px 16px;
+  backdrop-filter:blur(20px);
+  box-shadow:0 16px 40px rgba(0,0,0,.4);
+  min-width:140px;z-index:20;
+  animation:floatSlow 5s ease-in-out infinite;
+}
+.kpi-float:nth-of-type(1){top:8%;left:-5%;animation-delay:0s;}
+.kpi-float:nth-of-type(2){top:30%;right:-8%;animation-delay:1.5s;}
+.kpi-float:nth-of-type(3){bottom:20%;left:-8%;animation-delay:3s;}
+.kfi-label{font-size:9.5px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
+.kfi-val{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:#fff;line-height:1;}
+.kfi-meta{font-size:9.5px;color:var(--g300);margin-top:3px;}
+
+/* ═══════════════════════════════════════
+   SECTION SHARED
+═══════════════════════════════════════ */
+section{padding:100px 40px;}
+.container{max-width:1280px;margin:0 auto;}
+.eyebrow{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;}
+.eyebrow.g{color:var(--g500);}
+.eyebrow.b{color:var(--aqua);}
+.eyebrow.a{color:var(--amber);}
+.section-title{font-family:'Syne',sans-serif;font-size:clamp(32px,4vw,52px);font-weight:700;line-height:1.1;letter-spacing:-1.5px;margin-bottom:14px;}
+.section-sub{font-size:17px;color:var(--muted);line-height:1.7;max-width:600px;}
+.section-header{margin-bottom:56px;}
+.section-header.center{text-align:center;}
+.section-header.center .section-sub{margin:0 auto;}
+
+/* ═══════════════════════════════════════
+   PROBLEM SECTION
+═══════════════════════════════════════ */
+.problem-section{background:var(--cream);overflow:hidden;}
+.problem-collage{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:60px;height:340px;}
+.collage-card{border-radius:18px;overflow:hidden;position:relative;cursor:pointer;transition:transform .3s;}
+.collage-card:hover{transform:scale(1.02);}
+.collage-card img{width:100%;height:100%;object-fit:cover;}
+.collage-card .overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,26,15,.85) 0%,rgba(10,26,15,.1) 60%);}
+.collage-label{position:absolute;bottom:16px;left:16px;font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.8px;background:rgba(255,255,255,.15);padding:4px 10px;border-radius:6px;backdrop-filter:blur(10px);}
+.collage-icon{position:absolute;top:16px;right:16px;width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;backdrop-filter:blur(10px);}
+.problem-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.prob-stat{background:white;border:1px solid var(--border);border-radius:16px;padding:28px;position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s;}
+.prob-stat:hover{box-shadow:0 12px 40px rgba(10,26,15,.1);transform:translateY(-3px);}
+.prob-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:16px 16px 0 0;}
+.prob-stat.red::before{background:var(--red);}
+.prob-stat.amber::before{background:var(--amber);}
+.prob-stat.blue::before{background:var(--blue);}
+.prob-num{font-family:'DM Mono',monospace;font-size:42px;font-weight:500;line-height:1;margin-bottom:6px;}
+.prob-num.red{color:var(--red);}
+.prob-num.amber{color:var(--amber);}
+.prob-num.blue{color:var(--blue);}
+.prob-label{font-size:16px;font-weight:500;color:var(--txt);margin-bottom:6px;}
+.prob-desc{font-size:13.5px;color:var(--muted);line-height:1.5;}
+
+/* ═══════════════════════════════════════
+   ECOSYSTEM FLOW
+═══════════════════════════════════════ */
+.ecosystem-section{background:var(--g900);position:relative;overflow:hidden;}
+.ecosystem-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(45,125,70,.15) 0%,transparent 60%);}
+.flow-container{display:flex;align-items:center;gap:0;position:relative;z-index:1;}
+.flow-step{flex:1;text-align:center;padding:32px 16px;position:relative;}
+.flow-step:not(:last-child)::after{
+  content:'';position:absolute;right:-1px;top:50%;transform:translateY(-50%);
+  width:28px;height:2px;
+  background:linear-gradient(90deg,var(--g500),transparent);
+  z-index:2;
+}
+.flow-icon-wrap{
+  width:72px;height:72px;border-radius:20px;
+  background:linear-gradient(135deg,var(--g700),var(--g600));
+  border:1px solid rgba(93,194,120,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;margin:0 auto 14px;
+  transition:transform .2s,box-shadow .2s;
+  box-shadow:0 8px 24px rgba(0,0,0,.3);
+}
+.flow-step:hover .flow-icon-wrap{transform:translateY(-4px);box-shadow:0 16px 40px rgba(45,125,70,.3);}
+.flow-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:#fff;margin-bottom:5px;}
+.flow-desc{font-size:12px;color:rgba(255,255,255,.4);line-height:1.5;}
+.flow-arrow{flex-shrink:0;font-size:20px;color:var(--g500);padding:0 4px;animation:arrowPulse 2s ease-in-out infinite;}
+@keyframes arrowPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+/* ═══════════════════════════════════════
+   DASHBOARD PREVIEW
+═══════════════════════════════════════ */
+.dashboard-section{background:var(--bg);}
+.browser-mockup{
+  background:linear-gradient(135deg,var(--g900),var(--g800));
+  border-radius:16px;
+  border:1px solid rgba(93,194,120,.15);
+  overflow:hidden;
+  box-shadow:0 40px 100px rgba(10,26,15,.25);
+  transform:perspective(1000px) rotateX(4deg) rotateY(-2deg);
+  transition:transform .4s ease;
+}
+.browser-mockup:hover{transform:perspective(1000px) rotateX(0deg) rotateY(0deg);}
+.browser-bar{
+  background:var(--g800);
+  padding:12px 16px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.browser-dots{display:flex;gap:6px;}
+.browser-dot{width:10px;height:10px;border-radius:50%;}
+.browser-url{flex:1;background:rgba(255,255,255,.06);border-radius:6px;padding:5px 12px;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);}
+.dashboard-preview-content{padding:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.dp-kpi{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;}
+.dp-kpi-label{font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.dp-kpi-val{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:#fff;}
+.dp-kpi-val.g{color:var(--g300);}
+.dp-kpi-val.r{color:#FC8181;}
+.dp-kpi-val.a{color:#FBBF24;}
+.dashboard-bottom{padding:0 20px 20px;display:grid;grid-template-columns:2fr 1fr;gap:10px;}
+.dp-chart{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px;height:100px;position:relative;overflow:hidden;}
+.dp-chart-bars{display:flex;align-items:flex-end;gap:5px;height:60px;padding-top:8px;}
+.dp-bar{border-radius:3px 3px 0 0;flex:1;transition:height .5s ease;}
+.dp-rec{background:linear-gradient(135deg,var(--g700),var(--g600));border:1px solid rgba(93,194,120,.2);border-radius:10px;padding:14px;}
+.dp-rec-label{font-size:9px;color:var(--g300);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.dp-rec-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:8px;}
+.dp-score{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--g300);}
+
+/* floating cards around mockup */
+.preview-float{
+  position:absolute;
+  background:rgba(15,37,24,.9);
+  border:1px solid rgba(93,194,120,.2);
+  border-radius:12px;padding:12px 14px;
+  backdrop-filter:blur(20px);
+  box-shadow:0 16px 40px rgba(0,0,0,.3);
+  min-width:160px;
+}
+.preview-float.f1{top:-20px;right:-20px;animation:floatSlow 5s ease-in-out infinite;}
+.preview-float.f2{bottom:-16px;left:-20px;animation:floatSlow 6s ease-in-out infinite 1.5s;}
+.preview-float.f3{top:40%;right:-30px;animation:floatSlow 4s ease-in-out infinite 3s;}
+
+/* ═══════════════════════════════════════
+   STREAMS
+═══════════════════════════════════════ */
+.streams-section{background:white;}
+.streams-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+.stream-card{
+  border:1px solid var(--border);border-radius:16px;overflow:hidden;
+  transition:all .25s;cursor:default;
+  transform-style:preserve-3d;
+}
+.stream-card:hover{
+  box-shadow:0 20px 50px rgba(10,26,15,.12);
+  transform:translateY(-6px) rotateX(2deg);
+  border-color:var(--g300);
+}
+.sc-img{height:130px;position:relative;overflow:hidden;}
+.sc-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
+.stream-card:hover .sc-img img{transform:scale(1.06);}
+.sc-sector{position:absolute;top:10px;left:10px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.4px;backdrop-filter:blur(10px);}
+.sc-sector.dairy{background:rgba(255,247,237,.85);color:#C2410C;}
+.sc-sector.aqua{background:rgba(207,250,254,.85);color:#0E7490;}
+.sc-blocked-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--red);}
+.sc-body{padding:14px;}
+.sc-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--txt);margin-bottom:4px;}
+.sc-vol{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:10px;}
+.sc-params{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px;}
+.sc-p{background:var(--bg);border-radius:6px;padding:5px 7px;}
+.sc-p-name{font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
+.sc-p-val{font-family:'DM Mono',monospace;font-size:11.5px;font-weight:500;color:var(--txt);}
+.sc-p-val.warn{color:var(--amber);}
+.sc-p-val.danger{color:var(--red);}
+.sc-p-val.ok{color:var(--g500);}
+.sc-pathway{font-size:11px;color:var(--g500);font-weight:500;display:flex;align-items:center;gap:5px;}
+.sc-badge{display:inline-flex;align-items:center;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:8px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px;}
+.scb-ok{background:var(--g50);color:var(--g600);}
+.scb-blocked{background:var(--red-l);color:var(--red);}
+.scb-warn{background:var(--amber-l);color:#92400E;}
+
+/* ═══════════════════════════════════════
+   SCORING ENGINE
+═══════════════════════════════════════ */
+.scoring-section{background:var(--g900);position:relative;overflow:hidden;}
+.scoring-section::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(45,125,70,.12) 0%,transparent 70%);pointer-events:none;}
+.scoring-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;position:relative;z-index:1;}
+.score-stack{display:flex;flex-direction:column;gap:14px;}
+.score-layer{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:18px 22px;
+  display:flex;align-items:center;gap:16px;
+  transition:all .2s;cursor:default;
+  transform:translateX(0);
+}
+.score-layer:hover{background:rgba(255,255,255,.07);transform:translateX(4px);}
+.sl-color{width:4px;height:40px;border-radius:4px;flex-shrink:0;}
+.sl-label{flex:1;}
+.sl-name{font-size:14px;font-weight:500;color:#fff;margin-bottom:2px;}
+.sl-desc{font-size:11.5px;color:rgba(255,255,255,.35);}
+.sl-weight{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:rgba(255,255,255,.5);flex-shrink:0;}
+.sl-bar{flex:2;}
+.sl-track{height:5px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden;}
+.sl-fill{height:100%;border-radius:10px;transition:width 1.5s cubic-bezier(.4,0,.2,1);width:0;}
+.sl-score{font-family:'DM Mono',monospace;font-size:14px;color:#fff;width:32px;text-align:right;flex-shrink:0;}
+.score-result{
+  background:linear-gradient(135deg,var(--g700),var(--g600));
+  border:1px solid rgba(93,194,120,.3);
+  border-radius:14px;padding:20px 22px;
+  display:flex;align-items:center;gap:16px;
+  box-shadow:0 8px 32px rgba(45,125,70,.2);
+  margin-top:4px;
+}
+.sr-label{font-size:12px;font-weight:600;color:var(--g200);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
+.sr-val{font-family:'DM Mono',monospace;font-size:42px;font-weight:500;color:#fff;line-height:1;}
+.sr-badge{margin-left:auto;background:var(--g500);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;}
+
+.scoring-right{color:rgba(255,255,255,.7);}
+.scoring-right .section-title{color:#fff;}
+
+/* ═══════════════════════════════════════
+   PATHWAYS / PRODUCTS
+═══════════════════════════════════════ */
+.pathways-section{background:var(--bg);}
+.products-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+.product-card{
+  background:white;border:1px solid var(--border);
+  border-radius:18px;overflow:hidden;
+  transition:all .3s;cursor:default;
+  transform-style:preserve-3d;
+}
+.product-card:hover{
+  box-shadow:0 24px 60px rgba(10,26,15,.15);
+  transform:translateY(-10px) rotateX(3deg) rotateY(-3deg);
+  border-color:transparent;
+}
+.pc-top{padding:28px 22px 20px;text-align:center;position:relative;overflow:hidden;}
+.pc-emoji{font-size:48px;display:block;margin-bottom:12px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.15));transition:transform .3s;}
+.product-card:hover .pc-emoji{transform:translateY(-4px) scale(1.1);}
+.pc-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--txt);margin-bottom:4px;}
+.pc-feedstock{font-size:11.5px;color:var(--muted);margin-bottom:10px;}
+.pc-price{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;margin-bottom:3px;}
+.pc-price-unit{font-size:10px;color:var(--muted);}
+.pc-divider{height:1px;background:var(--border);margin:0 22px;}
+.pc-bottom{padding:14px 22px;}
+.pc-revenue{font-size:13px;font-weight:600;margin-bottom:4px;}
+.pc-reg{font-size:10.5px;color:var(--muted);font-family:'DM Mono',monospace;}
+.pc-badge{display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:8px;}
+
+/* ═══════════════════════════════════════
+   IMPACT / KPI BENTO
+═══════════════════════════════════════ */
+.impact-section{background:var(--g900);position:relative;overflow:hidden;}
+.impact-section::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%232D7D46' fill-opacity='0.04'%3E%3Cpath d='M30 0l4 12h12l-10 8 4 12-10-8-10 8 4-12-10-8h12z'/%3E%3C/g%3E%3C/svg%3E");}
+.bento-grid{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:auto auto;gap:16px;position:relative;z-index:1;}
+.bento-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:18px;padding:28px;
+  transition:all .2s;
+}
+.bento-card:hover{background:rgba(255,255,255,.07);border-color:rgba(93,194,120,.15);}
+.bento-card.big{grid-column:1;grid-row:1/3;background:linear-gradient(135deg,rgba(45,125,70,.2),rgba(26,111,168,.1));border-color:rgba(93,194,120,.15);}
+.bento-card.accent{background:linear-gradient(135deg,rgba(45,125,70,.15),rgba(45,125,70,.05));border-color:rgba(93,194,120,.12);}
+.bento-num{font-family:'DM Mono',monospace;font-size:clamp(32px,4vw,56px);font-weight:500;line-height:1;margin-bottom:6px;}
+.bento-num.g{color:var(--g300);}
+.bento-num.w{color:#fff;}
+.bento-num.a{color:#FBBF24;}
+.bento-num.b{color:#60A5FA;}
+.bento-label{font-size:15px;font-weight:500;color:rgba(255,255,255,.7);margin-bottom:6px;}
+.bento-sub{font-size:13px;color:rgba(255,255,255,.35);line-height:1.5;}
+.bento-icon{font-size:32px;margin-bottom:14px;}
+
+/* ═══════════════════════════════════════
+   WASTEMAP
+═══════════════════════════════════════ */
+.wastemap-section{background:var(--g950);position:relative;overflow:hidden;}
+.map-visual{
+  position:relative;height:440px;
+  background:radial-gradient(ellipse at 50% 50%,rgba(45,125,70,.12) 0%,transparent 70%);
+  border:1px solid rgba(93,194,120,.1);
+  border-radius:20px;overflow:hidden;
+}
+/* Puglia map SVG outline */
+.map-outline{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.15;}
+/* Map nodes */
+.map-node{
+  position:absolute;
+  width:56px;height:56px;
+  background:rgba(10,26,15,.9);
+  border:1px solid rgba(93,194,120,.3);
+  border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;
+  box-shadow:0 0 20px rgba(45,125,70,.2);
+}
+.map-node:hover{transform:scale(1.15);border-color:var(--g400);box-shadow:0 0 30px rgba(93,194,120,.4);}
+.map-node .pulse{
+  position:absolute;width:100%;height:100%;border-radius:14px;
+  border:1px solid rgba(93,194,120,.4);
+  animation:nodePulse 2.5s ease-out infinite;
+}
+@keyframes nodePulse{0%{transform:scale(1);opacity:.5;}100%{transform:scale(1.8);opacity:0;}}
+.map-node-icon{font-size:20px;}
+.map-node-lbl{font-size:7.5px;color:var(--g300);font-weight:600;text-align:center;letter-spacing:.2px;margin-top:2px;}
+/* SVG glow lines */
+.map-lines{position:absolute;inset:0;pointer-events:none;}
+.map-line-path{stroke:var(--g400);stroke-width:1.5;fill:none;stroke-dasharray:8 4;animation:dashMove 3s linear infinite;}
+.map-line-path.slow{animation-duration:5s;}
+.map-line-path.fast{animation-duration:2s;}
+@keyframes dashMove{to{stroke-dashoffset:-24;}}
+
+.wastemap-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.wastemap-features{display:flex;flex-direction:column;gap:20px;}
+.wf-item{display:flex;gap:14px;align-items:flex-start;}
+.wf-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:rgba(45,125,70,.15);border:1px solid rgba(93,194,120,.2);}
+.wf-text-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:4px;}
+.wf-text-desc{font-size:13.5px;color:rgba(255,255,255,.45);line-height:1.5;}
+
+/* ═══════════════════════════════════════
+   WHY GIOVANNI
+═══════════════════════════════════════ */
+.giovanni-section{background:white;}
+.giovanni-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.giovanni-img-wrap{position:relative;border-radius:20px;overflow:hidden;height:480px;}
+.giovanni-img-wrap img{width:100%;height:100%;object-fit:cover;}
+.giovanni-img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(45deg,rgba(10,26,15,.6) 0%,transparent 60%);}
+.giovanni-overlay{
+  position:absolute;bottom:20px;left:20px;right:20px;
+  background:rgba(10,26,15,.85);
+  border:1px solid rgba(93,194,120,.2);
+  border-radius:12px;padding:16px;
+  backdrop-filter:blur(20px);
+  z-index:1;
+}
+.giovanni-creds{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px;}
+.cred-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px;transition:all .2s;}
+.cred-card:hover{box-shadow:0 8px 24px rgba(10,26,15,.1);transform:translateY(-2px);}
+.cred-icon{font-size:24px;margin-bottom:10px;}
+.cred-title{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:4px;}
+.cred-desc{font-size:12.5px;color:var(--muted);line-height:1.4;}
+
+/* ═══════════════════════════════════════
+   ROADMAP
+═══════════════════════════════════════ */
+.roadmap-section{background:var(--bg);}
+.roadmap-timeline{display:flex;gap:0;position:relative;}
+.roadmap-timeline::before{content:'';position:absolute;top:50px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--g500),var(--g300),var(--g500));z-index:0;}
+.rm-step{flex:1;text-align:center;position:relative;z-index:1;padding-top:0;}
+.rm-dot{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--g500);border:3px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  margin:30px auto 24px;
+  font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:#fff;
+  box-shadow:0 0 0 6px rgba(45,125,70,.15);
+  transition:all .2s;
+}
+.rm-step:hover .rm-dot{transform:scale(1.15);box-shadow:0 0 0 10px rgba(45,125,70,.2);}
+.rm-phase{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--g500);margin-bottom:5px;}
+.rm-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:var(--txt);margin-bottom:6px;}
+.rm-desc{font-size:12px;color:var(--muted);line-height:1.5;padding:0 10px;}
+
+/* ═══════════════════════════════════════
+   CTA FINAL
+═══════════════════════════════════════ */
+.cta-section{
+  background:linear-gradient(160deg,var(--g950) 0%,var(--g900) 40%,var(--g800) 100%);
+  padding:120px 40px;position:relative;overflow:hidden;text-align:center;
+}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(45,125,70,.2) 0%,transparent 60%);}
+.cta-inner{position:relative;z-index:1;max-width:700px;margin:0 auto;}
+.cta-title{font-family:'Syne',sans-serif;font-size:clamp(36px,5vw,58px);font-weight:800;color:#fff;line-height:1.1;letter-spacing:-1.5px;margin-bottom:16px;}
+.cta-sub{font-size:17px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:36px;}
+.cta-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:48px;}
+.btn-cta-p{background:var(--g500);color:#fff;padding:14px 28px;border-radius:11px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;border:none;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.btn-cta-p:hover{background:var(--g400);box-shadow:0 12px 40px rgba(45,125,70,.5);transform:translateY(-2px);}
+.btn-cta-s{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8);padding:13px 26px;border-radius:11px;font-size:15px;font-family:'DM Sans',sans-serif;border:1px solid rgba(255,255,255,.15);cursor:pointer;transition:all .2s;}
+.btn-cta-s:hover{background:rgba(255,255,255,.12);}
+.cta-logos{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.cta-logo-badge{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 16px;font-size:12px;color:rgba(255,255,255,.5);}
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+footer{background:var(--g950);padding:60px 40px 30px;border-top:1px solid rgba(255,255,255,.06);}
+.footer-grid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px;}
+.footer-brand{}
+.footer-logo{display:flex;align-items:center;gap:9px;margin-bottom:14px;}
+.footer-desc{font-size:13.5px;color:rgba(255,255,255,.35);line-height:1.6;max-width:280px;margin-bottom:16px;}
+.footer-col-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.3);margin-bottom:14px;}
+.footer-link{display:block;font-size:13.5px;color:rgba(255,255,255,.45);text-decoration:none;margin-bottom:8px;transition:color .15s;cursor:pointer;}
+.footer-link:hover{color:rgba(255,255,255,.8);}
+.footer-bottom{max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding-top:20px;border-top:1px solid rgba(255,255,255,.06);}
+.footer-copy{font-size:12.5px;color:rgba(255,255,255,.3);}
+
+/* ═══════════════════════════════════════
+   LOGIN MODAL
+═══════════════════════════════════════ */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.7);z-index:500;
+  align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);
+}
+.modal-overlay.show{display:flex;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes spin{to{transform:rotate(360deg);}}
+.login-modal{
+  background:var(--g900);
+  border:1px solid rgba(93,194,120,.15);
+  border-radius:20px;
+  width:440px;
+  overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,.5);
+  animation:slideUp .3s ease;
+}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.login-header{
+  background:linear-gradient(135deg,var(--g800),var(--g700));
+  padding:32px;border-bottom:1px solid rgba(255,255,255,.06);
+  text-align:center;
+}
+.login-logo{width:50px;height:50px;background:var(--g500);border-radius:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.login-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:5px;}
+.login-sub{font-size:13px;color:rgba(255,255,255,.4);}
+.login-body{padding:28px 32px;}
+.role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;}
+.role-tab{
+  padding:12px;border-radius:10px;text-align:center;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.1);
+  transition:all .2s;
+}
+.role-tab.active{border-color:var(--g400);background:rgba(45,125,70,.15);}
+.role-tab-icon{font-size:22px;display:block;margin-bottom:5px;}
+.role-tab-name{font-size:13px;font-weight:600;color:rgba(255,255,255,.7);}
+.role-tab-desc{font-size:10.5px;color:rgba(255,255,255,.35);}
+.role-tab.active .role-tab-name{color:#fff;}
+.form-group{margin-bottom:14px;}
+.form-label{font-size:12px;font-weight:500;color:rgba(255,255,255,.5);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+.form-input{
+  width:100%;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:9px;padding:11px 14px;
+  font-size:14px;font-family:'DM Sans',sans-serif;color:#fff;outline:none;
+  transition:border-color .15s;
+}
+.form-input:focus{border-color:var(--g400);}
+.form-input::placeholder{color:rgba(255,255,255,.25);}
+.login-btn{
+  width:100%;background:var(--g500);color:#fff;border:none;
+  padding:13px;border-radius:10px;font-size:15px;
+  font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;
+  transition:all .2s;margin-top:6px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.login-btn:hover{background:var(--g400);box-shadow:0 8px 24px rgba(45,125,70,.4);}
+.login-close{
+  position:absolute;top:16px;right:16px;
+  background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.6);
+  width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+}
+.login-close:hover{background:rgba(255,255,255,.14);color:#fff;}
+.login-footer{padding:16px 32px;border-top:1px solid rgba(255,255,255,.06);text-align:center;font-size:12px;color:rgba(255,255,255,.3);}
+
+/* Demo hint */
+.demo-hint{background:rgba(45,125,70,.12);border:1px solid rgba(93,194,120,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--g300);margin-bottom:16px;line-height:1.5;}
+
+/* ═══════════════════════════════════════
+   CONSULTATION SUCCESS MODAL
+═══════════════════════════════════════ */
+.success-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.success-modal.show{display:flex;}
+.success-box{background:white;border-radius:18px;padding:36px;max-width:420px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.2);}
+.success-icon{width:64px;height:64px;background:var(--g50);border:2px solid var(--g200);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.success-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--txt);margin-bottom:8px;}
+.success-sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:22px;}
+.success-ref{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);background:var(--bg);padding:8px 14px;border-radius:7px;margin-bottom:20px;display:inline-block;}
+.success-btn{background:var(--g500);color:#fff;border:none;padding:11px 24px;border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;}
+
+/* ═══════════════════════════════════════
+   SCROLL ANIMATIONS
+═══════════════════════════════════════ */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-left{opacity:0;transform:translateX(-28px);transition:opacity .7s ease,transform .7s ease;}
+.reveal-left.visible{opacity:1;transform:translateX(0);}
+.reveal-right{opacity:0;transform:translateX(28px);transition:opacity .7s ease,transform .7s ease;}
+.reveal-right.visible{opacity:1;transform:translateX(0);}
+.stagger-1{transition-delay:.1s;}
+.stagger-2{transition-delay:.2s;}
+.stagger-3{transition-delay:.3s;}
+.stagger-4{transition-delay:.4s;}
+.stagger-5{transition-delay:.5s;}
+
+/* ═══════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════ */
+.text-g{color:var(--g500);}
+.text-g3{color:var(--g300);}
+.font-mono{font-family:'DM Mono',monospace;}
+.separator{height:1px;background:var(--border);margin:0 40px;}
+
+/* ─── MOBILE NAV TOGGLE ─── */
+.nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;cursor:pointer;padding:8px;flex-shrink:0;margin-left:auto;}
+.nav-hamburger span{display:block;height:2px;background:rgba(255,255,255,.8);border-radius:2px;transition:all .25s;}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-hamburger.open span:nth-child(2){opacity:0;}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* Mobile nav drawer */
+.mobile-nav{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(6,18,10,.97);border-top:1px solid rgba(255,255,255,.08);padding:16px;flex-direction:column;gap:4px;z-index:99;}
+.mobile-nav.show{display:flex;animation:fadeUp .2s ease;}
+.mobile-nav a,.mobile-nav button{color:rgba(255,255,255,.7);font-size:14px;padding:11px 14px;border-radius:8px;text-decoration:none;background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;transition:background .15s;}
+.mobile-nav a:hover,.mobile-nav button:hover{background:rgba(255,255,255,.08);color:#fff;}
+.mobile-nav .mob-cta{background:var(--g500);color:#fff;font-weight:600;text-align:center;border-radius:9px;margin-top:8px;}
+.mobile-nav .mob-cta:hover{background:var(--g400);}
+.mobile-nav-overlay{display:none;position:fixed;inset:0;z-index:98;}
+.mobile-nav-overlay.show{display:block;}
+
+/* ══════════════════════════════════════
+   RESPONSIVE — LANDING PAGE
+══════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .hero-inner{grid-template-columns:1fr;gap:40px;}
+  .hero-visual{display:none;}
+  .hero{padding:90px 32px 60px;min-height:auto;}
+  .hero-title{font-size:clamp(36px,7vw,56px);}
+
+  section{padding:72px 32px;}
+
+  .problem-collage{grid-template-columns:1fr 1fr;height:auto;}
+  .problem-collage .collage-card:last-child{display:none;}
+  .problem-stats{grid-template-columns:1fr 1fr;}
+  .problem-stats .prob-stat:last-child{grid-column:1/-1;}
+
+  .scoring-layout{grid-template-columns:1fr;gap:48px;}
+
+  .wastemap-grid{grid-template-columns:1fr;gap:40px;}
+  .map-visual{height:320px;}
+
+  .giovanni-layout{grid-template-columns:1fr;gap:40px;}
+  .giovanni-img-wrap{height:320px;}
+
+  .bento-grid{grid-template-columns:1fr 1fr;}
+  .bento-card.big{grid-column:1/-1;grid-row:auto;}
+
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .footer-grid .footer-brand{grid-column:1/-1;}
+}
+
+@media (max-width: 768px) {
+  /* Two-col inline layout override */
+  .two-col-section{grid-template-columns:1fr !important;gap:40px !important;}
+
+  /* Nav — hide links, show hamburger */
+  .nav-links,.nav-spacer,.nav-login,.nav-cta{display:none;}
+  .nav-hamburger{display:flex;}
+  nav{padding:0 20px;}
+
+  /* Hero */
+  .hero{padding:85px 20px 50px;}
+  .hero-title{font-size:clamp(32px,8vw,48px);letter-spacing:-1px;}
+  .hero-sub{font-size:15px;}
+  .hero-btns{flex-direction:column;gap:10px;}
+  .btn-hero-p,.btn-hero-s{width:100%;justify-content:center;}
+  .hero-trust{gap:6px;}
+  .trust-item{font-size:11px;}
+  .kpi-float{display:none;}
+
+  /* Sections */
+  section{padding:60px 20px;}
+  .section-title{font-size:clamp(26px,6vw,40px);}
+  .section-sub{font-size:15px;}
+
+  /* Problem */
+  .problem-collage{grid-template-columns:1fr;height:220px;}
+  .problem-collage .collage-card:not(:first-child){display:none;}
+  .problem-stats{grid-template-columns:1fr;}
+  .prob-num{font-size:36px;}
+
+  /* Ecosystem flow — wrap */
+  .flow-container{flex-wrap:wrap;justify-content:center;gap:12px;}
+  .flow-arrow{display:none;}
+  .flow-step{flex:0 0 calc(50% - 6px);padding:16px 8px;}
+
+  /* Dashboard mockup */
+  .browser-mockup{transform:none;}
+  .preview-float{display:none;}
+  .dashboard-bottom{grid-template-columns:1fr;}
+
+  /* Streams */
+  .streams-grid{grid-template-columns:1fr 1fr;}
+
+  /* Scoring */
+  .scoring-layout{grid-template-columns:1fr;}
+  .score-stack{gap:10px;}
+
+  /* Products */
+  .products-grid{grid-template-columns:1fr 1fr;}
+
+  /* Bento */
+  .bento-grid{grid-template-columns:1fr 1fr;}
+  .bento-card.big{grid-column:1/-1;}
+  .bento-num{font-size:clamp(28px,6vw,44px);}
+
+  /* Roadmap */
+  .roadmap-timeline{flex-direction:column;gap:0;}
+  .roadmap-timeline::before{display:none;}
+  .rm-step{display:flex;align-items:flex-start;gap:16px;text-align:left;padding:0 0 24px;}
+  .rm-dot{margin:0;flex-shrink:0;width:32px;height:32px;}
+  .rm-phase,.rm-title,.rm-desc{text-align:left;padding:0;}
+
+  /* CTA */
+  .cta-section{padding:72px 20px;}
+  .cta-title{font-size:clamp(28px,6vw,44px);}
+  .cta-btns{flex-direction:column;align-items:stretch;gap:10px;}
+  .btn-cta-p,.btn-cta-s{justify-content:center;}
+  .cta-logos{gap:8px;}
+
+  /* WasteMap */
+  .wastemap-grid{grid-template-columns:1fr;}
+  .map-visual{height:280px;}
+
+  /* Giovanni */
+  .giovanni-layout{grid-template-columns:1fr;}
+  .giovanni-img-wrap{height:260px;}
+  .giovanni-creds{grid-template-columns:1fr;}
+
+  /* Footer */
+  .footer-grid{grid-template-columns:1fr;gap:28px;}
+  .footer-bottom{flex-direction:column;gap:8px;text-align:center;}
+
+  /* Login modal */
+  .login-modal{width:calc(100vw - 24px);}
+}
+
+@media (max-width: 480px) {
+  nav{padding:0 16px;height:60px;}
+  .mobile-nav{top:60px;}
+
+  .hero{padding:75px 16px 44px;}
+  .hero-title{font-size:clamp(28px,9vw,40px);}
+  .hero-eyebrow{font-size:10.5px;}
+
+  section{padding:48px 16px;}
+  .section-header{margin-bottom:36px;}
+
+  .streams-grid{grid-template-columns:1fr;}
+  .products-grid{grid-template-columns:1fr;}
+  .bento-grid{grid-template-columns:1fr;}
+
+  .flow-step{flex:0 0 calc(100% - 6px);}
+
+  .role-tabs{grid-template-columns:1fr;}
+  .login-body{padding:20px;}
+  .login-header{padding:24px;}
+
+  footer{padding:40px 16px 24px;}
+  .separator{margin:0 16px;}
+
+  /* Dashboard preview */
+  .dashboard-preview-content{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ NAVBAR ═══════════════ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L14.196 5V11L9 14L3.804 11V5L9 2Z" fill="white" fill-opacity=".9"/><path d="M9 5.5L11.5 7V10L9 11.5L6.5 10V7L9 5.5Z" fill="#0A1628"/></svg>
+    </div>
+    <span class="nav-logo-name">CircularIQ</span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="#ecosystem">Ecosystem</a>
+    <a class="nav-link" href="#dashboard">Dashboard</a>
+    <a class="nav-link" href="#pathways">Pathways</a>
+    <a class="nav-link" href="#impact">Impact</a>
+    <a class="nav-link" href="#wastemap">WasteMap</a>
+    <a class="nav-link" href="#giovanni">Giovanni</a>
+  </div>
+  <div class="nav-spacer"></div>
+  <button class="nav-login" onclick="openLogin()">Sign In</button>
+  <button class="nav-cta" onclick="window.location.href='CircularIQ_GetStarted.html'">
+    <svg width="13" height="13" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M2 2h12v10H9l-3 3v-3H2z"/></svg>
+    Request Pilot
+  </button>
+  <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile Nav Drawer -->
+<div class="mobile-nav-overlay" id="mobile-nav-overlay" onclick="closeMobileNav()"></div>
+<div class="mobile-nav" id="mobile-nav">
+  <a href="#ecosystem" onclick="closeMobileNav()">Ecosystem</a>
+  <a href="#dashboard" onclick="closeMobileNav()">Dashboard</a>
+  <a href="#pathways" onclick="closeMobileNav()">Pathways</a>
+  <a href="#impact" onclick="closeMobileNav()">Impact</a>
+  <a href="#wastemap" onclick="closeMobileNav()">WasteMap</a>
+  <a href="#giovanni" onclick="closeMobileNav()">Giovanni</a>
+  <a href="#roadmap" onclick="closeMobileNav()">Roadmap</a>
+  <button onclick="openLogin();closeMobileNav()">Sign In →</button>
+  <button class="mob-cta" onclick="window.location.href='CircularIQ_GetStarted.html';closeMobileNav()">⭐ Get Started</button>
+  <button class="mob-cta" style="background:var(--g700);margin-top:4px;" onclick="openLogin();closeMobileNav()">Open Dashboard</button>
+</div>
+
+<!-- ═══════════════ LOGIN MODAL ═══════════════ -->
+<div class="modal-overlay" id="login-modal">
+  <div class="login-modal" style="position:relative;">
+    <button class="login-close" onclick="closeLogin()">✕</button>
+    <div class="login-header">
+      <div class="login-logo">
+        <svg width="24" height="24" viewBox="0 0 18 18" fill="none"><path d="M9 2L14.196 5V11L9 14L3.804 11V5L9 2Z" fill="white" fill-opacity=".9"/><path d="M9 5.5L11.5 7V10L9 11.5L6.5 10V7L9 5.5Z" fill="#0A1628"/></svg>
+      </div>
+      <div class="login-title">Welcome to CircularIQ</div>
+      <div class="login-sub">Sign in to access your dashboard</div>
+    </div>
+    <div class="login-body">
+      <div class="role-tabs">
+        <div class="role-tab active" id="tab-admin" onclick="selectRole('admin')">
+          <span class="role-tab-icon">🏭</span>
+          <div class="role-tab-name">Giovanni Admin</div>
+          <div class="role-tab-desc">Platform management</div>
+        </div>
+        <div class="role-tab" id="tab-customer" onclick="selectRole('customer')">
+          <span class="role-tab-icon">🌿</span>
+          <div class="role-tab-name">Producer Portal</div>
+          <div class="role-tab-desc">Dairy & Aquaculture</div>
+        </div>
+      </div>
+      <div class="demo-hint" id="demo-hint">
+        <strong>Demo:</strong> Use any email and password to access the <strong>Admin Dashboard</strong> (Giovanni Putignano & Figli S.r.l.)
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" type="email" id="login-email" placeholder="your@email.com" value="admin@circulariq.it">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="login-pass" placeholder="••••••••" value="••••••••">
+      </div>
+      <button class="login-btn" onclick="doLogin()">
+        <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M7 3H3a1 1 0 00-1 1v9a1 1 0 001 1h10a1 1 0 001-1v-4M9 1l4 4-4 4M13 5H6"/></svg>
+        Sign In to Dashboard
+      </button>
+    </div>
+    <div class="login-footer">CircularIQ · CIHEAM Bari × LUM University · Massafra, Puglia</div>
+  </div>
+</div>
+
+<!-- ═══════════════ SUCCESS MODAL ═══════════════ -->
+<div class="success-modal" id="success-modal">
+  <div class="success-box">
+    <div class="success-icon">
+      <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#2D7D46" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div class="success-title" id="success-title">Request Sent!</div>
+    <div class="success-sub" id="success-sub">Thank you! The CircularIQ team will contact you within 2 business days.</div>
+    <div class="success-ref" id="success-ref">Reference: CIQ-2025-PILOT-0031</div>
+    <button class="success-btn" onclick="closeSuccess()">Done</button>
+  </div>
+</div>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero" id="home">
+  <!-- Animated SVG mesh background -->
+  <div class="hero-mesh">
+    <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="rg1" cx="30%" cy="40%"><stop offset="0%" stop-color="#2D7D46" stop-opacity=".18"/><stop offset="100%" stop-color="#2D7D46" stop-opacity="0"/></radialGradient>
+        <radialGradient id="rg2" cx="70%" cy="60%"><stop offset="0%" stop-color="#0891B2" stop-opacity=".1"/><stop offset="100%" stop-color="#0891B2" stop-opacity="0"/></radialGradient>
+      </defs>
+      <ellipse cx="400" cy="350" rx="500" ry="400" fill="url(#rg1)"/>
+      <ellipse cx="1000" cy="550" rx="400" ry="350" fill="url(#rg2)"/>
+      <g stroke="#5DC278" stroke-opacity=".07" stroke-width="1">
+        <path d="M0 200 Q350 100 700 200 T1400 200"/><path d="M0 350 Q350 250 700 350 T1400 350"/>
+        <path d="M0 500 Q350 400 700 500 T1400 500"/><path d="M0 650 Q350 550 700 650 T1400 650"/>
+        <path d="M200 0 Q300 450 200 900"/><path d="M500 0 Q600 450 500 900"/>
+        <path d="M800 0 Q900 450 800 900"/><path d="M1100 0 Q1200 450 1100 900"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-inner" style="max-width:1280px;margin:0 auto;width:100%;">
+    <!-- Left content -->
+    <div>
+      <div class="hero-eyebrow">
+        <span class="hero-eyebrow-dot"></span>
+        Mediterranean Circular Economy Platform
+      </div>
+      <h1 class="hero-title">
+        Measure the stream.<br>
+        Score the<br>
+        <em>opportunity.</em>
+      </h1>
+      <p class="hero-sub">CircularIQ is the digital intelligence layer that connects wastewater treatment, agrifood producers, recovered products, and circular markets — turning disposal costs into annual revenue.</p>
+      <div class="hero-btns">
+        <button class="btn-hero-p" onclick="openLogin()">
+          <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M7 3H3a1 1 0 00-1 1v9a1 1 0 001 1h10a1 1 0 001-1v-4M9 1l4 4-4 4M13 5H6"/></svg>
+          Open Dashboard
+        </button>
+        <button class="btn-hero-p" style="background:var(--g600);box-shadow:none;" onclick="window.location.href='CircularIQ_GetStarted.html'" onmouseover="this.style.background='var(--g500)';this.style.boxShadow='0 8px 30px rgba(45,125,70,.35)'" onmouseout="this.style.background='var(--g600)';this.style.boxShadow='none'">
+          <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M8 1l1.5 4.5H14l-3.7 2.7 1.4 4.3L8 10l-3.7 2.5 1.4-4.3L2 5.5h4.5z"/></svg>
+          Get Started
+        </button>
+        <button class="btn-hero-s" onclick="document.getElementById('ecosystem').scrollIntoView({behavior:'smooth'})">
+          See How It Works ↓
+        </button>
+      </div>
+      <div class="hero-trust">
+        <div class="trust-item">🎓 CIHEAM Bari</div>
+        <div class="trust-item">🏛️ LUM University</div>
+        <div class="trust-item">🌿 EU ESPR Ready</div>
+        <div class="trust-item">🏭 Giovanni P&F</div>
+        <div class="trust-item">🇮🇹 Puglia, Italy</div>
+      </div>
+      <!-- Scroll indicator -->
+      <div style="margin-top:48px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;cursor:pointer;" onclick="document.getElementById('problem').scrollIntoView({behavior:'smooth'})">
+        <div style="font-size:11px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:1px;">Scroll to explore</div>
+        <div style="width:24px;height:24px;border:1.5px solid rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;animation:floatSlow 2s ease-in-out infinite;">
+          <svg width="10" height="10" fill="none" viewBox="0 0 10 10" stroke="rgba(255,255,255,.4)" stroke-width="1.5"><path d="M2 4l3 3 3-3"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right — ecosystem visual -->
+    <div class="hero-visual" style="position:relative;">
+      <!-- Floating KPI cards -->
+      <div class="kpi-float" style="top:5%;left:-10%;">
+        <div class="kfi-label">Net Annual Value</div>
+        <div class="kfi-val">+€217K</div>
+        <div class="kfi-meta">↑ Year 2 projection</div>
+      </div>
+      <div class="kpi-float" style="top:35%;right:-12%;">
+        <div class="kfi-label">Best Pathway Score</div>
+        <div class="kfi-val">8.4/10</div>
+        <div class="kfi-meta">Microalgae Production</div>
+      </div>
+      <div class="kpi-float" style="bottom:15%;left:-8%;">
+        <div class="kfi-label">Disposal Avoided</div>
+        <div class="kfi-val">€120K/yr</div>
+        <div class="kfi-meta">€15–40/m³ saved</div>
+      </div>
+
+      <!-- Ecosystem ring -->
+      <div class="eco-ring">
+        <div class="eco-ring-inner"></div>
+        <div class="eco-center">
+          <div style="font-size:32px;margin-bottom:6px;">🧠</div>
+          <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;text-align:center;line-height:1.2;">CircularIQ<br><span style="color:var(--g300);font-size:11px;font-weight:400;">Scoring Engine</span></div>
+        </div>
+        <!-- Orbit nodes -->
+        <div class="eco-node" style="position:absolute;top:-36px;left:50%;transform:translateX(-50%);">🏭<span>Treatment</span></div>
+        <div class="eco-node" style="position:absolute;top:50%;right:-36px;transform:translateY(-50%);">🐟<span>Aquaculture</span></div>
+        <div class="eco-node" style="position:absolute;bottom:-36px;left:50%;transform:translateX(-50%);">🌿<span>Algae</span></div>
+        <div class="eco-node" style="position:absolute;top:50%;left:-36px;transform:translateY(-50%);">🧀<span>Dairy</span></div>
+        <div class="eco-node" style="position:absolute;top:15%;right:5%;transform:translate(50%,-50%);">💎<span>Struvite</span></div>
+        <div class="eco-node" style="position:absolute;bottom:15%;left:5%;transform:translate(-50%,50%);">🛒<span>WasteMap</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PROBLEM ═══════════════ -->
+<section class="problem-section" id="problem" style="padding:100px 40px;">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="eyebrow g">The Problem</div>
+      <h2 class="section-title">Valuable wastewater<br>paid away every day</h2>
+      <p class="section-sub">Mediterranean agrifood producers spend millions disposing of nutrient-rich wastewater streams that could become their most profitable asset.</p>
+    </div>
+
+    <div class="problem-collage reveal">
+      <!-- Dairy card -->
+      <div class="collage-card">
+        <img src="https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&q=80" alt="Dairy production facility" loading="lazy" onerror="this.style.background='linear-gradient(135deg,#1E4529,#0F2518)';this.style.display='block';this.src='';">
+        <div class="overlay"></div>
+        <div class="collage-label">Dairy Production</div>
+        <div class="collage-icon">🧀</div>
+      </div>
+      <!-- Aquaculture card -->
+      <div class="collage-card">
+        <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80" alt="Aquaculture RAS facility" loading="lazy" onerror="this.style.background='linear-gradient(135deg,#0E3D52,#0A1A0F)';this.style.display='block';">
+        <div class="overlay"></div>
+        <div class="collage-label">Aquaculture RAS</div>
+        <div class="collage-icon">🐟</div>
+      </div>
+      <!-- Treatment plant -->
+      <div class="collage-card">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Water treatment facility" loading="lazy" onerror="this.style.background='linear-gradient(135deg,#163320,#0A1A0F)';this.style.display='block';">
+        <div class="overlay"></div>
+        <div class="collage-label">Treatment Plant</div>
+        <div class="collage-icon">🏭</div>
+      </div>
+    </div>
+
+    <div class="problem-stats">
+      <div class="prob-stat red reveal stagger-1">
+        <div class="prob-num red">€15–40</div>
+        <div class="prob-label">Per m³ disposal cost</div>
+        <div class="prob-desc">Dairy and aquaculture operators in Puglia pay €15–40 per cubic metre to dispose of nutrient-rich wastewater — water that could generate revenue instead.</div>
+      </div>
+      <div class="prob-stat amber reveal stagger-2">
+        <div class="prob-num amber">€1,800/t</div>
+        <div class="prob-label">Fishmeal purchased</div>
+        <div class="prob-desc">The same operators buy fishmeal at €1,200–1,800/tonne to feed their fish — while disposing of the exact wastewater that could produce that feed as algae biomass.</div>
+      </div>
+      <div class="prob-stat blue reveal stagger-3">
+        <div class="prob-num blue">0</div>
+        <div class="prob-label">Decision tools available</div>
+        <div class="prob-desc">No intelligence tool exists today to help agrifood producers identify, compare, and prioritise the most profitable wastewater valorisation pathway for their specific streams.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ECOSYSTEM FLOW ═══════════════ -->
+<section class="ecosystem-section" id="ecosystem">
+  <div class="container">
+    <div class="section-header center reveal" style="margin-bottom:64px;">
+      <div class="eyebrow" style="color:var(--g300);">The CircularIQ System</div>
+      <h2 class="section-title" style="color:#fff;">From waste stream<br>to circular revenue</h2>
+      <p class="section-sub" style="color:rgba(255,255,255,.5);">Seven steps. One integrated intelligence loop. Every cycle makes the system smarter.</p>
+    </div>
+
+    <div class="flow-container reveal">
+      <div class="flow-step stagger-1">
+        <div class="flow-icon-wrap">🏭</div>
+        <div class="flow-name">Your Waste</div>
+        <div class="flow-desc">5 streams · 60 m³/day</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step stagger-2">
+        <div class="flow-icon-wrap">⚗️</div>
+        <div class="flow-name">BioLink Unit</div>
+        <div class="flow-desc">On-site pilot · sensors every 15 min</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step stagger-3">
+        <div class="flow-icon-wrap">🧠</div>
+        <div class="flow-name">CircularIQ</div>
+        <div class="flow-desc">Score all pathways · rank opportunities</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step stagger-4">
+        <div class="flow-icon-wrap">📊</div>
+        <div class="flow-name">Best Pathway</div>
+        <div class="flow-desc">Regulatory · Economic · Technical</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step stagger-5">
+        <div class="flow-icon-wrap">🌿</div>
+        <div class="flow-name">Recovered Product</div>
+        <div class="flow-desc">Algae · Struvite · Biogas · Water</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon-wrap">🏷️</div>
+        <div class="flow-name">Circular Passport</div>
+        <div class="flow-desc">QR certified · EU ESPR ready</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon-wrap">🛒</div>
+        <div class="flow-name">WasteMap Sale</div>
+        <div class="flow-desc">B2B marketplace · prices feed back</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ DASHBOARD PREVIEW ═══════════════ -->
+<section class="dashboard-section" id="dashboard">
+  <div class="container">
+    <div class="two-col-section" style="display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;">
+      <div class="reveal-left">
+        <div class="eyebrow g">Live Intelligence</div>
+        <h2 class="section-title">Your circular economy<br>command centre</h2>
+        <p class="section-sub" style="margin-bottom:28px;">The CircularIQ admin dashboard gives Giovanni and his team a real-time view of all waste streams, pathway rankings, economic impact, and compliance status — in one screen.</p>
+        <div style="display:flex;flex-direction:column;gap:13px;margin-bottom:32px;">
+          <div style="display:flex;align-items:center;gap:12px;"><div style="width:36px;height:36px;background:var(--g50);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📊</div><div><div style="font-size:14px;font-weight:600;color:var(--txt);">Real-time pathway scoring</div><div style="font-size:12.5px;color:var(--muted);">Economic 40% · Technical 30% · Regulatory 20% · Logistics 10%</div></div></div>
+          <div style="display:flex;align-items:center;gap:12px;"><div style="width:36px;height:36px;background:var(--g50);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🚨</div><div><div style="font-size:14px;font-weight:600;color:var(--txt);">Automatic regulatory hard gates</div><div style="font-size:12.5px;color:var(--muted);">NaCl > 10 g/L blocks all biological pathways instantly</div></div></div>
+          <div style="display:flex;align-items:center;gap:12px;"><div style="width:36px;height:36px;background:var(--g50);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💶</div><div><div style="font-size:14px;font-weight:600;color:var(--txt);">Full economic waterfall</div><div style="font-size:12.5px;color:var(--muted);">Revenue + savings − capex − opex = net annual value</div></div></div>
+          <div style="display:flex;align-items:center;gap:12px;"><div style="width:36px;height:36px;background:var(--g50);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🏷️</div><div><div style="font-size:14px;font-weight:600;color:var(--txt);">Circular Passport generation</div><div style="font-size:12.5px;color:var(--muted);">QR-coded certificates for every certified output batch</div></div></div>
+        </div>
+        <button class="btn-hero-p" onclick="openLogin()">
+          Open Admin Dashboard →
+        </button>
+      </div>
+
+      <!-- Browser mockup -->
+      <div class="reveal-right" style="position:relative;">
+        <div class="browser-mockup">
+          <div class="browser-bar">
+            <div class="browser-dots">
+              <div class="browser-dot" style="background:#FC8181;"></div>
+              <div class="browser-dot" style="background:#FBBF24;"></div>
+              <div class="browser-dot" style="background:#4ADE80;"></div>
+            </div>
+            <div class="browser-url">circulariq.io/admin/dashboard</div>
+          </div>
+          <div class="dashboard-preview-content">
+            <div class="dp-kpi"><div class="dp-kpi-label">Net Annual Value</div><div class="dp-kpi-val g">+€217K</div></div>
+            <div class="dp-kpi"><div class="dp-kpi-label">Best Pathway</div><div class="dp-kpi-val" style="font-size:13px;">Microalgae 8.4</div></div>
+            <div class="dp-kpi"><div class="dp-kpi-label">Active Streams</div><div class="dp-kpi-val">4/5</div></div>
+            <div class="dp-kpi"><div class="dp-kpi-label">Disposal Avoided</div><div class="dp-kpi-val a">€120K</div></div>
+          </div>
+          <!-- Mini chart area -->
+          <div class="dashboard-bottom">
+            <div class="dp-chart">
+              <div style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:4px;">PATHWAY SCORES</div>
+              <div class="dp-chart-bars">
+                <div class="dp-bar" style="height:84%;background:rgba(93,194,120,.6);"></div>
+                <div class="dp-bar" style="height:79%;background:rgba(96,165,250,.5);"></div>
+                <div class="dp-bar" style="height:72%;background:rgba(251,191,36,.5);"></div>
+                <div class="dp-bar" style="height:61%;background:rgba(196,132,252,.4);"></div>
+                <div class="dp-bar" style="height:71%;background:rgba(201,168,76,.4);"></div>
+                <div class="dp-bar" style="height:8%;background:rgba(248,113,113,.4);"></div>
+              </div>
+            </div>
+            <div class="dp-rec">
+              <div class="dp-rec-label">⭐ Best Pathway</div>
+              <div class="dp-rec-name">Microalgae<br>Production</div>
+              <div class="dp-score">8.4</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating labels -->
+        <div class="preview-float f1">
+          <div style="font-size:9px;color:rgba(255,255,255,.4);margin-bottom:3px;">RECOMMENDATION</div>
+          <div style="font-size:13px;font-weight:600;color:#fff;">Microalgae #1</div>
+          <div style="font-size:10px;color:var(--g300);">Score 8.4 · +€52K/yr</div>
+        </div>
+        <div class="preview-float f2">
+          <div style="font-size:9px;color:rgba(255,255,255,.4);margin-bottom:3px;">ALERT</div>
+          <div style="font-size:12px;font-weight:600;color:#FC8181;">Brine Blocked</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.4);">NaCl 150 g/L gate</div>
+        </div>
+        <div class="preview-float f3">
+          <div style="font-size:9px;color:rgba(255,255,255,.4);margin-bottom:3px;">PAYBACK</div>
+          <div style="font-size:18px;font-weight:500;color:#fff;font-family:'DM Mono',monospace;">3–5 yr</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ STREAMS ═══════════════ -->
+<section class="streams-section" id="streams" style="padding:100px 40px;">
+  <div class="container">
+    <div class="section-header center reveal" style="margin-bottom:48px;">
+      <div class="eyebrow g">5 Waste Streams</div>
+      <h2 class="section-title">Every stream.<br>Every opportunity.</h2>
+      <p class="section-sub">CircularIQ analyses all five input streams from Giovanni's Massafra pilot site — each with its own pathway, value, and compliance status.</p>
+    </div>
+    <div class="streams-grid reveal">
+      <!-- Stream 1: RAS Effluent -->
+      <div class="stream-card stagger-1">
+        <div class="sc-img">
+          <img src="https://images.unsplash.com/photo-1563906267088-b029e7101114?w=400&q=80" alt="Aquaculture RAS tanks" loading="lazy" onerror="this.style.background='linear-gradient(135deg,#0E3D52,#0891B2)';this.style.display='block';">
+          <div class="sc-sector aqua">Aquaculture</div>
+        </div>
+        <div class="sc-body">
+          <div class="sc-badge scb-ok">Active ✓</div>
+          <div class="sc-name">RAS Tank Effluent</div>
+          <div class="sc-vol">35 m³/day · COD 380 mg/L</div>
+          <div class="sc-params">
+            <div class="sc-p"><div class="sc-p-name">TN</div><div class="sc-p-val ok">55 mg/L</div></div>
+            <div class="sc-p"><div class="sc-p-name">pH</div><div class="sc-p-val ok">7.1</div></div>
+          </div>
+          <div class="sc-pathway">🌿 Microalgae Production (8.4)</div>
+        </div>
+      </div>
+      <!-- Stream 2: RAS Sludge -->
+      <div class="stream-card stagger-2">
+        <div class="sc-img">
+          <img src="https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=400&q=80" alt="Water treatment tanks" loading="lazy" onerror="this.style.background='linear-gradient(135deg,#1A3A6A,#1A6FA8)';this.style.display='block';">
+          <div class="sc-sector aqua">Aquaculture</div>
+        </div>
+        <div class="sc-body">
+          <div class="sc-badge scb-ok">Active ✓</div>
+          <div class="sc-name">RAS Sludge</div>
+          <div class="sc-vol">2.5 m³/day · TN 320 mg/L</div>
+          <div class="sc-params">
+            <div class="sc-p"><div class="sc-p-name">TP</div><div class="sc-p-val warn">95 mg/L</div></div>
+            <div class="sc-p"><div class="sc-p-name">TSS</div><div class="sc-p-val warn">4,200</div></div>
+          </div>
+          <div class="sc-pathway">💎 Struvite Fertiliser (7.9)</div>
+        </div>
+      </div>
+      <!-- Stream 3: Cheese Whey -->
+      <div class="stream-card stagger-3">
+        <div class="sc-img">
+          <img src="https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=400&q=80" alt="Dairy cheese production" loading="lazy" onerror="this.style.background='linear-gradient(135deg,#92400E,#D97706)';this.style.display='block';">
+          <div class="sc-sector dairy">Dairy</div>
+        </div>
+        <div class="sc-body">
+          <div class="sc-badge scb-warn">Pre-treat needed</div>
+          <div class="sc-name">Cheese Whey</div>
+          <div class="sc-vol">12 m³/day · COD 55,000 mg/L</div>
+          <div class="sc-params">
+            <div class="sc-p"><div class="sc-p-name">TN</div><div class="sc-p-val">180 mg/L</div></div>
+            <div class="sc-p"><div class="sc-p-name">pH</div><div class="sc-p-val danger">4.5</div></div>
+          </div>
+          <div class="sc-pathway">🔥 Biogas Production (7.2)</div>
+        </div>
+      </div>
+      <!-- Stream 4: CIP -->
+      <div class="stream-card stagger-4">
+        <div class="sc-img">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" alt="Industrial cleaning system" loading="lazy" onerror="this.style.background='linear-gradient(135deg,#374151,#4B5563)';this.style.display='block';">
+          <div class="sc-sector dairy">Dairy</div>
+        </div>
+        <div class="sc-body">
+          <div class="sc-badge scb-warn">IED compliance</div>
+          <div class="sc-name">CIP Washdown</div>
+          <div class="sc-vol">8 m³/day · COD 4,500 mg/L</div>
+          <div class="sc-params">
+            <div class="sc-p"><div class="sc-p-name">pH</div><div class="sc-p-val danger">11.2</div></div>
+            <div class="sc-p"><div class="sc-p-name">NaCl</div><div class="sc-p-val ok">0.1 g/L</div></div>
+          </div>
+          <div class="sc-pathway">💧 Cost elimination priority</div>
+        </div>
+      </div>
+      <!-- Stream 5: Cheese Brine - BLOCKED -->
+      <div class="stream-card stagger-5">
+        <div class="sc-img">
+          <img src="https://images.unsplash.com/photo-1559598467-f8b76c8155d0?w=400&q=80" alt="Cheese brine processing" loading="lazy" onerror="this.style.background='linear-gradient(135deg,#7F1D1D,#DC2626)';this.style.display='block';">
+          <div class="sc-sector dairy">Dairy</div>
+          <div class="sc-blocked-bar"></div>
+        </div>
+        <div class="sc-body">
+          <div class="sc-badge scb-blocked">BLOCKED ✗</div>
+          <div class="sc-name" style="color:var(--red);">Cheese Brine</div>
+          <div class="sc-vol">2 m³/day · NaCl 150 g/L</div>
+          <div class="sc-params">
+            <div class="sc-p" style="background:#FEF2F2;"><div class="sc-p-name">NaCl</div><div class="sc-p-val danger">150 g/L ⚠</div></div>
+            <div class="sc-p"><div class="sc-p-name">Limit</div><div class="sc-p-val danger">10 g/L</div></div>
+          </div>
+          <div class="sc-pathway" style="color:var(--red);">🚫 Isolated — Phase 3 option</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ SCORING ENGINE ═══════════════ -->
+<section class="scoring-section" id="scoring" style="padding:100px 40px;">
+  <div class="container">
+    <div class="scoring-layout">
+      <div class="reveal-left">
+        <div class="score-stack">
+          <div class="score-layer" id="sl1">
+            <div class="sl-color" style="background:#4ADE80;"></div>
+            <div class="sl-label">
+              <div class="sl-name">Economic</div>
+              <div class="sl-desc">Revenue + disposal savings − opex − capex/20</div>
+            </div>
+            <div class="sl-weight">40%</div>
+            <div class="sl-bar"><div class="sl-track"><div class="sl-fill" id="sf1" style="background:#4ADE80;"></div></div></div>
+            <div class="sl-score" id="sv1">9.1</div>
+          </div>
+          <div class="score-layer" id="sl2">
+            <div class="sl-color" style="background:#60A5FA;"></div>
+            <div class="sl-label">
+              <div class="sl-name">Technical</div>
+              <div class="sl-desc">TRL level · energy · footprint · complexity</div>
+            </div>
+            <div class="sl-weight">30%</div>
+            <div class="sl-bar"><div class="sl-track"><div class="sl-fill" id="sf2" style="background:#60A5FA;"></div></div></div>
+            <div class="sl-score" id="sv2">7.8</div>
+          </div>
+          <div class="score-layer" id="sl3">
+            <div class="sl-color" style="background:#FBBF24;"></div>
+            <div class="sl-label">
+              <div class="sl-name">Regulatory</div>
+              <div class="sl-desc">EU compliance · blocked = score 0</div>
+            </div>
+            <div class="sl-weight">20%</div>
+            <div class="sl-bar"><div class="sl-track"><div class="sl-fill" id="sf3" style="background:#FBBF24;"></div></div></div>
+            <div class="sl-score" id="sv3">8.5</div>
+          </div>
+          <div class="score-layer" id="sl4">
+            <div class="sl-color" style="background:#C084FC;"></div>
+            <div class="sl-label">
+              <div class="sl-name">Logistics</div>
+              <div class="sl-desc">Buyers · storage · transport · seasonality</div>
+            </div>
+            <div class="sl-weight">10%</div>
+            <div class="sl-bar"><div class="sl-track"><div class="sl-fill" id="sf4" style="background:#C084FC;"></div></div></div>
+            <div class="sl-score" id="sv4">7.2</div>
+          </div>
+          <div class="score-result">
+            <div>
+              <div class="sr-label">Final Weighted Score</div>
+              <div class="sr-val" id="final-score">0.0</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="sr-badge">BEST PATHWAY</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:6px;">Microalgae Production</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="scoring-right reveal-right">
+        <div class="eyebrow" style="color:var(--g300);">The Scoring Engine</div>
+        <h2 class="section-title">Four axes.<br>One clear answer.</h2>
+        <p style="font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:28px;">CircularIQ scores every valorisation pathway on four weighted axes — merging economic potential, technical feasibility, regulatory compliance, and market logistics into a single ranked recommendation.</p>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px 20px;margin-bottom:20px;">
+          <div style="font-family:'DM Mono',monospace;font-size:13px;color:rgba(255,255,255,.5);margin-bottom:4px;">Formula</div>
+          <div style="font-family:'DM Mono',monospace;font-size:13px;color:#fff;">Score = <span style="color:#4ADE80;">Eco×0.40</span> + <span style="color:#60A5FA;">Tech×0.30</span> + <span style="color:#FBBF24;">Reg×0.20</span> + <span style="color:#C084FC;">Log×0.10</span></div>
+        </div>
+        <div style="font-size:13px;color:rgba(255,255,255,.35);line-height:1.6;">Any pathway with a blocked regulation receives score 0 and is removed from ranking — regardless of economic value.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PATHWAYS ═══════════════ -->
+<section class="pathways-section" id="pathways" style="padding:100px 40px;">
+  <div class="container">
+    <div class="section-header center reveal" style="margin-bottom:48px;">
+      <div class="eyebrow g">Valorised Outputs</div>
+      <h2 class="section-title">Waste in.<br>Revenue out.</h2>
+      <p class="section-sub">Five certified output products from Giovanni's pilot site — each with market prices, EU certifications, and a Circular Passport for traceability.</p>
+    </div>
+    <div class="products-grid reveal">
+      <div class="product-card stagger-1">
+        <div class="pc-top" style="background:linear-gradient(135deg,#EEF9F2,#D4F5E0);">
+          <div class="pc-badge" style="background:var(--g100);color:var(--g600);">Best Pathway ★</div>
+          <span class="pc-emoji">🌿</span>
+          <div class="pc-name">Algae Biomass</div>
+          <div class="pc-feedstock">From RAS effluent · Chlorella vulgaris</div>
+          <div class="pc-price" style="color:var(--g500);">€600–1,800</div>
+          <div class="pc-price-unit">per tonne</div>
+        </div>
+        <div class="pc-divider"></div>
+        <div class="pc-bottom">
+          <div class="pc-revenue" style="color:var(--g500);">+€52,000/yr revenue</div>
+          <div class="pc-reg">Feed Hyg. 183/2005 · EU 2020/741</div>
+        </div>
+      </div>
+      <div class="product-card stagger-2">
+        <div class="pc-top" style="background:linear-gradient(135deg,#EBF4FF,#D4EAF8);">
+          <div class="pc-badge" style="background:var(--blue-l);color:var(--blue);">CE-Certified</div>
+          <span class="pc-emoji">💎</span>
+          <div class="pc-name">Struvite Fertiliser</div>
+          <div class="pc-feedstock">From RAS sludge · MgNH₄PO₄</div>
+          <div class="pc-price" style="color:var(--blue);">€300–600</div>
+          <div class="pc-price-unit">per tonne</div>
+        </div>
+        <div class="pc-divider"></div>
+        <div class="pc-bottom">
+          <div class="pc-revenue" style="color:var(--g500);">+€28,000/yr revenue</div>
+          <div class="pc-reg">FPR 2019/1009 CMC 4</div>
+        </div>
+      </div>
+      <div class="product-card stagger-3">
+        <div class="pc-top" style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);">
+          <div class="pc-badge" style="background:var(--amber-l);color:#92400E;">Energy</div>
+          <span class="pc-emoji">🔥</span>
+          <div class="pc-name">Biogas / Biomethane</div>
+          <div class="pc-feedstock">From cheese whey · anaerobic digestion</div>
+          <div class="pc-price" style="color:var(--amber);">€0.05–0.10</div>
+          <div class="pc-price-unit">per kWh</div>
+        </div>
+        <div class="pc-divider"></div>
+        <div class="pc-bottom">
+          <div class="pc-revenue" style="color:var(--g500);">+€18,000/yr offset</div>
+          <div class="pc-reg">IED 2010/75/EU · ABP 1069/2009</div>
+        </div>
+      </div>
+      <div class="product-card stagger-4">
+        <div class="pc-top" style="background:linear-gradient(135deg,#ECFEFF,#CFFAFE);">
+          <div class="pc-badge" style="background:var(--aqua-l);color:#0E7490;">EU Class B</div>
+          <span class="pc-emoji">💧</span>
+          <div class="pc-name">Reclaimed Water</div>
+          <div class="pc-feedstock">Post-algae polishing · sand + UV</div>
+          <div class="pc-price" style="color:var(--aqua);">€0.5–1.5</div>
+          <div class="pc-price-unit">per m³</div>
+        </div>
+        <div class="pc-divider"></div>
+        <div class="pc-bottom">
+          <div class="pc-revenue" style="color:var(--g500);">+€14,000/yr savings</div>
+          <div class="pc-reg">EU 2020/741 Class B/A</div>
+        </div>
+      </div>
+      <div class="product-card stagger-5">
+        <div class="pc-top" style="background:linear-gradient(135deg,#FDF6E3,#FDE68A);">
+          <div class="pc-badge" style="background:var(--amber-l);color:#92400E;">Phase 2</div>
+          <span class="pc-emoji">🧀</span>
+          <div class="pc-name">WPC Protein</div>
+          <div class="pc-feedstock">Whey protein concentrate · UF membrane</div>
+          <div class="pc-price" style="color:var(--amber);">€800–4,000</div>
+          <div class="pc-price-unit">per tonne</div>
+        </div>
+        <div class="pc-divider"></div>
+        <div class="pc-bottom">
+          <div class="pc-revenue" style="color:var(--amber);">+€95,000/yr potential</div>
+          <div class="pc-reg">Novel Food 2015/2283</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ IMPACT ═══════════════ -->
+<section class="impact-section" id="impact" style="padding:100px 40px;">
+  <div class="container">
+    <div class="section-header center reveal" style="margin-bottom:56px;">
+      <div class="eyebrow" style="color:var(--g300);">Proven Impact</div>
+      <h2 class="section-title" style="color:#fff;">The numbers<br>that matter.</h2>
+    </div>
+    <div class="bento-grid reveal">
+      <div class="bento-card big">
+        <div class="bento-icon">💶</div>
+        <div class="bento-num g" id="kpi-net">+€217K</div>
+        <div class="bento-label">Net Annual Value</div>
+        <div class="bento-sub">Year 2 full operation · all 4 pathways active · Massafra pilot site</div>
+        <div style="margin-top:24px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,.4);">Disposal costs avoided</span><span style="color:var(--g300);font-family:'DM Mono',monospace;">+€120,000</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,.4);">Algae biomass sales</span><span style="color:var(--g300);font-family:'DM Mono',monospace;">+€52,000</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,.4);">Struvite fertiliser</span><span style="color:var(--g300);font-family:'DM Mono',monospace;">+€28,000</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,.4);">Biogas energy offset</span><span style="color:var(--g300);font-family:'DM Mono',monospace;">+€18,000</span></div>
+          <div style="height:1px;background:rgba(255,255,255,.08);"></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,.4);">Capex amortised (20yr)</span><span style="color:#FC8181;font-family:'DM Mono',monospace;">−€18,000</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:rgba(255,255,255,.4);">Opex</span><span style="color:#FC8181;font-family:'DM Mono',monospace;">−€42,000</span></div>
+        </div>
+      </div>
+      <div class="bento-card accent reveal stagger-1">
+        <div class="bento-icon">⏱️</div>
+        <div class="bento-num w">3–5</div>
+        <div class="bento-label">Year Payback</div>
+        <div class="bento-sub">Capex €130–200k</div>
+      </div>
+      <div class="bento-card reveal stagger-2">
+        <div class="bento-icon">🌊</div>
+        <div class="bento-num b">60.5</div>
+        <div class="bento-label">m³/day Monitored</div>
+        <div class="bento-sub">5 active streams</div>
+      </div>
+      <div class="bento-card accent reveal stagger-3">
+        <div class="bento-icon">🧠</div>
+        <div class="bento-num g">6</div>
+        <div class="bento-label">Pathways Scored</div>
+        <div class="bento-sub">4 viable · 1 conditional · 1 blocked</div>
+      </div>
+      <div class="bento-card reveal stagger-4">
+        <div class="bento-icon">⚡</div>
+        <div class="bento-num a">&lt;10</div>
+        <div class="bento-label">Minutes to Decide</div>
+        <div class="bento-sub">From data entry to ranked recommendation</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ WASTEMAP ═══════════════ -->
+<section class="wastemap-section" id="wastemap" style="padding:100px 40px;">
+  <div class="container">
+    <div class="wastemap-grid">
+      <div class="reveal-left">
+        <div class="eyebrow b">WasteMap Marketplace</div>
+        <h2 class="section-title" style="color:#fff;">The B2B<br>circular market<br>for Puglia.</h2>
+        <p style="font-size:16px;color:rgba(255,255,255,.45);line-height:1.7;margin-bottom:32px;">WasteMap connects certified circular output producers with local buyers — dairy operators, aquaculture farms, farmers, energy users, and municipalities — in a territorial B2B marketplace.</p>
+        <div class="wastemap-features">
+          <div class="wf-item">
+            <div class="wf-icon">🏷️</div>
+            <div><div class="wf-text-title">Circular Passport on every batch</div><div class="wf-text-desc">QR-coded certificates with 4 certification layers — regulatory, process audit, circular claim, digital traceability.</div></div>
+          </div>
+          <div class="wf-item">
+            <div class="wf-icon">📍</div>
+            <div><div class="wf-text-title">Territorial anchor network</div><div class="wf-text-desc">Giovanni as the first node. Phase 3: 3–5 Puglia operators. Phase 4: Mediterranean MENA expansion.</div></div>
+          </div>
+          <div class="wf-item">
+            <div class="wf-icon">💶</div>
+            <div><div class="wf-text-title">2–5% transaction fee model</div><div class="wf-text-desc">Every sale on WasteMap feeds real market prices back into CircularIQ — the system learns with every cycle.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map visual -->
+      <div class="reveal-right">
+        <div class="map-visual">
+          <!-- SVG lines -->
+          <svg class="map-lines" viewBox="0 0 500 440" preserveAspectRatio="none">
+            <path class="map-line-path" d="M250 220 Q180 160 120 130"/>
+            <path class="map-line-path slow" d="M250 220 Q320 160 380 130"/>
+            <path class="map-line-path fast" d="M250 220 Q200 300 140 340"/>
+            <path class="map-line-path" d="M250 220 Q300 300 360 340"/>
+            <path class="map-line-path slow" d="M250 220 Q250 120 250 60"/>
+            <path class="map-line-path fast" d="M250 220 Q420 240 440 220"/>
+          </svg>
+
+          <!-- Center node -->
+          <div class="map-node" style="top:50%;left:50%;transform:translate(-50%,-50%);width:68px;height:68px;border-color:var(--g400);box-shadow:0 0 40px rgba(45,125,70,.4);">
+            <div class="pulse"></div>
+            <div class="map-node-icon">🧠</div>
+            <div class="map-node-lbl">CircularIQ</div>
+          </div>
+          <!-- Surrounding nodes -->
+          <div class="map-node" style="top:22%;left:20%;">
+            <div class="pulse" style="animation-delay:.5s;"></div>
+            <div class="map-node-icon">🧀</div>
+            <div class="map-node-lbl">Dairy</div>
+          </div>
+          <div class="map-node" style="top:22%;right:20%;">
+            <div class="pulse" style="animation-delay:1s;"></div>
+            <div class="map-node-icon">🐟</div>
+            <div class="map-node-lbl">Aquaculture</div>
+          </div>
+          <div class="map-node" style="bottom:22%;left:20%;">
+            <div class="pulse" style="animation-delay:1.5s;"></div>
+            <div class="map-node-icon">🌱</div>
+            <div class="map-node-lbl">Farmers</div>
+          </div>
+          <div class="map-node" style="bottom:22%;right:20%;">
+            <div class="pulse" style="animation-delay:2s;"></div>
+            <div class="map-node-icon">⚡</div>
+            <div class="map-node-lbl">Energy</div>
+          </div>
+          <div class="map-node" style="top:10%;left:50%;transform:translateX(-50%);">
+            <div class="pulse" style="animation-delay:2.5s;"></div>
+            <div class="map-node-icon">🏭</div>
+            <div class="map-node-lbl">Giovanni</div>
+          </div>
+          <div class="map-node" style="top:50%;right:5%;transform:translateY(-50%);">
+            <div class="pulse" style="animation-delay:3s;"></div>
+            <div class="map-node-icon">🛒</div>
+            <div class="map-node-lbl">Buyers</div>
+          </div>
+
+          <!-- Legend -->
+          <div style="position:absolute;bottom:16px;left:16px;background:rgba(10,26,15,.85);border:1px solid rgba(93,194,120,.2);border-radius:9px;padding:10px 14px;backdrop-filter:blur(10px);">
+            <div style="font-size:9.5px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Phase 3 · Puglia Network</div>
+            <div style="font-size:12px;color:var(--g300);font-weight:600;">3–5 operators · Q4 2026</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ WHY GIOVANNI ═══════════════ -->
+<section class="giovanni-section" id="giovanni" style="padding:100px 40px;">
+  <div class="container">
+    <div class="giovanni-layout">
+      <div class="giovanni-img-wrap reveal-left">
+        <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80" alt="Water treatment plant infrastructure" loading="lazy" onerror="this.style.background='linear-gradient(135deg,#0F2518,#1E4529)';this.style.display='block';">
+        <div class="giovanni-overlay">
+          <div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;">Industrial Partner</div>
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;">Giovanni Putignano & Figli S.r.l.</div>
+          <div style="font-size:12.5px;color:rgba(255,255,255,.5);">Massafra, Puglia · Wastewater Treatment Plant Builder</div>
+        </div>
+      </div>
+      <div class="reveal-right">
+        <div class="eyebrow g">Why Giovanni</div>
+        <h2 class="section-title">Industrial expertise<br>meets digital intelligence.</h2>
+        <p class="section-sub" style="margin-bottom:32px;">Giovanni Putignano & Figli S.r.l. is a Puglia-based wastewater treatment plant construction company making a strategic move into circular economy services for the Mediterranean agrifood sector.</p>
+        <div class="giovanni-creds">
+          <div class="cred-card">
+            <div class="cred-icon">🔧</div>
+            <div class="cred-title">Wastewater Engineering</div>
+            <div class="cred-desc">Decades of design, build, and operate experience for municipal and industrial treatment plants in Puglia.</div>
+          </div>
+          <div class="cred-card">
+            <div class="cred-icon">📍</div>
+            <div class="cred-title">Puglia Industry Knowledge</div>
+            <div class="cred-desc">Deep roots in the Mediterranean agrifood territory — dairy, olive, aquaculture — the exact sectors CircularIQ serves.</div>
+          </div>
+          <div class="cred-card">
+            <div class="cred-icon">🎓</div>
+            <div class="cred-title">Academic Partnership</div>
+            <div class="cred-desc">Co-developed with CIHEAM Bari and LUM University through the LUM × CIHEAM design challenge.</div>
+          </div>
+          <div class="cred-card">
+            <div class="cred-icon">🌐</div>
+            <div class="cred-title">Mediterranean Vision</div>
+            <div class="cred-desc">Phase 4 expansion to Tunisia, Morocco, Algeria — replicating the CircularIQ model across MENA agrifood regions.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ROADMAP ═══════════════ -->
+<section class="roadmap-section" id="roadmap" style="padding:100px 40px;">
+  <div class="container">
+    <div class="section-header center reveal" style="margin-bottom:56px;">
+      <div class="eyebrow g">Investment Roadmap</div>
+      <h2 class="section-title">From pilot to<br>Mediterranean platform.</h2>
+      <p class="section-sub">Five phases. Each phase builds on the last — adding data, scale, and market reach across the Mediterranean circular economy.</p>
+    </div>
+    <div class="roadmap-timeline reveal">
+      <div class="rm-step stagger-1">
+        <div class="rm-dot">1</div>
+        <div class="rm-phase">Now · Months 0–6</div>
+        <div class="rm-title">Frontend MVP</div>
+        <div class="rm-desc">Dashboard, landing page, customer portal, mock data, first demo for Giovanni and investors.</div>
+      </div>
+      <div class="rm-step stagger-2">
+        <div class="rm-dot">2</div>
+        <div class="rm-phase">Months 6–18</div>
+        <div class="rm-title">Pilot Data</div>
+        <div class="rm-desc">Real measurements from Massafra. Validated scoring engine. First Circular Passports issued.</div>
+      </div>
+      <div class="rm-step stagger-3">
+        <div class="rm-dot">3</div>
+        <div class="rm-phase">Months 18–36</div>
+        <div class="rm-title">BioLink Integration</div>
+        <div class="rm-desc">Sensors live. Treatment unit operational. BioLink auto-updates CircularIQ every 15 minutes.</div>
+      </div>
+      <div class="rm-step stagger-4">
+        <div class="rm-dot">4</div>
+        <div class="rm-phase">Months 36–48</div>
+        <div class="rm-title">WasteMap Puglia</div>
+        <div class="rm-desc">3–5 operators listed. First certified batch sales. Bureau Veritas audit complete. €15K transaction revenue.</div>
+      </div>
+      <div class="rm-step stagger-5">
+        <div class="rm-dot">5</div>
+        <div class="rm-phase">Year 4+</div>
+        <div class="rm-title">Mediterranean MENA</div>
+        <div class="rm-desc">CircularIQ as SaaS. Tunisia, Morocco, Algeria expansion. EU ESPR mandate drives adoption.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FINAL CTA ═══════════════ -->
+<section class="cta-section" id="contact">
+  <div class="cta-inner">
+    <div class="eyebrow" style="color:var(--g300);margin-bottom:14px;">Ready to Transform?</div>
+    <h2 class="cta-title">Turn your wastewater<br>into circular value.</h2>
+    <p class="cta-sub">CircularIQ helps agrifood operators discover the most profitable, compliant, and sustainable pathway for every wastewater stream — in under 10 minutes.</p>
+    <div class="cta-btns">
+      <button class="btn-cta-p" onclick="openConsultation()">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Request Pilot Assessment
+      </button>
+      <button class="btn-cta-s" onclick="openLogin()">View Dashboard Demo</button>
+      <button class="btn-cta-s" onclick="window.location.href='CircularIQ_GetStarted.html'">Contact the Team</button>
+    </div>
+    <div class="cta-logos">
+      <div class="cta-logo-badge">🎓 CIHEAM Bari</div>
+      <div class="cta-logo-badge">🏛️ LUM University</div>
+      <div class="cta-logo-badge">🏭 Giovanni Putignano & Figli</div>
+      <div class="cta-logo-badge">🇮🇹 Massafra, Puglia</div>
+      <div class="cta-logo-badge">🌿 EU ESPR Ready</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <div style="width:30px;height:30px;background:var(--g500);border-radius:8px;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><path d="M9 2L14.196 5V11L9 14L3.804 11V5L9 2Z" fill="white" fill-opacity=".9"/></svg></div>
+        <span style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:#fff;">CircularIQ</span>
+      </div>
+      <div class="footer-desc">The digital intelligence layer connecting wastewater treatment, agrifood producers, recovered products, and circular markets in the Mediterranean.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="font-size:11px;background:rgba(93,194,120,.1);border:1px solid rgba(93,194,120,.15);border-radius:5px;padding:3px 8px;color:var(--g300);">CIHEAM Bari</div>
+        <div style="font-size:11px;background:rgba(93,194,120,.1);border:1px solid rgba(93,194,120,.15);border-radius:5px;padding:3px 8px;color:var(--g300);">LUM University</div>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Platform</div>
+      <a class="footer-link" onclick="openLogin()">Admin Dashboard</a>
+      <a class="footer-link" onclick="window.location.href='CircularIQ_Customer_Dashboard.html'">Customer Portal</a>
+      <a class="footer-link" href="#wastemap">WasteMap</a>
+      <a class="footer-link" href="#scoring">Scoring Engine</a>
+    </div>
+    <div>
+      <div class="footer-col-title">Ecosystem</div>
+      <a class="footer-link" href="#streams">Waste Streams</a>
+      <a class="footer-link" href="#pathways">Valorised Products</a>
+      <a class="footer-link" href="#giovanni">Why Giovanni</a>
+      <a class="footer-link" href="#roadmap">Roadmap</a>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <a class="footer-link" onclick="openConsultation()">Request Pilot</a>
+      <a class="footer-link" onclick="openConsultation()">Investor Deck</a>
+      <div class="footer-link" style="cursor:default;color:rgba(255,255,255,.3);">Massafra, Puglia 🇮🇹</div>
+      <div class="footer-link" style="cursor:default;color:rgba(255,255,255,.3);">info@circulariq.io</div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 CircularIQ · Giovanni Putignano & Figli S.r.l. · Built by Mohib · MOI Master Programme · CIHEAM Bari</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.2);">Measure · Score · Recover · Sell</div>
+  </div>
+</footer>
+
+<script>
+// ═══════════════ MOBILE NAV TOGGLE ═══════════════
+function toggleMobileNav() {
+  const nav     = document.getElementById('mobile-nav');
+  const overlay = document.getElementById('mobile-nav-overlay');
+  const btn     = document.getElementById('nav-hamburger');
+  const isOpen  = nav.classList.contains('show');
+  if (isOpen) {
+    nav.classList.remove('show');
+    overlay.classList.remove('show');
+    btn.classList.remove('open');
+    document.body.style.overflow = '';
+  } else {
+    nav.classList.add('show');
+    overlay.classList.add('show');
+    btn.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeMobileNav() {
+  document.getElementById('mobile-nav').classList.remove('show');
+  document.getElementById('mobile-nav-overlay').classList.remove('show');
+  document.getElementById('nav-hamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+// Close on resize to desktop
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768) closeMobileNav();
+});
+
+// ═══════════════ NAVBAR SCROLL ═══════════════
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ═══════════════ SCROLL REVEAL ═══════════════
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => revealObserver.observe(el));
+
+// ═══════════════ SCORE BARS ANIMATION ═══════════════
+const scoreData = [
+  { fill: 'sf1', width: 91 },
+  { fill: 'sf2', width: 78 },
+  { fill: 'sf3', width: 85 },
+  { fill: 'sf4', width: 72 },
+];
+let scoresAnimated = false;
+
+const scoreObserver = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting && !scoresAnimated) {
+    scoresAnimated = true;
+    scoreData.forEach((s, i) => {
+      setTimeout(() => {
+        document.getElementById(s.fill).style.width = s.width + '%';
+      }, i * 200);
+    });
+    // Animate final score
+    let val = 0;
+    const target = 8.4;
+    const step = target / 60;
+    const ticker = setInterval(() => {
+      val = Math.min(val + step, target);
+      document.getElementById('final-score').textContent = val.toFixed(1);
+      if (val >= target) clearInterval(ticker);
+    }, 25);
+  }
+}, { threshold: 0.3 });
+
+const scoringSection = document.getElementById('scoring');
+if (scoringSection) scoreObserver.observe(scoringSection);
+
+// ═══════════════ KPI COUNT-UP ═══════════════
+let kpiAnimated = false;
+const kpiObserver = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting && !kpiAnimated) {
+    kpiAnimated = true;
+  }
+}, { threshold: 0.3 });
+const impactSection = document.getElementById('impact');
+if (impactSection) kpiObserver.observe(impactSection);
+
+// ═══════════════ LOGIN MODAL ═══════════════
+let selectedRole = 'admin';
+
+function openLogin() {
+  document.getElementById('login-modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLogin() {
+  document.getElementById('login-modal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function selectRole(role) {
+  selectedRole = role;
+  document.getElementById('tab-admin').classList.toggle('active', role === 'admin');
+  document.getElementById('tab-customer').classList.toggle('active', role === 'customer');
+
+  const hint = document.getElementById('demo-hint');
+  if (role === 'admin') {
+    hint.innerHTML = '<strong>Demo:</strong> Use any email and password to access the <strong>Admin Dashboard</strong> (Giovanni Putignano & Figli S.r.l.)';
+    document.getElementById('login-email').value = 'admin@circulariq.it';
+  } else {
+    hint.innerHTML = '<strong>Demo:</strong> Use any email and password to access the <strong>Customer Portal</strong> (Dairy & Aquaculture producer view)';
+    document.getElementById('login-email').value = 'mgmt@latteriapugliese.it';
+  }
+}
+
+function doLogin() {
+  const btn = document.querySelector('.login-btn');
+  const original = btn.innerHTML;
+  btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;"></span> Signing in...';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    closeLogin();
+    document.body.style.overflow = '';
+    btn.innerHTML = original;
+    btn.disabled = false;
+
+    if (selectedRole === 'admin') {
+      window.location.href = 'CircularIQ_Full_Dashboard.html';
+    } else {
+      window.location.href = 'CircularIQ_Customer_Dashboard.html';
+    }
+  }, 900);
+}
+
+// ═══════════════ CONSULTATION ═══════════════
+function openConsultation() {
+  const ref = 'CIQ-2025-PILOT-' + Math.floor(1000 + Math.random() * 9000);
+  document.getElementById('success-title').textContent = 'Request Sent! ✓';
+  document.getElementById('success-sub').textContent = 'Thank you! The CircularIQ team at Giovanni Putignano & Figli will contact you within 2 business days with a custom pilot assessment for your site.';
+  document.getElementById('success-ref').textContent = 'Reference: ' + ref;
+  document.getElementById('success-modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSuccess() {
+  document.getElementById('success-modal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// ═══════════════ CLOSE ON OVERLAY CLICK ═══════════════
+document.getElementById('login-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeLogin();
+});
+document.getElementById('success-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeSuccess();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeLogin(); closeSuccess(); }
+});
+
+// ═══════════════ SMOOTH SCROLL FOR NAV ═══════════════
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const id = a.getAttribute('href').slice(1);
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// ═══════════════ IMAGE FALLBACK COLORS ═══════════════
+document.querySelectorAll('img').forEach(img => {
+  img.addEventListener('error', function() {
+    const parent = this.closest('.sc-img, .collage-card, .giovanni-img-wrap');
+    if (parent) {
+      const gradients = [
+        'linear-gradient(135deg,#0E3D52,#0891B2)',
+        'linear-gradient(135deg,#1E4529,#2D7D46)',
+        'linear-gradient(135deg,#92400E,#D97706)',
+        'linear-gradient(135deg,#0F2518,#163320)',
+        'linear-gradient(135deg,#7F1D1D,#991B1B)',
+      ];
+      parent.style.background = gradients[Math.floor(Math.random() * gradients.length)];
+      this.style.display = 'none';
+    }
+  });
+});
+</script>
+</body>
+</html>

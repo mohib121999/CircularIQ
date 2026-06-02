@@ -1,0 +1,2374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CircularIQ — Admin Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --g900:#0A1A0F;--g800:#0F2518;--g700:#163320;--g600:#1E4529;--g500:#2D7D46;--g400:#3DA05C;--g300:#5DC278;--g200:#A8E4BC;--g100:#D4F5E0;--g50:#EEF9F2;
+  --b500:#1A6FA8;--b400:#2589CC;--b100:#D4EAF8;--b50:#EFF6FF;
+  --a500:#D97706;--a100:#FEF3C7;--a50:#FFFBEB;
+  --r500:#DC2626;--r100:#FEE2E2;--r50:#FFF5F5;
+  --p500:#7C3AED;--p100:#EDE9FE;
+  --t500:#0891B2;--t100:#CFFAFE;
+  --gray50:#F8FAF9;--gray100:#EEF0EE;--gray200:#D9DDD9;--gray400:#8F9A8F;--gray600:#4A5C4A;
+  --sidebar:#0A1A0F;--sidact:#1E4529;
+  --card:#ffffff;--bg:#F0F4F1;
+  --txt:#0F2518;--txt2:#4A5C4A;--muted:#8F9A8F;--border:#D9DDD9;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);display:flex;min-height:100vh;font-size:14px;line-height:1.5;overflow-x:hidden;}
+
+/* ─── SIDEBAR ─── */
+.sidebar{width:220px;min-height:100vh;background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .25s;}
+.logo-area{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.07);}
+.logo-badge{display:flex;align-items:center;gap:9px;}
+.logo-icon{width:32px;height:32px;background:var(--g500);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:#fff;letter-spacing:-.3px;}
+.logo-sub{font-size:10px;color:var(--g300);margin-top:3px;letter-spacing:.5px;text-transform:uppercase;}
+.nav-section{padding:18px 10px;flex:1;overflow-y:auto;}
+.nav-group-label{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--g400);padding:0 8px;margin:14px 0 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.5);font-size:13px;font-weight:400;transition:all .15s;margin-bottom:2px;user-select:none;position:relative;}
+.nav-item:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.06);}
+.nav-item.active{background:var(--sidact);color:var(--g200);font-weight:500;}
+.nav-item.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;background:var(--g400);border-radius:0 3px 3px 0;}
+.nav-icon{width:15px;height:15px;flex-shrink:0;opacity:.7;}
+.nav-item.active .nav-icon{opacity:1;}
+.nav-badge{margin-left:auto;background:var(--r500);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;}
+.nav-badge.green{background:var(--g500);}
+.sidebar-footer{padding:14px 10px;border-top:1px solid rgba(255,255,255,.07);}
+.user-card{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;}
+.user-avatar{width:30px;height:30px;background:var(--g600);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--g100);flex-shrink:0;}
+.user-name{font-size:12px;color:rgba(255,255,255,.8);font-weight:500;}
+.user-role{font-size:10.5px;color:var(--g400);}
+
+/* ─── MAIN ─── */
+.main{margin-left:220px;flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 26px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.page-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:var(--txt);}
+.page-sub{font-size:11.5px;color:var(--muted);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.btn-primary{background:var(--g500);color:#fff;border:none;padding:8px 15px;border-radius:8px;font-size:12.5px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;}
+.btn-primary:hover{background:var(--g400);}
+.btn-secondary{background:transparent;color:var(--txt2);border:1px solid var(--border);padding:7px 13px;border-radius:8px;font-size:12.5px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .15s;}
+.btn-secondary:hover{background:var(--gray100);}
+.icon-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:8px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;transition:background .15s;}
+.icon-btn:hover{background:var(--gray100);}
+.notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--r500);border-radius:50%;border:2px solid #fff;}
+.live-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);padding:5px 10px;background:var(--gray50);border:1px solid var(--border);border-radius:6px;}
+.pulse-dot{width:6px;height:6px;background:var(--g500);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ─── PAGES ─── */
+.page{display:none;flex-direction:column;gap:0;animation:fadeUp .35s ease both;height:100%;min-height:0;}
+.page.active{display:flex;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.page-scroll{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;-webkit-overflow-scrolling:touch;}
+.content{padding:22px 26px;display:flex;flex-direction:column;gap:18px;padding-bottom:40px;}
+
+/* ─── CARDS ─── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.card-header{padding:15px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.card-title{font-family:'Syne',sans-serif;font-size:13.5px;font-weight:600;color:var(--txt);}
+.card-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.card-body{padding:18px;}
+
+/* ─── KPI CARDS ─── */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s;cursor:default;}
+.kpi:hover{box-shadow:0 6px 24px rgba(45,125,70,.1);transform:translateY(-1px);}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.kpi.g::after{background:var(--g500);}
+.kpi.b::after{background:var(--b500);}
+.kpi.a::after{background:var(--a500);}
+.kpi.r::after{background:var(--r500);}
+.kpi.p::after{background:var(--p500);}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;}
+.kpi-value{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:var(--txt);line-height:1;margin-bottom:5px;}
+.kpi-value.g{color:var(--g500);}
+.kpi-value.r{color:var(--r500);}
+.kpi-meta{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.trend{font-size:10.5px;font-weight:600;padding:2px 6px;border-radius:4px;}
+.trend.up{background:#DCFCE7;color:#166534;}
+.trend.down{background:var(--r100);color:var(--r500);}
+.trend.warn{background:var(--a100);color:#92400E;}
+.trend.neu{background:var(--gray100);color:var(--gray600);}
+
+/* ─── BADGES ─── */
+.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;}
+.badge.best{background:#DCFCE7;color:#166534;}
+.badge.rec{background:var(--b100);color:#1A4E7A;}
+.badge.viable{background:var(--gray100);color:var(--gray600);}
+.badge.cond{background:var(--a100);color:#92400E;}
+.badge.blocked{background:var(--r100);color:var(--r500);}
+.badge.active-s{background:var(--g50);color:var(--g600);border:1px solid var(--g200);}
+.badge.inactive{background:var(--gray100);color:var(--muted);}
+
+/* ─── TABLES ─── */
+.data-table{width:100%;border-collapse:collapse;}
+.data-table thead th{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:0 14px 11px;text-align:left;font-weight:500;border-bottom:1px solid var(--border);}
+.data-table tbody tr{border-bottom:1px solid var(--gray100);transition:background .1s;cursor:pointer;}
+.data-table tbody tr:hover{background:var(--gray50);}
+.data-table tbody tr:last-child{border-bottom:none;}
+.data-table td{padding:12px 14px;font-size:13px;color:var(--txt);vertical-align:middle;}
+.mono{font-family:'DM Mono',monospace;font-size:12px;}
+
+/* ─── MINI BAR ─── */
+.mbar{display:inline-block;width:56px;height:4px;background:var(--gray200);border-radius:10px;overflow:hidden;vertical-align:middle;}
+.mbar-fill{height:100%;border-radius:10px;background:var(--g500);}
+.mbar-fill.b{background:var(--b500);}
+.mbar-fill.a{background:var(--a500);}
+.mbar-fill.r{background:var(--r500);}
+.mbar-fill.p{background:var(--p500);}
+
+/* ─── SCORE BAR ROWS (best rec) ─── */
+.best-rec{background:linear-gradient(135deg,#0F2518 0%,#1E4529 100%);border-radius:12px;padding:22px;position:relative;overflow:hidden;}
+.best-rec::after{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:rgba(45,125,70,.12);border-radius:50%;}
+.sbar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.sbar-label{font-size:11px;color:rgba(255,255,255,.55);width:95px;flex-shrink:0;}
+.sbar-track{flex:1;height:5px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden;}
+.sbar-fill{height:100%;border-radius:10px;background:var(--g400);transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.sbar-val{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--g200);width:26px;text-align:right;flex-shrink:0;}
+
+/* ─── ALERTS ─── */
+.alert-item{display:flex;gap:10px;padding:11px 13px;border-radius:9px;border:1px solid;align-items:flex-start;margin-bottom:9px;transition:transform .15s;}
+.alert-item:hover{transform:translateX(2px);}
+.alert-item:last-child{margin-bottom:0;}
+.alert-item.red{background:#FFF5F5;border-color:#FECACA;}
+.alert-item.amber{background:#FFFBEB;border-color:#FDE68A;}
+.alert-item.green{background:#F0FDF4;border-color:#BBF7D0;}
+.alert-item.blue{background:#EFF6FF;border-color:#BFDBFE;}
+.ai{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:1px;}
+.alert-item.red .ai{background:var(--r500);color:#fff;}
+.alert-item.amber .ai{background:var(--a500);color:#fff;}
+.alert-item.green .ai{background:var(--g500);color:#fff;}
+.alert-item.blue .ai{background:var(--b500);color:#fff;}
+.alert-title{font-size:12px;font-weight:500;color:var(--txt);margin-bottom:2px;}
+.alert-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+.alert-time{font-size:10px;color:var(--muted);margin-top:3px;}
+
+/* ─── STREAM CARDS (big cards on streams page) ─── */
+.stream-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.stream-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:box-shadow .2s,transform .2s;cursor:pointer;}
+.stream-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.08);transform:translateY(-2px);}
+.stream-card.blocked-card{opacity:.7;border-style:dashed;}
+.stream-card-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.stream-sector{font-size:10px;text-transform:uppercase;letter-spacing:.6px;font-weight:600;padding:2px 7px;border-radius:4px;}
+.sector-dairy{background:#EFF6FF;color:#1A4E7A;}
+.sector-aqua{background:var(--g50);color:var(--g600);}
+.stream-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--txt);}
+.stream-vol{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--txt);margin:2px 0;}
+.stream-vol-label{font-size:10.5px;color:var(--muted);}
+.stream-params{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:12px 14px;border-top:1px solid var(--gray100);}
+.param-item{background:var(--gray50);border-radius:6px;padding:6px 9px;}
+.param-name{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;}
+.param-val{font-family:'DM Mono',monospace;font-size:12.5px;font-weight:500;color:var(--txt);}
+.param-val.warn{color:var(--a500);}
+.param-val.danger{color:var(--r500);}
+.param-val.ok{color:var(--g500);}
+.stream-pathway-hint{padding:10px 14px;background:var(--gray50);border-top:1px solid var(--gray100);font-size:11px;color:var(--txt2);display:flex;align-items:center;gap:6px;}
+
+/* ─── PATHWAY DETAIL CARDS ─── */
+.pathway-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.pathway-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;}
+.pathway-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.08);transform:translateY(-2px);}
+.pathway-card.best-card{border:2px solid var(--g400);box-shadow:0 4px 20px rgba(45,125,70,.15);}
+.pathway-card.blocked-card{opacity:.6;border-style:dashed;}
+.pw-header{padding:16px;border-bottom:1px solid var(--border);}
+.pw-rank{font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);margin-bottom:4px;}
+.pw-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--txt);margin-bottom:4px;}
+.pw-product{font-size:11.5px;color:var(--txt2);margin-bottom:8px;}
+.pw-score-big{font-family:'Syne',sans-serif;font-size:32px;font-weight:700;line-height:1;}
+.pw-score-unit{font-size:13px;font-weight:400;color:var(--muted);}
+.pw-axes{padding:14px 16px;border-bottom:1px solid var(--border);}
+.pw-axis{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.pw-axis:last-child{margin-bottom:0;}
+.pw-axis-label{font-size:11px;color:var(--muted);width:100px;flex-shrink:0;}
+.pw-axis-bar{flex:1;height:4px;background:var(--gray100);border-radius:10px;overflow:hidden;}
+.pw-axis-fill{height:100%;border-radius:10px;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.pw-axis-val{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--txt);width:24px;text-align:right;}
+.pw-economics{padding:14px 16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.pw-econ-item{background:var(--gray50);border-radius:6px;padding:8px 10px;}
+.pw-econ-label{font-size:10px;color:var(--muted);margin-bottom:2px;}
+.pw-econ-val{font-size:13px;font-weight:500;}
+.pw-econ-val.pos{color:var(--g500);}
+.pw-econ-val.neg{color:var(--r500);}
+.pw-footer{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:var(--gray50);}
+.pw-feedstock{font-size:11px;color:var(--muted);}
+.pw-regs{display:flex;gap:4px;flex-wrap:wrap;}
+.reg-tag{font-size:9.5px;padding:2px 6px;border-radius:4px;background:var(--gray100);color:var(--muted);border:1px solid var(--border);font-family:'DM Mono',monospace;}
+.reg-tag.ok{background:#F0FDF4;border-color:#BBF7D0;color:#166534;}
+.reg-tag.warn{background:var(--a50);border-color:#FDE68A;color:#92400E;}
+.reg-tag.block{background:var(--r100);border-color:#FECACA;color:var(--r500);}
+
+/* ─── CUSTOMER PORTAL ─── */
+.portal-layout{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start;}
+.step-indicator{display:flex;align-items:center;gap:0;margin-bottom:20px;}
+.step{display:flex;align-items:center;gap:7px;}
+.step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:'Syne',sans-serif;transition:all .3s;}
+.step-num.done{background:var(--g500);color:#fff;}
+.step-num.current{background:var(--txt);color:#fff;}
+.step-num.pending{background:var(--gray200);color:var(--muted);}
+.step-label{font-size:11.5px;color:var(--muted);font-weight:500;}
+.step-label.current{color:var(--txt);}
+.step-line{flex:1;height:1px;background:var(--border);margin:0 8px;}
+.step-line.done{background:var(--g500);}
+
+.form-group{margin-bottom:14px;}
+.form-label{font-size:11.5px;font-weight:500;color:var(--txt2);margin-bottom:5px;display:block;}
+.form-sub{font-size:10.5px;color:var(--muted);margin-bottom:5px;}
+.form-input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--txt);background:var(--card);transition:border-color .15s;outline:none;}
+.form-input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(45,125,70,.08);}
+.form-select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--txt);background:var(--card);cursor:pointer;outline:none;}
+.form-select:focus{border-color:var(--g500);}
+.form-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.param-input-card{background:var(--gray50);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;}
+.param-input-title{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:600;color:var(--txt);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.param-input-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.param-input-item{}
+.param-input-label{font-size:10px;color:var(--muted);margin-bottom:4px;display:block;text-transform:uppercase;letter-spacing:.4px;}
+.param-input-field{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;font-family:'DM Mono',monospace;color:var(--txt);background:#fff;outline:none;transition:border-color .15s;}
+.param-input-field:focus{border-color:var(--g500);}
+.param-input-field.flag{border-color:var(--r500);background:var(--r50);}
+.param-input-field.ok{border-color:var(--g300);}
+.flag-hint{font-size:10px;color:var(--r500);margin-top:3px;display:none;}
+
+/* ─── RESULT PANEL ─── */
+.result-panel{display:none;flex-direction:column;gap:14px;}
+.result-panel.show{display:flex;}
+.result-best{background:linear-gradient(135deg,#0F2518,#1E4529);border-radius:12px;padding:20px;color:#fff;}
+.result-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;}
+.result-sub{font-size:12px;color:var(--g200);margin-bottom:16px;}
+.result-score-row{display:flex;align-items:flex-end;gap:20px;}
+.result-big-score{font-family:'Syne',sans-serif;font-size:48px;font-weight:700;line-height:1;color:#fff;}
+.result-axes{flex:1;}
+.roi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.roi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px;text-align:center;}
+.roi-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--g500);}
+.roi-label{font-size:10.5px;color:var(--muted);margin-top:3px;}
+
+/* ─── COMPARISON TABLE ─── */
+.comp-table{width:100%;border-collapse:collapse;}
+.comp-table th{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);}
+.comp-table td{padding:10px 12px;font-size:12.5px;border-bottom:1px solid var(--gray100);}
+.comp-table tr:last-child td{border-bottom:none;}
+
+/* ─── CHART CONTAINERS ─── */
+.chart-wrap{position:relative;width:100%;}
+
+/* ─── TABS ─── */
+.tabs{display:flex;gap:2px;background:var(--gray100);border-radius:8px;padding:3px;width:fit-content;}
+.tab{padding:5px 13px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--muted);transition:all .15s;white-space:nowrap;}
+.tab.active{background:#fff;color:var(--txt);font-weight:500;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+
+/* ─── TOOLTIP ─── */
+.tooltip-wrap{position:relative;display:inline-flex;}
+.tooltip{position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;font-size:10.5px;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:999;}
+.tooltip-wrap:hover .tooltip{opacity:1;}
+
+/* ─── SECTION HEADER ─── */
+.section-eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--g500);font-weight:600;margin-bottom:4px;}
+.section-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--txt);margin-bottom:2px;}
+.section-sub{font-size:12.5px;color:var(--muted);}
+
+/* ─── LAYOUT HELPERS ─── */
+.two-col{display:grid;grid-template-columns:1fr 300px;gap:14px;}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.flex-row{display:flex;align-items:center;gap:10px;}
+.spacer{flex:1;}
+.divider{height:1px;background:var(--border);margin:4px 0;}
+
+/* ─── LOADING SHIMMER ─── */
+.shimmer{background:linear-gradient(90deg,var(--gray100) 25%,var(--gray50) 50%,var(--gray100) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:4px;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* ─── CHART TOOLTIP CUSTOM ─── */
+.chart-legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px;}
+.chart-legend-item{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--txt2);}
+.legend-swatch{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+
+/* ─── CUSTOMER PORTAL HEADER ─── */
+.portal-hero{background:linear-gradient(135deg,#0F2518 0%,#1E4529 60%,#2D7D46 100%);border-radius:12px;padding:24px 28px;color:#fff;position:relative;overflow:hidden;margin-bottom:18px;}
+.portal-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;background:rgba(45,125,70,.15);border-radius:50%;}
+.portal-hero::after{content:'';position:absolute;bottom:-40px;right:80px;width:150px;height:150px;background:rgba(93,194,120,.08);border-radius:50%;}
+.portal-hero-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px;}
+.portal-hero-sub{font-size:13px;color:var(--g200);max-width:460px;line-height:1.5;}
+
+/* ─── EMPTY STATE ─── */
+.empty-state{text-align:center;padding:50px 20px;}
+.empty-icon{width:48px;height:48px;background:var(--gray100);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+.empty-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:600;color:var(--txt);margin-bottom:5px;}
+.empty-sub{font-size:12.5px;color:var(--muted);}
+
+/* ─── NOTICE BANNER ─── */
+.notice{padding:10px 14px;border-radius:8px;font-size:12px;display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.notice.info{background:var(--b50);border:1px solid #BFDBFE;color:#1A4E7A;}
+.notice.warn{background:var(--a50);border:1px solid #FDE68A;color:#92400E;}
+.notice.danger{background:var(--r50);border:1px solid #FECACA;color:var(--r500);}
+.notice.success{background:var(--g50);border:1px solid var(--g200);color:var(--g600);}
+
+/* ─── HAMBURGER BUTTON ─── */
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:transparent;border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:8px;flex-shrink:0;}
+.hamburger span{display:block;height:2px;background:var(--txt2);border-radius:2px;transition:all .25s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ─── SIDEBAR OVERLAY ─── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:190;backdrop-filter:blur(2px);}
+.sidebar-overlay.show{display:block;}
+
+/* ══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS — FULL DASHBOARD
+══════════════════════════════════════ */
+@media (max-width: 900px) {
+  /* Sidebar slides in/out */
+  .sidebar{transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+
+  /* Hamburger visible */
+  .hamburger{display:flex;}
+
+  /* Topbar adjustments */
+  .topbar{padding:0 14px;gap:8px;}
+  .topbar-right{gap:6px;}
+  .topbar-right .btn-secondary{display:none;}
+  .page-sub{display:none;}
+
+  /* KPI rows → 2 columns */
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  .kpi-row.five-col{grid-template-columns:repeat(2,1fr);}
+
+  /* All 2-col grids → 1 col */
+  .two-col{grid-template-columns:1fr;}
+  .three-col{grid-template-columns:1fr 1fr;}
+  .stream-grid{grid-template-columns:1fr 1fr;}
+  .pathway-grid{grid-template-columns:1fr;}
+  .portal-layout{grid-template-columns:1fr;}
+  .roi-grid{grid-template-columns:1fr 1fr;}
+
+  /* Content padding */
+  .content{padding:14px 14px 40px;}
+
+  /* Best rec card simplify */
+  .best-rec{padding:16px;}
+
+  /* Notif panel full width */
+  #notif-panel{width:calc(100vw - 28px);right:14px;}
+}
+
+@media (max-width: 600px) {
+  /* KPI → single column */
+  .kpi-row{grid-template-columns:1fr 1fr;}
+  .kpi-value{font-size:20px;}
+
+  /* Grids → single column */
+  .three-col{grid-template-columns:1fr;}
+  .stream-grid{grid-template-columns:1fr;}
+  .pathway-grid{grid-template-columns:1fr;}
+  .two-col{grid-template-columns:1fr;}
+
+  /* Topbar compact */
+  .topbar{height:52px;padding:0 12px;}
+  .page-title{font-size:14px;}
+  .icon-btn{width:30px;height:30px;}
+
+  /* Tables — allow horizontal scroll */
+  .card{overflow-x:auto;}
+  .data-table{min-width:600px;}
+  .comp-table{min-width:400px;}
+
+  /* Content */
+  .content{padding:12px 12px 40px;gap:12px;}
+
+  /* Portal layout */
+  .portal-layout{grid-template-columns:1fr;}
+  .param-input-grid{grid-template-columns:1fr 1fr;}
+  .form-grid2{grid-template-columns:1fr;}
+
+  /* Scoring section */
+  .sbar-label{width:70px;font-size:10px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="logo-area">
+    <div class="logo-badge">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L14.196 5V11L9 14L3.804 11V5L9 2Z" fill="white" fill-opacity=".9"/><path d="M9 5.5L11.5 7V10L9 11.5L6.5 10V7L9 5.5Z" fill="#0F2518"/></svg>
+      </div>
+      <div>
+        <div class="logo-name">CircularIQ</div>
+        <div class="logo-sub">Admin Platform</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="nav-section">
+    <div class="nav-group-label">Main</div>
+    <div class="nav-item active" onclick="showPage('dashboard',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('streams',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M1 5c2-2 4-2 6 0s4 2 6 0M1 11c2-2 4-2 6 0s4 2 6 0"/></svg>
+      Streams
+      <span class="nav-badge green">5</span>
+    </div>
+    <div class="nav-item" onclick="showPage('pathways',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z"/></svg>
+      Pathways
+    </div>
+    <div class="nav-item" onclick="showPage('customers',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+      Customer Portal
+      <span class="nav-badge">3</span>
+    </div>
+    <div class="nav-item" onclick="showPage('market',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M5 7h6M5 10h4"/></svg>
+      WasteMap
+    </div>
+    <div class="nav-group-label">System</div>
+    <div class="nav-item" onclick="showPage('settings',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.1 3.1l1.4 1.4M11.5 11.5l1.4 1.4M3.1 12.9l1.4-1.4M11.5 4.5l1.4-1.4"/></svg>
+      Settings
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">GP</div>
+      <div>
+        <div class="user-name">Giovanni P&F</div>
+        <div class="user-role">Admin · Massafra</div>
+      </div>
+    </div>
+    <a href="CircularIQ_Customer_Dashboard.html" style="display:flex;align-items:center;gap:7px;width:100%;background:rgba(26,196,168,.1);border:1px solid rgba(26,196,168,.2);color:rgba(26,196,168,.85);padding:8px 12px;border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:8px;justify-content:center;text-decoration:none;" onmouseover="this.style.background='rgba(26,196,168,.18)'" onmouseout="this.style.background='rgba(26,196,168,.1)'">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Customer Portal
+    </a>
+    <button onclick="openLogout()" style="display:flex;align-items:center;gap:7px;width:100%;background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.2);color:rgba(255,120,120,.8);padding:8px 12px;border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;transition:all .2s;margin-top:6px;justify-content:center;" onmouseover="this.style.background='rgba(220,38,38,.2)'" onmouseout="this.style.background='rgba(220,38,38,.1)'">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      Sign out
+    </button>
+  </div>
+</aside>
+
+<!-- ═══════════ MAIN AREA ═══════════ -->
+<main class="main">
+
+<!-- ────────────────────────────────────────────────────────
+     PAGE 1 · DASHBOARD
+────────────────────────────────────────────────────────── -->
+<div class="page active" id="page-dashboard">
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+        <div><div class="page-title">Dashboard</div><div class="page-sub">Massafra Pilot Site · Overview</div></div>
+    <div class="topbar-right">
+      <div class="live-badge"><span class="pulse-dot"></span><span id="last-scored-ts">Last scored: Today 08:15</span></div>
+      <button class="icon-btn" onclick="toggleNotif(this)" id="notif-btn"><svg width="15" height="15" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5a5 5 0 015 5v3l1 2H2l1-2V6.5a5 5 0 015-5Z"/><path d="M6.5 13.5a1.5 1.5 0 003 0"/></svg><span class="notif-dot" id="notif-dot"></span></button>
+      <button class="btn-primary" onclick="animateScoring(this)">
+        <svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2.2"><path d="M13 8A5 5 0 118 3M13 3v5h-5"/></svg>Run Scoring
+      </button>
+    </div>
+  </div>
+  <div class="page-scroll"><div class="content">
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi g"><div class="kpi-label">Net Annual Value</div><div class="kpi-value g">+€217K</div><div class="kpi-meta"><span class="trend up">↑ Year 2 projection</span></div></div>
+      <div class="kpi b"><div class="kpi-label">Best Pathway Score</div><div class="kpi-value">8.4<span style="font-size:13px;font-weight:400;color:var(--muted)">/10</span></div><div class="kpi-meta" style="color:var(--b500)">Microalgae Production</div></div>
+      <div class="kpi a"><div class="kpi-label">Active Streams</div><div class="kpi-value">4<span style="font-size:13px;font-weight:400;color:var(--muted)">/5</span></div><div class="kpi-meta"><span class="trend warn">1 blocked (brine)</span></div></div>
+      <div class="kpi r"><div class="kpi-label">Disposal Costs Avoided</div><div class="kpi-value">€120K</div><div class="kpi-meta"><span class="trend up">↑ /year saved</span></div></div>
+    </div>
+
+    <!-- Best Rec + Alerts -->
+    <div style="display:grid;grid-template-columns:1fr 310px;gap:14px;">
+      <div class="best-rec">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span class="badge best"><svg width="8" height="8" viewBox="0 0 9 9" fill="currentColor"><polygon points="4.5,0.5 5.6,3.3 8.5,3.4 6.3,5.2 7.1,8 4.5,6.4 1.9,8 2.7,5.2 0.5,3.4 3.4,3.3"/></svg>Best Pathway</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.4)">Scored today · auto-updates on new data</span>
+        </div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:3px;">Microalgae Production</div>
+        <div style="font-size:12px;color:var(--g200);margin-bottom:18px;opacity:.85;">Feedstock: RAS Tank Effluent · 35 m³/day · COD 380 mg/L · pH 7.1</div>
+        <div style="margin-bottom:18px;">
+          <div class="sbar-row"><span class="sbar-label">Economic (40%)</span><div class="sbar-track"><div class="sbar-fill" style="width:91%"></div></div><span class="sbar-val">9.1</span></div>
+          <div class="sbar-row"><span class="sbar-label">Technical (30%)</span><div class="sbar-track"><div class="sbar-fill" style="width:78%"></div></div><span class="sbar-val">7.8</span></div>
+          <div class="sbar-row"><span class="sbar-label">Regulatory (20%)</span><div class="sbar-track"><div class="sbar-fill" style="width:85%"></div></div><span class="sbar-val">8.5</span></div>
+          <div class="sbar-row"><span class="sbar-label">Logistics (10%)</span><div class="sbar-track"><div class="sbar-fill" style="width:72%"></div></div><span class="sbar-val">7.2</span></div>
+        </div>
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;">
+          <div><div style="font-family:'Syne',sans-serif;font-size:42px;font-weight:700;color:#fff;line-height:1;">8.4</div><div style="font-size:11px;color:var(--g200);opacity:.7;">Final weighted score</div></div>
+          <div style="text-align:right;">
+            <div style="font-size:12px;color:var(--g100);margin-bottom:4px;">Revenue breakdown</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:5px;justify-content:flex-end;margin-bottom:3px;"><span style="width:5px;height:5px;border-radius:50%;background:var(--g300);display:inline-block;"></span>Algae biomass +€52,000/yr</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:5px;justify-content:flex-end;margin-bottom:3px;"><span style="width:5px;height:5px;border-radius:50%;background:var(--g300);display:inline-block;"></span>Reclaimed water +€14,000/yr</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:5px;justify-content:flex-end;"><span style="width:5px;height:5px;border-radius:50%;background:var(--g300);display:inline-block;"></span>Fishmeal replaced +€36,000/yr</div>
+            <div style="font-size:11px;color:var(--g300);margin-top:8px;font-weight:500;">TRL 6 · Payback 3–5 yrs · Capex €130–200k</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">System Alerts</div><div class="card-sub">Live compliance flags</div></div><span class="badge blocked">2 Critical</span></div>
+        <div class="card-body" style="padding:14px;">
+          <div class="alert-item red"><div class="ai">!</div><div><div class="alert-title">Cheese brine — BLOCKED</div><div class="alert-desc">NaCl 150 g/L exceeds hard gate (≤10 g/L). All biological pathways blocked for Stream 3.</div><div class="alert-time">Today 08:15 · ABP 1069/2009</div></div></div>
+          <div class="alert-item red"><div class="ai">!</div><div><div class="alert-title">IED compliance check due</div><div class="alert-desc">CIP washdown pH 11.2 — must neutralise before any discharge.</div><div class="alert-time">Today 08:15 · IED 2010/75/EU</div></div></div>
+          <div class="alert-item amber"><div class="ai">~</div><div><div class="alert-title">RAS sludge TP rising</div><div class="alert-desc">TP 95 mg/L (+8% vs last week). Struvite yield increasing — update market price.</div><div class="alert-time">Advisory · Yesterday</div></div></div>
+          <div class="alert-item green"><div class="ai">✓</div><div><div class="alert-title">Algae pathway nominal</div><div class="alert-desc">COD 380 mg/L stable. EU 2020/741 & Feed Hyg. 183/2005 compliance confirmed.</div><div class="alert-time">OK · Today 08:15</div></div></div>
+          <div class="alert-item blue"><div class="ai">i</div><div><div class="alert-title">Batch STR-004 ready</div><div class="alert-desc">Struvite lot certified FPR 2019/1009. Ready for WasteMap listing.</div><div class="alert-time">Info · 2 days ago</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ranking Table + Economic -->
+    <div style="display:grid;grid-template-columns:1fr 290px;gap:14px;">
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Pathway Ranking</div><div class="card-sub">Economic 40% · Technical 30% · Regulatory 20% · Logistics 10%</div></div></div>
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Pathway</th><th>Feedstock</th><th>Econ</th><th>Tech</th><th>Reg</th><th>Log</th><th>Score</th><th>Label</th></tr></thead>
+          <tbody>
+            <tr style="background:#FAFFFE" onclick="showPage('pathways',document.querySelector('[onclick*=pathways]'))">
+              <td><span class="mono">01</span></td><td style="font-weight:500">Microalgae Production</td><td><span style="font-size:11px;background:var(--gray100);padding:2px 7px;border-radius:4px;color:var(--muted)">RAS Effluent</span></td>
+              <td><div class="mbar"><div class="mbar-fill" style="width:91%"></div></div></td><td><div class="mbar"><div class="mbar-fill" style="width:78%"></div></div></td><td><div class="mbar"><div class="mbar-fill" style="width:85%"></div></div></td><td><div class="mbar"><div class="mbar-fill" style="width:72%"></div></div></td>
+              <td><span class="mono" style="color:var(--g500);font-weight:500">8.4</span></td><td><span class="badge best">Best</span></td>
+            </tr>
+            <tr onclick="showPage('pathways',document.querySelector('[onclick*=pathways]'))">
+              <td><span class="mono">02</span></td><td style="font-weight:500">Struvite Fertiliser</td><td><span style="font-size:11px;background:var(--gray100);padding:2px 7px;border-radius:4px;color:var(--muted)">RAS Sludge</span></td>
+              <td><div class="mbar"><div class="mbar-fill b" style="width:82%"></div></div></td><td><div class="mbar"><div class="mbar-fill b" style="width:80%"></div></div></td><td><div class="mbar"><div class="mbar-fill b" style="width:90%"></div></div></td><td><div class="mbar"><div class="mbar-fill b" style="width:65%"></div></div></td>
+              <td><span class="mono" style="color:var(--b500);font-weight:500">7.9</span></td><td><span class="badge rec">Recommended</span></td>
+            </tr>
+            <tr><td><span class="mono">03</span></td><td style="font-weight:500">Biogas / Biomethane</td><td><span style="font-size:11px;background:var(--gray100);padding:2px 7px;border-radius:4px;color:var(--muted)">Cheese Whey</span></td>
+              <td><div class="mbar"><div class="mbar-fill" style="width:75%"></div></div></td><td><div class="mbar"><div class="mbar-fill" style="width:72%"></div></div></td><td><div class="mbar"><div class="mbar-fill" style="width:80%"></div></div></td><td><div class="mbar"><div class="mbar-fill" style="width:68%"></div></div></td>
+              <td><span class="mono" style="color:var(--b500);font-weight:500">7.2</span></td><td><span class="badge rec">Recommended</span></td>
+            </tr>
+            <tr><td><span class="mono">04</span></td><td style="font-weight:500">Water Reclamation</td><td><span style="font-size:11px;background:var(--gray100);padding:2px 7px;border-radius:4px;color:var(--muted)">Mixed</span></td>
+              <td><div class="mbar"><div class="mbar-fill a" style="width:58%"></div></div></td><td><div class="mbar"><div class="mbar-fill" style="width:70%"></div></div></td><td><div class="mbar"><div class="mbar-fill" style="width:75%"></div></div></td><td><div class="mbar"><div class="mbar-fill" style="width:52%"></div></div></td>
+              <td><span class="mono" style="color:var(--txt2);font-weight:500">6.1</span></td><td><span class="badge viable">Viable</span></td>
+            </tr>
+            <tr><td><span class="mono">05</span></td><td style="font-weight:500">WPC Protein Extract</td><td><span style="font-size:11px;background:var(--gray100);padding:2px 7px;border-radius:4px;color:var(--muted)">Cheese Whey</span></td>
+              <td><div class="mbar"><div class="mbar-fill" style="width:95%"></div></div></td><td><div class="mbar"><div class="mbar-fill a" style="width:45%"></div></div></td><td><div class="mbar"><div class="mbar-fill" style="width:60%"></div></div></td><td><div class="mbar"><div class="mbar-fill" style="width:80%"></div></div></td>
+              <td><span class="mono" style="color:var(--a500);font-weight:500">7.1</span></td><td><span class="badge cond">Conditional</span></td>
+            </tr>
+            <tr style="opacity:.55"><td><span class="mono">—</span></td><td style="font-weight:500">Cheese Brine Recovery</td><td><span style="font-size:11px;background:var(--r100);padding:2px 7px;border-radius:4px;color:var(--r500)">Brine (BLOCKED)</span></td>
+              <td colspan="4" style="font-size:11px;color:var(--r500)">NaCl hard gate — pathway disabled</td>
+              <td><span class="mono" style="color:var(--r500)">0.0</span></td><td><span class="badge blocked">Blocked</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:5px;align-items:center;">
+          <span style="font-size:10.5px;color:var(--muted);margin-right:3px;">Regulations active:</span>
+          <span class="reg-tag ok">EU 2020/741</span><span class="reg-tag ok">FPR 2019/1009</span><span class="reg-tag ok">Feed Hyg. 183/2005</span><span class="reg-tag warn">ABP 1069/2009</span><span class="reg-tag warn">IED 2010/75/EU</span><span class="reg-tag block">NaCl gate</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Economic Summary</div></div>
+        <div style="padding:14px;display:flex;flex-direction:column;gap:8px;">
+          <div style="background:var(--g50);border:1px solid var(--g200);border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:10.5px;color:var(--g600);margin-bottom:2px;">Net Annual Value (Y2)</div><div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:var(--g500);">+€217,000</div></div><div style="font-size:10.5px;color:var(--g600);text-align:right;">Payback<br><span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--g500);">3–5 yr</span></div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div style="background:var(--gray50);border-radius:8px;padding:9px;"><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Algae biomass</div><div style="font-size:13px;font-weight:600;color:var(--g500);">+€52K</div></div>
+            <div style="background:var(--gray50);border-radius:8px;padding:9px;"><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Struvite sales</div><div style="font-size:13px;font-weight:600;color:var(--g500);">+€28K</div></div>
+            <div style="background:var(--gray50);border-radius:8px;padding:9px;"><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Biogas offset</div><div style="font-size:13px;font-weight:600;color:var(--g500);">+€18K</div></div>
+            <div style="background:var(--gray50);border-radius:8px;padding:9px;"><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Reclaimed water</div><div style="font-size:13px;font-weight:600;color:var(--g500);">+€14K</div></div>
+            <div style="background:#FFF5F5;border-radius:8px;padding:9px;grid-column:1/-1;"><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Disposal costs avoided</div><div style="font-size:15px;font-weight:600;color:var(--g500);">+€120K</div></div>
+            <div style="background:var(--gray50);border-radius:8px;padding:9px;"><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Capex (amort. 20yr)</div><div style="font-size:13px;font-weight:600;color:var(--r500);">−€18K</div></div>
+            <div style="background:var(--gray50);border-radius:8px;padding:9px;"><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Opex (energy+labour)</div><div style="font-size:13px;font-weight:600;color:var(--r500);">−€42K</div></div>
+          </div>
+          <div style="font-size:10.5px;color:var(--muted);padding-top:4px;">WasteMap revenue: +€15K/yr · Capex range: €130–200k</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ────────────────────────────────────────────────────────
+     PAGE 2 · STREAMS
+────────────────────────────────────────────────────────── -->
+<div class="page" id="page-streams">
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+        <div><div class="page-title">Waste Streams</div><div class="page-sub">5 streams · 4 active · 1 blocked · Massafra pilot site</div></div>
+    <div class="topbar-right">
+      <div class="tabs">
+        <div class="tab active" onclick="switchStreamTab(this,'all')">All Streams</div>
+        <div class="tab" onclick="switchStreamTab(this,'dairy')">Dairy</div>
+        <div class="tab" onclick="switchStreamTab(this,'aqua')">Aquaculture</div>
+      </div>
+      <button class="btn-primary" onclick="void(0)">
+        <svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg>Add Measurement
+      </button>
+    </div>
+  </div>
+  <div class="page-scroll"><div class="content">
+    <!-- Summary bar -->
+    <div class="kpi-row" style="grid-template-columns:repeat(5,1fr);">
+      <div class="kpi g" style="padding:13px 15px;"><div class="kpi-label">Total Daily Volume</div><div class="kpi-value" style="font-size:20px;">60.5 m³</div><div class="kpi-meta">All active streams</div></div>
+      <div class="kpi b"><div class="kpi-label">RAS Effluent</div><div class="kpi-value" style="font-size:20px;">35 m³/d</div><div class="kpi-meta"><span class="trend up">Top contributor</span></div></div>
+      <div class="kpi" style="--c:var(--g500)"><div class="kpi-label">Total TN Load</div><div class="kpi-value" style="font-size:20px;">6.2 kg/d</div><div class="kpi-meta">Nitrogen · all streams</div></div>
+      <div class="kpi"><div class="kpi-label">Total TP Load</div><div class="kpi-value" style="font-size:20px;">1.6 kg/d</div><div class="kpi-meta">Phosphorus · all streams</div></div>
+      <div class="kpi a"><div class="kpi-label">Blocked Streams</div><div class="kpi-value r" style="font-size:20px;">1</div><div class="kpi-meta"><span class="trend warn">Cheese brine</span></div></div>
+    </div>
+
+    <!-- 30-day trend chart -->
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">30-Day Volume Trends</div><div class="card-sub">Daily m³ per stream · hover to inspect</div></div>
+        <div class="chart-legend" style="margin-bottom:0;">
+          <div class="chart-legend-item"><div class="legend-swatch" style="background:#2D7D46"></div>RAS Effluent</div>
+          <div class="chart-legend-item"><div class="legend-swatch" style="background:#1A6FA8"></div>Cheese Whey</div>
+          <div class="chart-legend-item"><div class="legend-swatch" style="background:#D97706"></div>CIP Washdown</div>
+          <div class="chart-legend-item"><div class="legend-swatch" style="background:#7C3AED"></div>RAS Sludge</div>
+          <div class="chart-legend-item"><div class="legend-swatch" style="background:#DC2626;opacity:.5"></div>Cheese Brine (blocked)</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:220px;"><canvas id="trendChart" role="img" aria-label="Line chart showing 30-day volume trends for all 5 waste streams">30-day volume data for 5 streams.</canvas></div>
+      </div>
+    </div>
+
+    <!-- Stream detail cards -->
+    <div class="stream-grid" id="stream-cards-grid">
+
+      <!-- Stream 4: RAS Effluent -->
+      <div class="stream-card" data-sector="aqua">
+        <div class="stream-card-header">
+          <div><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Stream 04 · Aquaculture</div><div class="stream-name">RAS Tank Effluent</div></div>
+          <span class="sector-aqua stream-sector">Aquaculture</span>
+        </div>
+        <div style="padding:14px 16px 8px;display:flex;align-items:baseline;gap:8px;">
+          <div class="stream-vol">35</div><div class="stream-vol-label">m³/day avg · range 20–60</div>
+        </div>
+        <div style="padding:0 16px 12px;">
+          <div class="notice success" style="margin:0;font-size:11px;"><svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5.5 8l2 2 3-3"/></svg>Ideal algae feedstock — pathway ACTIVE</div>
+        </div>
+        <div class="stream-params">
+          <div class="param-item"><div class="param-name">COD</div><div class="param-val ok">380 mg/L</div></div>
+          <div class="param-item"><div class="param-name">TN (Total Nitrogen)</div><div class="param-val ok">55 mg/L</div></div>
+          <div class="param-item"><div class="param-name">TP (Total Phosphorus)</div><div class="param-val ok">14 mg/L</div></div>
+          <div class="param-item"><div class="param-name">pH</div><div class="param-val ok">7.1</div></div>
+          <div class="param-item"><div class="param-name">NaCl</div><div class="param-val ok">0.5 g/L</div></div>
+          <div class="param-item"><div class="param-name">Temperature</div><div class="param-val">22°C</div></div>
+        </div>
+        <div class="stream-pathway-hint"><svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z"/></svg>→ Pathway: <strong>Microalgae Production</strong> (score 8.4) · <strong>Water Reclamation</strong> EU 2020/741</div>
+      </div>
+
+      <!-- Stream 5: RAS Sludge -->
+      <div class="stream-card" data-sector="aqua">
+        <div class="stream-card-header">
+          <div><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Stream 05 · Aquaculture</div><div class="stream-name">RAS Sludge Concentrate</div></div>
+          <span class="sector-aqua stream-sector">Aquaculture</span>
+        </div>
+        <div style="padding:14px 16px 8px;display:flex;align-items:baseline;gap:8px;">
+          <div class="stream-vol">2.5</div><div class="stream-vol-label">m³/day avg · range 1–4</div>
+        </div>
+        <div style="padding:0 16px 12px;">
+          <div class="notice info" style="margin:0;font-size:11px;"><svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="8" y1="6" x2="8" y2="10"/><circle cx="8" cy="4.5" r=".5" fill="currentColor"/></svg>TP rising +8% — struvite yield increasing</div>
+        </div>
+        <div class="stream-params">
+          <div class="param-item"><div class="param-name">TN (Total Nitrogen)</div><div class="param-val warn">320 mg/L</div></div>
+          <div class="param-item"><div class="param-name">TP (Total Phosphorus)</div><div class="param-val warn">95 mg/L</div></div>
+          <div class="param-item"><div class="param-name">COD</div><div class="param-val">1,200 mg/L</div></div>
+          <div class="param-item"><div class="param-name">pH</div><div class="param-val ok">7.3</div></div>
+          <div class="param-item"><div class="param-name">TSS</div><div class="param-val warn">4,200 mg/L</div></div>
+          <div class="param-item"><div class="param-name">Ammonia</div><div class="param-val">45 mg/L</div></div>
+        </div>
+        <div class="stream-pathway-hint"><svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z"/></svg>→ Pathway: <strong>Struvite Fertiliser</strong> (score 7.9) · FPR 2019/1009 CE-marked</div>
+      </div>
+
+      <!-- Stream 1: Cheese Whey -->
+      <div class="stream-card" data-sector="dairy">
+        <div class="stream-card-header">
+          <div><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Stream 01 · Dairy</div><div class="stream-name">Cheese Whey / Permeate</div></div>
+          <span class="sector-dairy stream-sector">Dairy</span>
+        </div>
+        <div style="padding:14px 16px 8px;display:flex;align-items:baseline;gap:8px;">
+          <div class="stream-vol">12</div><div class="stream-vol-label">m³/day avg · range 8–20</div>
+        </div>
+        <div style="padding:0 16px 12px;">
+          <div class="notice warn" style="margin:0;font-size:11px;"><svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M8 2L14 14H2L8 2Z"/><line x1="8" y1="7" x2="8" y2="10"/></svg>High COD — pre-treatment required before algae use</div>
+        </div>
+        <div class="stream-params">
+          <div class="param-item"><div class="param-name">COD</div><div class="param-val danger">55,000 mg/L</div></div>
+          <div class="param-item"><div class="param-name">TN</div><div class="param-val">180 mg/L</div></div>
+          <div class="param-item"><div class="param-name">TP</div><div class="param-val">55 mg/L</div></div>
+          <div class="param-item"><div class="param-name">pH</div><div class="param-val danger">4.5</div></div>
+          <div class="param-item"><div class="param-name">NaCl</div><div class="param-val ok">0.2 g/L</div></div>
+          <div class="param-item"><div class="param-name">Lactose</div><div class="param-val">45,000 mg/L</div></div>
+        </div>
+        <div class="stream-pathway-hint"><svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z"/></svg>→ Pathway: <strong>Biogas/Biomethane</strong> (7.2) · <strong>WPC Protein</strong> phase 2</div>
+      </div>
+
+      <!-- Stream 2: CIP -->
+      <div class="stream-card" data-sector="dairy">
+        <div class="stream-card-header">
+          <div><div style="font-size:10px;color:var(--muted);margin-bottom:2px;">Stream 02 · Dairy</div><div class="stream-name">CIP / Cleaning Washdown</div></div>
+          <span class="sector-dairy stream-sector">Dairy</span>
+        </div>
+        <div style="padding:14px 16px 8px;display:flex;align-items:baseline;gap:8px;">
+          <div class="stream-vol">8</div><div class="stream-vol-label">m³/day avg · range 5–15</div>
+        </div>
+        <div style="padding:0 16px 12px;">
+          <div class="notice warn" style="margin:0;font-size:11px;"><svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M8 2L14 14H2L8 2Z"/><line x1="8" y1="7" x2="8" y2="10"/></svg>pH extremes — neutralisation needed · IED compliance</div>
+        </div>
+        <div class="stream-params">
+          <div class="param-item"><div class="param-name">COD</div><div class="param-val warn">4,500 mg/L</div></div>
+          <div class="param-item"><div class="param-name">pH</div><div class="param-val danger">11.2</div></div>
+          <div class="param-item"><div class="param-name">TN</div><div class="param-val">40 mg/L</div></div>
+          <div class="param-item"><div class="param-name">TP</div><div class="param-val">12 mg/L</div></div>
+          <div class="param-item"><div class="param-name">Detergents</div><div class="param-val warn">Present</div></div>
+          <div class="param-item"><div class="param-name">NaCl</div><div class="param-val ok">0.1 g/L</div></div>
+        </div>
+        <div class="stream-pathway-hint"><svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z"/></svg>→ Pathway: Cost elimination priority · blend at 1:10 (dairy:aqua)</div>
+      </div>
+
+      <!-- Stream 3: Cheese Brine — BLOCKED -->
+      <div class="stream-card blocked-card" data-sector="dairy">
+        <div class="stream-card-header" style="background:var(--r50);">
+          <div><div style="font-size:10px;color:var(--r500);margin-bottom:2px;">Stream 03 · Dairy · HARD GATE TRIGGERED</div><div class="stream-name" style="color:var(--r500)">Cheese Brine</div></div>
+          <span class="badge blocked">Blocked</span>
+        </div>
+        <div style="padding:14px 16px 8px;display:flex;align-items:baseline;gap:8px;">
+          <div class="stream-vol" style="color:var(--r500)">2</div><div class="stream-vol-label">m³/day avg · range 1–5</div>
+        </div>
+        <div style="padding:0 16px 12px;">
+          <div class="notice danger" style="margin:0;font-size:11px;"><svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M8 2L14 14H2L8 2Z"/><line x1="8" y1="7" x2="8" y2="10"/></svg>NaCl 150 g/L — hard gate limit is 10 g/L. ALL biological pathways blocked.</div>
+        </div>
+        <div class="stream-params">
+          <div class="param-item" style="background:var(--r50);border:1px solid #FECACA;"><div class="param-name">NaCl</div><div class="param-val danger">150 g/L ⚠</div></div>
+          <div class="param-item"><div class="param-name">COD</div><div class="param-val">800 mg/L</div></div>
+          <div class="param-item"><div class="param-name">pH</div><div class="param-val">6.8</div></div>
+          <div class="param-item"><div class="param-name">TN</div><div class="param-val">20 mg/L</div></div>
+          <div class="param-item"><div class="param-name">TP</div><div class="param-val">5 mg/L</div></div>
+          <div class="param-item"><div class="param-name">Status</div><div class="param-val danger">ISOLATED</div></div>
+        </div>
+        <div class="stream-pathway-hint" style="background:var(--r50);color:var(--r500);border-top:1px solid #FECACA;">
+          <svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="5" y1="5" x2="11" y2="11"/><line x1="11" y1="5" x2="5" y2="11"/></svg>
+          No viable pathway. Options: evaporation + salt recovery (phase 3), or disposal.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Blending note -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Blending Protocol</div><div style="flex:1"></div><span class="badge active-s">BioLink Phase 1</span></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+          <div style="text-align:center;padding:14px;background:var(--g50);border-radius:10px;border:1px solid var(--g200);">
+            <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--g500);">1:10</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Dairy : Aquaculture ratio in pre-treatment blending tank</div>
+          </div>
+          <div style="text-align:center;padding:14px;background:var(--gray50);border-radius:10px;">
+            <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--txt);">7.0–7.5</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Target pH after blending · neutralises CIP alkalinity</div>
+          </div>
+          <div style="text-align:center;padding:14px;background:var(--gray50);border-radius:10px;">
+            <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--b500);">1,000 m²</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Total raceway pond surface · 2 × 500 m² <em>Chlorella vulgaris</em></div>
+          </div>
+          <div style="text-align:center;padding:14px;background:var(--gray50);border-radius:10px;">
+            <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:500;color:var(--a500);">15 min</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Sensor data push interval → CircularIQ scoring engine</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ────────────────────────────────────────────────────────
+     PAGE 3 · PATHWAYS
+────────────────────────────────────────────────────────── -->
+<div class="page" id="page-pathways">
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+        <div><div class="page-title">Valorisation Pathways</div><div class="page-sub">6 pathways scored · 4 viable · 1 conditional · 1 blocked</div></div>
+    <div class="topbar-right">
+      <div class="tabs">
+        <div class="tab active" onclick="switchPathwayTab(this,'all')">All</div>
+        <div class="tab" onclick="switchPathwayTab(this,'viable')">Viable</div>
+        <div class="tab" onclick="switchPathwayTab(this,'blocked')">Blocked</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-scroll"><div class="content">
+    <!-- Scoring formula -->
+    <div class="card" style="overflow:visible;">
+      <div class="card-body" style="padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+          <div style="font-size:12px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;">Scoring Formula:</div>
+          <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--txt);background:var(--gray50);padding:7px 14px;border-radius:7px;border:1px solid var(--border);">
+            Final = <span style="color:var(--g500)">Economic × 0.40</span> + <span style="color:var(--b500)">Technical × 0.30</span> + <span style="color:var(--a500)">Regulatory × 0.20</span> + <span style="color:var(--p500)">Logistics × 0.10</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted)">Hard gate: any BLOCKED regulation → pathway score = 0, removed from ranking</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pathway cards -->
+    <div class="pathway-grid" id="pathway-cards-grid">
+
+      <!-- Pathway 1: Microalgae -->
+      <div class="pathway-card best-card" data-status="viable">
+        <div class="pw-header">
+          <div class="pw-rank">#1 · BEST PATHWAY</div>
+          <div class="pw-name">Microalgae Production</div>
+          <div class="pw-product">Output: <em>Chlorella vulgaris</em> biomass — fishmeal replacement + direct fish feed</div>
+          <div style="display:flex;align-items:baseline;gap:5px;margin-top:10px;">
+            <div class="pw-score-big" style="color:var(--g500)">8.4<span class="pw-score-unit">/10</span></div>
+            <span class="badge best">Best</span>
+          </div>
+        </div>
+        <div class="pw-axes">
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--g500)">Economic (40%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:91%;background:var(--g500)"></div></div><span class="pw-axis-val">9.1</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--b500)">Technical (30%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:78%;background:var(--b500)"></div></div><span class="pw-axis-val">7.8</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--a500)">Regulatory (20%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:85%;background:var(--a500)"></div></div><span class="pw-axis-val">8.5</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--p500)">Logistics (10%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:72%;background:var(--p500)"></div></div><span class="pw-axis-val">7.2</span></div>
+        </div>
+        <div class="pw-economics">
+          <div class="pw-econ-item"><div class="pw-econ-label">Biomass revenue</div><div class="pw-econ-val pos">+€52,000/yr</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Market price</div><div class="pw-econ-val">€600–1,800/t</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Fishmeal replaced</div><div class="pw-econ-val pos">+€36,000/yr</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">TRL Level</div><div class="pw-econ-val">6 — Pilot</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Footprint</div><div class="pw-econ-val">1,000 m²</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Capex estimate</div><div class="pw-econ-val neg">€130–200k</div></div>
+        </div>
+        <div class="pw-footer">
+          <div class="pw-feedstock">Feedstock: Stream 04 RAS Effluent (primary) + Stream 02 CIP (blended)</div>
+          <div class="pw-regs"><span class="reg-tag ok">Feed Hyg. 183/2005</span><span class="reg-tag ok">EU 2020/741</span><span class="reg-tag warn">Novel Feed 2017/893</span></div>
+        </div>
+      </div>
+
+      <!-- Pathway 2: Struvite -->
+      <div class="pathway-card" data-status="viable">
+        <div class="pw-header">
+          <div class="pw-rank">#2 · RECOMMENDED</div>
+          <div class="pw-name">Struvite Fertiliser</div>
+          <div class="pw-product">Output: MgNH₄PO₄·6H₂O — CE-marked under FPR 2019/1009 · CMC 4</div>
+          <div style="display:flex;align-items:baseline;gap:5px;margin-top:10px;">
+            <div class="pw-score-big" style="color:var(--b500)">7.9<span class="pw-score-unit">/10</span></div>
+            <span class="badge rec">Recommended</span>
+          </div>
+        </div>
+        <div class="pw-axes">
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--g500)">Economic (40%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:82%;background:var(--g500)"></div></div><span class="pw-axis-val">8.2</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--b500)">Technical (30%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:80%;background:var(--b500)"></div></div><span class="pw-axis-val">8.0</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--a500)">Regulatory (20%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:90%;background:var(--a500)"></div></div><span class="pw-axis-val">9.0</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--p500)">Logistics (10%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:65%;background:var(--p500)"></div></div><span class="pw-axis-val">6.5</span></div>
+        </div>
+        <div class="pw-economics">
+          <div class="pw-econ-item"><div class="pw-econ-label">Fertiliser revenue</div><div class="pw-econ-val pos">+€28,000/yr</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Market price</div><div class="pw-econ-val">€300–600/t</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Sludge disposal saved</div><div class="pw-econ-val pos">+€12,000/yr</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">TRL Level</div><div class="pw-econ-val">7 — Demo</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Yield driver</div><div class="pw-econ-val">TP in RAS sludge</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Certification</div><div class="pw-econ-val">FPR CMC 4</div></div>
+        </div>
+        <div class="pw-footer">
+          <div class="pw-feedstock">Feedstock: Stream 05 RAS Sludge Concentrate (TN 320 · TP 95 mg/L)</div>
+          <div class="pw-regs"><span class="reg-tag ok">FPR 2019/1009</span><span class="reg-tag ok">Nitrates 91/676</span></div>
+        </div>
+      </div>
+
+      <!-- Pathway 3: Biogas -->
+      <div class="pathway-card" data-status="viable">
+        <div class="pw-header">
+          <div class="pw-rank">#3 · RECOMMENDED</div>
+          <div class="pw-name">Biogas / Biomethane</div>
+          <div class="pw-product">Output: Biogas (boilers) + Digestate (fertiliser). Whey lactose = ideal AD substrate</div>
+          <div style="display:flex;align-items:baseline;gap:5px;margin-top:10px;">
+            <div class="pw-score-big" style="color:var(--b500)">7.2<span class="pw-score-unit">/10</span></div>
+            <span class="badge rec">Recommended</span>
+          </div>
+        </div>
+        <div class="pw-axes">
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--g500)">Economic (40%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:75%;background:var(--g500)"></div></div><span class="pw-axis-val">7.5</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--b500)">Technical (30%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:72%;background:var(--b500)"></div></div><span class="pw-axis-val">7.2</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--a500)">Regulatory (20%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:80%;background:var(--a500)"></div></div><span class="pw-axis-val">8.0</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--p500)">Logistics (10%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:68%;background:var(--p500)"></div></div><span class="pw-axis-val">6.8</span></div>
+        </div>
+        <div class="pw-economics">
+          <div class="pw-econ-item"><div class="pw-econ-label">Energy offset</div><div class="pw-econ-val pos">+€18,000/yr</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Price</div><div class="pw-econ-val">€0.05–0.10/kWh</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Digestate sales</div><div class="pw-econ-val pos">+€5,000/yr</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Boiler savings</div><div class="pw-econ-val">€0.12–0.18/kWh</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">TRL Level</div><div class="pw-econ-val">8 — Proven</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">COD load</div><div class="pw-econ-val">55,000 mg/L</div></div>
+        </div>
+        <div class="pw-footer">
+          <div class="pw-feedstock">Feedstock: Stream 01 Cheese Whey (high-lactose substrate for AD)</div>
+          <div class="pw-regs"><span class="reg-tag ok">IED 2010/75/EU</span><span class="reg-tag ok">ABP 1069/2009</span></div>
+        </div>
+      </div>
+
+      <!-- Pathway 4: Water Reclamation -->
+      <div class="pathway-card" data-status="viable">
+        <div class="pw-header">
+          <div class="pw-rank">#4 · VIABLE</div>
+          <div class="pw-name">Water Reclamation</div>
+          <div class="pw-product">Output: Class B reclaimed water → RAS tank reuse + Class A irrigation</div>
+          <div style="display:flex;align-items:baseline;gap:5px;margin-top:10px;">
+            <div class="pw-score-big" style="color:var(--txt2)">6.1<span class="pw-score-unit">/10</span></div>
+            <span class="badge viable">Viable</span>
+          </div>
+        </div>
+        <div class="pw-axes">
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--g500)">Economic (40%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:58%;background:var(--g500)"></div></div><span class="pw-axis-val">5.8</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--b500)">Technical (30%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:70%;background:var(--b500)"></div></div><span class="pw-axis-val">7.0</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--a500)">Regulatory (20%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:75%;background:var(--a500)"></div></div><span class="pw-axis-val">7.5</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--p500)">Logistics (10%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:52%;background:var(--p500)"></div></div><span class="pw-axis-val">5.2</span></div>
+        </div>
+        <div class="pw-economics">
+          <div class="pw-econ-item"><div class="pw-econ-label">Water savings</div><div class="pw-econ-val pos">+€14,000/yr</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Price</div><div class="pw-econ-val">€0.5–1.5/m³</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Volume treated</div><div class="pw-econ-val">~35 m³/day</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Class</div><div class="pw-econ-val">EU Class B/A</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Process</div><div class="pw-econ-val">Sand + UV</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">TRL Level</div><div class="pw-econ-val">8 — Proven</div></div>
+        </div>
+        <div class="pw-footer">
+          <div class="pw-feedstock">Feedstock: RAS effluent post-algae polishing (sand filter + UV)</div>
+          <div class="pw-regs"><span class="reg-tag ok">EU 2020/741</span><span class="reg-tag warn">ARPA Puglia</span></div>
+        </div>
+      </div>
+
+      <!-- Pathway 5: WPC Protein -->
+      <div class="pathway-card" data-status="viable">
+        <div class="pw-header">
+          <div class="pw-rank">#5 · CONDITIONAL — Phase 2</div>
+          <div class="pw-name">WPC Protein Extract</div>
+          <div class="pw-product">Output: Whey Protein Concentrate (WPC) — food/feed grade · €800–4,000/t</div>
+          <div style="display:flex;align-items:baseline;gap:5px;margin-top:10px;">
+            <div class="pw-score-big" style="color:var(--a500)">7.1<span class="pw-score-unit">/10</span></div>
+            <span class="badge cond">Conditional</span>
+          </div>
+        </div>
+        <div class="pw-axes">
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--g500)">Economic (40%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:95%;background:var(--g500)"></div></div><span class="pw-axis-val">9.5</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--b500)">Technical (30%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:45%;background:var(--b500)"></div></div><span class="pw-axis-val">4.5</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--a500)">Regulatory (20%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:60%;background:var(--a500)"></div></div><span class="pw-axis-val">6.0</span></div>
+          <div class="pw-axis"><span class="pw-axis-label" style="color:var(--p500)">Logistics (10%)</span><div class="pw-axis-bar"><div class="pw-axis-fill" style="width:80%;background:var(--p500)"></div></div><span class="pw-axis-val">8.0</span></div>
+        </div>
+        <div class="pw-economics">
+          <div class="pw-econ-item"><div class="pw-econ-label">Potential revenue</div><div class="pw-econ-val pos">+€95,000/yr</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Market price</div><div class="pw-econ-val">€800–4,000/t</div></div>
+          <div class="pw-econ-item" style="background:var(--a50);border:1px solid #FDE68A;"><div class="pw-econ-label" style="color:#92400E;">Blocker: TRL</div><div class="pw-econ-val" style="color:#92400E;">4 — lab only</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Timeline</div><div class="pw-econ-val">Phase 2 (18mo+)</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Condition</div><div class="pw-econ-val">UF membrane needed</div></div>
+          <div class="pw-econ-item"><div class="pw-econ-label">Volume</div><div class="pw-econ-val">8–20 m³/day</div></div>
+        </div>
+        <div class="pw-footer">
+          <div class="pw-feedstock">Feedstock: Stream 01 Cheese Whey — requires ultrafiltration membrane</div>
+          <div class="pw-regs"><span class="reg-tag warn">Novel Food 2015/2283</span><span class="reg-tag warn">Food Hyg. 852/2004</span></div>
+        </div>
+      </div>
+
+      <!-- Pathway 6: Blocked -->
+      <div class="pathway-card blocked-card" data-status="blocked">
+        <div class="pw-header" style="background:var(--r50);">
+          <div class="pw-rank" style="color:var(--r500);">HARD GATE TRIGGERED — NaCl > 10 g/L</div>
+          <div class="pw-name" style="color:var(--r500);">Cheese Brine Recovery</div>
+          <div class="pw-product">All biological, algae, fertiliser, and water reuse pathways blocked</div>
+          <div style="display:flex;align-items:baseline;gap:5px;margin-top:10px;">
+            <div class="pw-score-big" style="color:var(--r500)">0.0<span class="pw-score-unit">/10</span></div>
+            <span class="badge blocked">Blocked</span>
+          </div>
+        </div>
+        <div style="padding:14px 16px;">
+          <div class="notice danger" style="margin-bottom:10px;">NaCl 150 g/L (limit: 10 g/L) — disables all biological pathways. Stream isolated.</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;">
+            <strong style="color:var(--txt);">Why this gate exists:</strong> Salt concentrations above 10 g/L inhibit microbial communities required for algae cultivation, anaerobic digestion, and struvite precipitation. High NaCl also disrupts plant uptake in irrigation scenarios, violating EU 2020/741 Class A/B limits.<br><br>
+            <strong style="color:var(--txt);">Phase 3 option:</strong> Electrodialysis or evaporation-crystallisation could recover food-grade NaCl at ~€80–150/t, but requires separate pilot investment.
+          </div>
+        </div>
+        <div class="pw-footer" style="background:var(--r50);">
+          <div class="pw-feedstock" style="color:var(--r500);">Stream 03 Cheese Brine (NaCl 150 g/L)</div>
+          <div class="pw-regs"><span class="reg-tag block">ABP 1069/2009</span><span class="reg-tag block">IED 2010/75</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Scoring radar chart -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Pathway Comparison — Score Breakdown</div><div class="card-sub">All axes per pathway · Economic (40%) · Technical (30%) · Regulatory (20%) · Logistics (10%)</div></div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:280px;"><canvas id="pathwayRadar" role="img" aria-label="Bar chart comparing all pathway scores across 4 axes">Pathway score comparison across economic, technical, regulatory, and logistics axes.</canvas></div>
+        <div class="chart-legend" style="margin-top:14px;">
+          <div class="chart-legend-item"><div class="legend-swatch" style="background:#2D7D46"></div>Microalgae</div>
+          <div class="chart-legend-item"><div class="legend-swatch" style="background:#1A6FA8"></div>Struvite</div>
+          <div class="chart-legend-item"><div class="legend-swatch" style="background:#D97706"></div>Biogas</div>
+          <div class="chart-legend-item"><div class="legend-swatch" style="background:#8B5CF6"></div>Water Rec.</div>
+          <div class="chart-legend-item"><div class="legend-swatch" style="background:#0891B2"></div>WPC Protein</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ────────────────────────────────────────────────────────
+     PAGE 4 · CUSTOMER PORTAL
+────────────────────────────────────────────────────────── -->
+<div class="page" id="page-customers">
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+        <div><div class="page-title">Customer Portal</div><div class="page-sub">Producer self-assessment · wastewater analysis tool</div></div>
+    <div class="topbar-right">
+      <button class="btn-secondary" onclick="resetForm()">Reset Form</button>
+      <button class="btn-primary" id="analyze-btn" onclick="runAnalysis()">
+        <svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>Analyse Streams
+      </button>
+    </div>
+  </div>
+  <div class="page-scroll"><div class="content">
+    <div class="portal-hero">
+      <div style="position:relative;z-index:1;">
+        <div class="portal-hero-title">Wastewater Valorisation Assessment</div>
+        <div class="portal-hero-sub">Enter your wastewater stream parameters below. CircularIQ will score each valorisation pathway and return a ranked recommendation with full ROI simulation.</div>
+        <div style="display:flex;gap:10px;margin-top:14px;">
+          <div style="background:rgba(255,255,255,.12);border-radius:7px;padding:7px 13px;font-size:11.5px;color:var(--g100);">✓ Regulatory screening automatic</div>
+          <div style="background:rgba(255,255,255,.12);border-radius:7px;padding:7px 13px;font-size:11.5px;color:var(--g100);">✓ 6 pathway options scored</div>
+          <div style="background:rgba(255,255,255,.12);border-radius:7px;padding:7px 13px;font-size:11.5px;color:var(--g100);">✓ ROI calculated instantly</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step indicator -->
+    <div class="step-indicator">
+      <div class="step"><div class="step-num done" id="si1">✓</div><div class="step-label current" id="sl1">Company Profile</div></div>
+      <div class="step-line done" id="sline1"></div>
+      <div class="step"><div class="step-num current" id="si2">2</div><div class="step-label current" id="sl2">Stream Parameters</div></div>
+      <div class="step-line" id="sline2"></div>
+      <div class="step"><div class="step-num pending" id="si3">3</div><div class="step-label" id="sl3">Results &amp; ROI</div></div>
+    </div>
+
+    <div class="portal-layout">
+      <!-- LEFT: INPUT FORM -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <!-- Company profile -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Company Profile</div></div>
+          <div class="card-body" style="padding:16px;">
+            <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" type="text" placeholder="e.g. Azienda Agricola Rossi" id="f-company" value="Latteria Pugliese S.r.l."></div>
+            <div class="form-grid2">
+              <div class="form-group"><label class="form-label">Sector</label>
+                <select class="form-select" id="f-sector">
+                  <option value="dairy">Dairy</option>
+                  <option value="aqua">Aquaculture (RAS)</option>
+                  <option value="both" selected>Both</option>
+                  <option value="olive">Olive Oil (OMWW)</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Region</label>
+                <select class="form-select" id="f-region">
+                  <option>Puglia</option><option>Sicilia</option><option>Calabria</option><option>Campania</option><option>Sardegna</option><option>Other Italy</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">Contact Email</label><input class="form-input" type="email" placeholder="name@company.it" id="f-email" value="mgmt@latteriapugliese.it"></div>
+          </div>
+        </div>
+
+        <!-- Stream parameters -->
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Stream Parameters</div><div class="card-sub">Enter measured values · fields in red = regulatory risk</div></div></div>
+          <div class="card-body" style="padding:16px;">
+
+            <div class="param-input-card">
+              <div class="param-input-title"><span>Stream A — Primary Wastewater</span><span class="badge active-s">Active</span></div>
+              <div class="param-input-grid">
+                <div class="param-input-item"><label class="param-input-label">Volume (m³/day)</label><input class="param-input-field ok" type="number" id="p-vol" value="35" oninput="liveCheck()"></div>
+                <div class="param-input-item"><label class="param-input-label">COD (mg/L)</label><input class="param-input-field ok" type="number" id="p-cod" value="380" oninput="liveCheck()"></div>
+                <div class="param-input-item"><label class="param-input-label">TN (mg/L)</label><input class="param-input-field ok" type="number" id="p-tn" value="55" oninput="liveCheck()"></div>
+                <div class="param-input-item"><label class="param-input-label">TP (mg/L)</label><input class="param-input-field ok" type="number" id="p-tp" value="14" oninput="liveCheck()"></div>
+                <div class="param-input-item"><label class="param-input-label">pH</label><input class="param-input-field ok" type="number" id="p-ph" step="0.1" value="7.1" oninput="liveCheck()"></div>
+                <div class="param-input-item"><label class="param-input-label">NaCl (g/L)</label><input class="param-input-field ok" type="number" id="p-nacl" step="0.1" value="0.5" oninput="liveCheck()"></div>
+              </div>
+              <div class="flag-hint" id="nacl-flag">⚠ NaCl > 10 g/L — brine hard gate triggered. Biological pathways will be blocked.</div>
+              <div class="flag-hint" id="ph-flag" style="color:var(--a500)">⚠ pH outside 6.0–9.0 — neutralisation required before any pathway.</div>
+            </div>
+
+            <div class="param-input-card">
+              <div class="param-input-title"><span>Stream B — Sludge / Concentrate</span><span style="font-size:10.5px;color:var(--muted);">optional</span></div>
+              <div class="param-input-grid">
+                <div class="param-input-item"><label class="param-input-label">Volume (m³/day)</label><input class="param-input-field" type="number" id="p-vol2" value="2.5" oninput="liveCheck()"></div>
+                <div class="param-input-item"><label class="param-input-label">TN (mg/L)</label><input class="param-input-field" type="number" id="p-tn2" value="320" oninput="liveCheck()"></div>
+                <div class="param-input-item"><label class="param-input-label">TP (mg/L)</label><input class="param-input-field" type="number" id="p-tp2" value="95" oninput="liveCheck()"></div>
+                <div class="param-input-item"><label class="param-input-label">TSS (mg/L)</label><input class="param-input-field" type="number" id="p-tss" value="4200"></div>
+                <div class="param-input-item"><label class="param-input-label">Ammonia (mg/L)</label><input class="param-input-field" type="number" id="p-amm" value="45"></div>
+                <div class="param-input-item"><label class="param-input-label">pH</label><input class="param-input-field" type="number" id="p-ph2" step="0.1" value="7.3"></div>
+              </div>
+            </div>
+
+            <div id="live-check-box" style="display:none;padding:10px 12px;background:var(--g50);border:1px solid var(--g200);border-radius:8px;margin-top:6px;">
+              <div style="font-size:11.5px;font-weight:500;color:var(--g600);margin-bottom:4px;">Live pre-screening</div>
+              <div id="live-check-content" style="font-size:11px;color:var(--g600);line-height:1.6;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- File upload -->
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Supporting Documents</div><div class="card-sub">Lab reports, ARPA analyses, discharge permits — optional but speeds assessment</div></div></div>
+          <div class="card-body" style="padding:16px;">
+            <div id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="dzDragOver(event)" ondragleave="dzDragLeave(event)" ondrop="dzDrop(event)" style="border:2px dashed var(--border);border-radius:10px;padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--gray50);">
+              <div style="width:40px;height:40px;background:var(--g50);border:1px solid var(--g200);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="var(--g500)" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <div style="font-size:13px;font-weight:500;color:var(--txt);margin-bottom:4px;">Drop files here or click to browse</div>
+              <div style="font-size:11px;color:var(--muted);">PDF, Excel, CSV, JPG · max 10 MB per file</div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:10px;">
+                <span style="font-size:10px;background:var(--b50);border:1px solid #BFDBFE;color:var(--b500);padding:2px 7px;border-radius:4px;">Lab report</span>
+                <span style="font-size:10px;background:var(--g50);border:1px solid var(--g200);color:var(--g600);padding:2px 7px;border-radius:4px;">ARPA analysis</span>
+                <span style="font-size:10px;background:var(--a50);border:1px solid #FDE68A;color:#92400E;padding:2px 7px;border-radius:4px;">Discharge permit</span>
+                <span style="font-size:10px;background:var(--gray100);border:1px solid var(--border);color:var(--muted);padding:2px 7px;border-radius:4px;">Other docs</span>
+              </div>
+            </div>
+            <input type="file" id="file-input" multiple accept=".pdf,.xlsx,.csv,.jpg,.png" style="display:none" onchange="handleFiles(this.files)">
+            <div id="file-list" style="margin-top:12px;display:flex;flex-direction:column;gap:7px;"></div>
+          </div>
+        </div>
+
+        <button class="btn-primary" style="width:100%;justify-content:center;padding:11px;" onclick="runAnalysis()">
+          <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
+          Run CircularIQ Analysis
+        </button>
+      </div>
+
+      <!-- RIGHT: RESULTS -->
+      <div>
+        <div id="results-placeholder" style="display:flex;">
+          <div class="card" style="width:100%;">
+            <div class="empty-state">
+              <div class="empty-icon"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+              <div class="empty-title">No analysis run yet</div>
+              <div class="empty-sub">Fill in stream parameters and click "Run CircularIQ Analysis" to get your ranked recommendations and ROI simulation.</div>
+            </div>
+          </div>
+        </div>
+        <div class="result-panel" id="result-panel">
+
+          <!-- Best result card -->
+          <div class="result-best">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <span class="badge best"><svg width="8" height="8" viewBox="0 0 9 9" fill="currentColor"><polygon points="4.5,0.5 5.6,3.3 8.5,3.4 6.3,5.2 7.1,8 4.5,6.4 1.9,8 2.7,5.2 0.5,3.4 3.4,3.3"/></svg>Best Recommendation</span>
+              <span style="font-size:10.5px;color:rgba(255,255,255,.4);" id="res-company-name">for Latteria Pugliese S.r.l.</span>
+            </div>
+            <div class="result-title" id="res-pathway-name">Microalgae Production</div>
+            <div class="result-sub" id="res-pathway-desc">From your RAS effluent stream · Chlorella vulgaris cultivation · fishmeal replacement</div>
+            <div class="result-score-row">
+              <div><div class="result-big-score" id="res-score">8.4</div><div style="font-size:11px;color:var(--g200);">/ 10 weighted score</div></div>
+              <div class="result-axes" style="margin-left:20px;">
+                <div class="sbar-row"><span class="sbar-label">Economic</span><div class="sbar-track"><div class="sbar-fill" id="rb-eco" style="width:91%"></div></div><span class="sbar-val" id="rv-eco">9.1</span></div>
+                <div class="sbar-row"><span class="sbar-label">Technical</span><div class="sbar-track"><div class="sbar-fill" id="rb-tec" style="width:78%"></div></div><span class="sbar-val" id="rv-tec">7.8</span></div>
+                <div class="sbar-row"><span class="sbar-label">Regulatory</span><div class="sbar-track"><div class="sbar-fill" id="rb-reg" style="width:85%"></div></div><span class="sbar-val" id="rv-reg">8.5</span></div>
+                <div class="sbar-row"><span class="sbar-label">Logistics</span><div class="sbar-track"><div class="sbar-fill" id="rb-log" style="width:72%"></div></div><span class="sbar-val" id="rv-log">7.2</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ROI cards -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">ROI Simulation</div><div class="card-sub" id="roi-sub">Year 2 full operation · based on your inputs</div></div>
+            <div class="card-body">
+              <div class="roi-grid">
+                <div class="roi-card"><div class="roi-val" id="roi-net">+€217K</div><div class="roi-label">Net Annual Value</div></div>
+                <div class="roi-card"><div class="roi-val" id="roi-pb" style="color:var(--b500)">3–5 yr</div><div class="roi-label">Estimated Payback</div></div>
+                <div class="roi-card"><div class="roi-val" id="roi-disp" style="color:var(--a500)">−€120K</div><div class="roi-label">Disposal Costs Avoided</div></div>
+                <div class="roi-card"><div class="roi-val" id="roi-rev">+€52K</div><div class="roi-label">Primary Revenue</div></div>
+              </div>
+              <div style="margin-top:12px;padding:10px 12px;background:var(--g50);border-radius:8px;border:1px solid var(--g200);">
+                <div style="font-size:11px;color:var(--g600);line-height:1.5;" id="roi-narrative">Based on 35 m³/day RAS effluent · COD 380 mg/L · Chlorella vulgaris at €800/t market price · disposal savings at €15/m³.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pathway comparison -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">All Viable Pathways</div></div>
+            <div style="padding:0 4px 4px;">
+              <table class="comp-table" id="comp-table">
+                <thead><tr><th>#</th><th>Pathway</th><th>Score</th><th>Revenue/yr</th><th>Label</th></tr></thead>
+                <tbody>
+                  <tr style="background:var(--g50)"><td>1</td><td style="font-weight:500">Microalgae Production</td><td><span class="mono" style="color:var(--g500)">8.4</span></td><td style="color:var(--g500)">+€52K</td><td><span class="badge best">Best</span></td></tr>
+                  <tr><td>2</td><td style="font-weight:500">Struvite Fertiliser</td><td><span class="mono" style="color:var(--b500)">7.9</span></td><td style="color:var(--g500)">+€28K</td><td><span class="badge rec">Recommended</span></td></tr>
+                  <tr><td>3</td><td style="font-weight:500">Biogas / Biomethane</td><td><span class="mono" style="color:var(--b500)">7.2</span></td><td style="color:var(--g500)">+€18K</td><td><span class="badge rec">Recommended</span></td></tr>
+                  <tr><td>4</td><td style="font-weight:500">Water Reclamation</td><td><span class="mono">6.1</span></td><td style="color:var(--g500)">+€14K</td><td><span class="badge viable">Viable</span></td></tr>
+                  <tr style="opacity:.5"><td>—</td><td style="font-weight:500">Cheese Brine Recovery</td><td><span class="mono" style="color:var(--r500)">0.0</span></td><td style="color:var(--r500)">—</td><td><span class="badge blocked">Blocked</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="card" style="background:linear-gradient(135deg,#0F2518,#1E4529);border:none;">
+            <div class="card-body" style="text-align:center;padding:22px;">
+              <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:6px;">Ready to implement?</div>
+              <div style="font-size:12px;color:var(--g200);margin-bottom:16px;">Giovanni Putignano &amp; Figli S.r.l. can design, build, and certify your BioLink pilot unit.</div>
+              <button class="btn-primary" style="margin:0 auto;padding:10px 22px;font-size:13px;" onclick="showConsultationModal()">
+                <svg width="13" height="13" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M2 2h12v10H9l-3 3v-3H2z"/></svg>
+                Request Consultation with Giovanni
+              </button>
+              <div style="font-size:10.5px;color:rgba(255,255,255,.4);margin-top:10px;">Massafra, Puglia · CIHEAM Bari certified methodology</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ────────────────────────────────────────────────────────
+     PAGE 5 · WASTEMAP
+────────────────────────────────────────────────────────── -->
+<div class="page" id="page-market">
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+        <div><div class="page-title">WasteMap Marketplace</div><div class="page-sub">B2B certified circular outputs · Massafra pilot · Puglia network</div></div>
+    <div class="topbar-right">
+      <div style="display:flex;gap:6px;background:var(--gray100);border-radius:8px;padding:3px;">
+        <div class="tab active" onclick="filterMarket(this,'all')" style="padding:5px 13px;border-radius:6px;font-size:12px;cursor:pointer;background:#fff;color:var(--txt);font-weight:500;box-shadow:0 1px 4px rgba(0,0,0,.08);">All Products</div>
+        <div class="tab" onclick="filterMarket(this,'algae')" style="padding:5px 13px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--muted);">Algae</div>
+        <div class="tab" onclick="filterMarket(this,'fertiliser')" style="padding:5px 13px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--muted);">Fertiliser</div>
+        <div class="tab" onclick="filterMarket(this,'water')" style="padding:5px 13px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--muted);">Water</div>
+      </div>
+      <button class="btn-primary" onclick="void(0)">
+        <svg width="12" height="12" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/></svg>List New Product
+      </button>
+    </div>
+  </div>
+  <div class="page-scroll"><div class="content">
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi g"><div class="kpi-label">Active Listings</div><div class="kpi-value">4</div><div class="kpi-meta">3 certified · 1 pending</div></div>
+      <div class="kpi b"><div class="kpi-label">Transaction Revenue</div><div class="kpi-value">€15K</div><div class="kpi-meta"><span class="trend up">2–5% fee model</span></div></div>
+      <div class="kpi a"><div class="kpi-label">Buyers Interested</div><div class="kpi-value">7</div><div class="kpi-meta">3 quotes requested</div></div>
+      <div class="kpi"><div class="kpi-label">Circular Passports</div><div class="kpi-value">3</div><div class="kpi-meta"><span class="trend up">EU ESPR ready</span></div></div>
+    </div>
+
+    <!-- Trust strip -->
+    <div class="card" style="overflow:visible;">
+      <div class="card-body" style="padding:12px 18px;">
+        <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+          <div style="font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;">Trust &amp; Certification:</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:5px;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--g600);"><svg width="11" height="11" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z"/><path d="M5.5 8l2 2 3-3"/></svg>Circular Passport (QR-coded)</div>
+            <div style="display:flex;align-items:center;gap:5px;background:var(--b50);border:1px solid #BFDBFE;border-radius:6px;padding:5px 10px;font-size:11px;color:var(--b500);"><svg width="11" height="11" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5.5 8l2 2 3-3"/></svg>ARPA Puglia / ISO 17025</div>
+            <div style="display:flex;align-items:center;gap:5px;background:var(--a50);border:1px solid #FDE68A;border-radius:6px;padding:5px 10px;font-size:11px;color:#92400E;"><svg width="11" height="11" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5.5 8l2 2 3-3"/></svg>ICEA / Ecocert organic</div>
+            <div style="display:flex;align-items:center;gap:5px;background:var(--gray100);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--gray600);"><svg width="11" height="11" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M4 4h8v8H4z"/><path d="M4 6h8M6 4v8"/></svg>EU ESPR DPP compliant</div>
+          </div>
+          <div style="margin-left:auto;font-size:11px;color:var(--muted);">Powered by Circularise · LUM/CIHEAM audit</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product cards grid -->
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;" id="market-grid">
+
+      <!-- Product 1: Algae Biomass -->
+      <div class="card" data-category="algae" style="overflow:visible;">
+        <div style="background:linear-gradient(135deg,#0F2518,#1E4529);padding:20px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(93,194,120,.12);border-radius:50%;"></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+            <div>
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--g300);margin-bottom:4px;">BATCH #ALG-007 · Algae Biomass</div>
+              <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;line-height:1.2;">Chlorella vulgaris<br>Dried Biomass</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--g300);">€850</div>
+              <div style="font-size:10px;color:var(--g200);opacity:.7;">/tonne</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="badge best">Certified</span>
+            <span style="font-size:10px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:2px 7px;border-radius:4px;">Feed Hyg. 183/2005</span>
+            <span style="font-size:10px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:2px 7px;border-radius:4px;">Protein 55–65%</span>
+          </div>
+        </div>
+        <div style="padding:16px;">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+            <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Volume Available</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--txt);">2.4 t</div></div>
+            <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Protein Content</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--g500);">61%</div></div>
+            <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Shelf Life</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--txt);">18 mo.</div></div>
+          </div>
+          <!-- Circular Passport strip -->
+          <div style="background:linear-gradient(90deg,var(--g50),var(--b50));border:1px solid var(--g200);border-radius:9px;padding:12px 14px;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="width:24px;height:24px;background:var(--g500);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white" opacity=".9"/><path d="M8 5.5L10.5 7V10L8 11.5L5.5 10V7L8 5.5Z" fill="#0F2518"/></svg>
+                </div>
+                <div><div style="font-size:11.5px;font-weight:600;color:var(--txt);">Circular Passport</div><div style="font-size:10px;color:var(--muted);">ID: CP-2025-ALG-007</div></div>
+              </div>
+              <button onclick="showPassport('alg007')" style="background:var(--g500);color:#fff;border:none;padding:5px 11px;border-radius:6px;font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;">View Passport</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:10.5px;">
+              <div style="color:var(--muted);">✓ Regulatory: <span style="color:var(--g600);font-weight:500;">EU 2020/741 + Feed Hyg.</span></div>
+              <div style="color:var(--muted);">✓ Lab: <span style="color:var(--g600);font-weight:500;">ARPA Puglia ISO 17025</span></div>
+              <div style="color:var(--muted);">✓ Organic: <span style="color:var(--g600);font-weight:500;">ICEA certified</span></div>
+              <div style="color:var(--muted);">✓ Chain: <span style="color:var(--g600);font-weight:500;">Circularise blockchain</span></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="showQR('ALG-007','Chlorella vulgaris Dried Biomass')" style="flex:1;background:var(--gray100);color:var(--txt2);border:1px solid var(--border);padding:8px;border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-weight:500;transition:background .15s;" onmouseover="this.style.background='var(--gray200)'" onmouseout="this.style.background='var(--gray100)'">
+              <svg width="13" height="13" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6"/><rect x="9" y="1" width="6" height="6"/><rect x="1" y="9" width="6" height="6"/><rect x="10" y="10" width="2" height="2" fill="currentColor"/><rect x="13" y="10" width="2" height="2" fill="currentColor"/><rect x="10" y="13" width="2" height="2" fill="currentColor"/><rect x="13" y="13" width="2" height="2" fill="currentColor"/></svg>
+              Scan QR
+            </button>
+            <button onclick="requestQuote('Chlorella vulgaris Dried Biomass')" style="flex:2;background:var(--g500);color:#fff;border:none;padding:8px;border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;transition:background .15s;" onmouseover="this.style.background='var(--g400)'" onmouseout="this.style.background='var(--g500)'">Request Quote →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 2: Struvite Fertiliser -->
+      <div class="card" data-category="fertiliser" style="overflow:visible;">
+        <div style="background:linear-gradient(135deg,#1A3A6A,#1A6FA8);padding:20px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(37,137,204,.15);border-radius:50%;"></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+            <div>
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:#90CAF9;margin-bottom:4px;">BATCH #STR-004 · Struvite Fertiliser</div>
+              <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;line-height:1.2;">CE-marked Struvite<br>MgNH₄PO₄·6H₂O</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#90CAF9;">€420</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.6);">/tonne</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="badge rec">CE Marked</span>
+            <span style="font-size:10px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:2px 7px;border-radius:4px;">FPR 2019/1009</span>
+            <span style="font-size:10px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:2px 7px;border-radius:4px;">CMC 4 compliant</span>
+          </div>
+        </div>
+        <div style="padding:16px;">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+            <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Volume Available</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--txt);">1.1 t</div></div>
+            <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">P₂O₅ Content</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--b500);">28%</div></div>
+            <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Slow Release</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--txt);">6–9 mo.</div></div>
+          </div>
+          <div style="background:linear-gradient(90deg,var(--b50),var(--g50));border:1px solid #BFDBFE;border-radius:9px;padding:12px 14px;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="width:24px;height:24px;background:var(--b500);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white" opacity=".9"/><path d="M8 5.5L10.5 7V10L8 11.5L5.5 10V7L8 5.5Z" fill="#1A3A6A"/></svg>
+                </div>
+                <div><div style="font-size:11.5px;font-weight:600;color:var(--txt);">Circular Passport</div><div style="font-size:10px;color:var(--muted);">ID: CP-2025-STR-004</div></div>
+              </div>
+              <button onclick="showPassport('str004')" style="background:var(--b500);color:#fff;border:none;padding:5px 11px;border-radius:6px;font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;">View Passport</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:10.5px;">
+              <div style="color:var(--muted);">✓ Regulatory: <span style="color:var(--b500);font-weight:500;">FPR 2019/1009 CMC 4</span></div>
+              <div style="color:var(--muted);">✓ Lab: <span style="color:var(--b500);font-weight:500;">ISO 17025 accredited</span></div>
+              <div style="color:var(--muted);">✓ Origin: <span style="color:var(--b500);font-weight:500;">RAS sludge · traceable</span></div>
+              <div style="color:var(--muted);">✓ EU ESPR: <span style="color:var(--b500);font-weight:500;">DPP ready</span></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="showQR('STR-004','CE-marked Struvite Fertiliser')" style="flex:1;background:var(--gray100);color:var(--txt2);border:1px solid var(--border);padding:8px;border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-weight:500;transition:background .15s;" onmouseover="this.style.background='var(--gray200)'" onmouseout="this.style.background='var(--gray100)'">
+              <svg width="13" height="13" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6"/><rect x="9" y="1" width="6" height="6"/><rect x="1" y="9" width="6" height="6"/><rect x="10" y="10" width="2" height="2" fill="currentColor"/><rect x="13" y="10" width="2" height="2" fill="currentColor"/><rect x="10" y="13" width="2" height="2" fill="currentColor"/><rect x="13" y="13" width="2" height="2" fill="currentColor"/></svg>
+              Scan QR
+            </button>
+            <button onclick="requestQuote('CE-marked Struvite Fertiliser')" style="flex:2;background:var(--b500);color:#fff;border:none;padding:8px;border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;transition:background .15s;" onmouseover="this.style.background='var(--b400)'" onmouseout="this.style.background='var(--b500)'">Request Quote →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 3: Reclaimed Water -->
+      <div class="card" data-category="water" style="overflow:visible;">
+        <div style="background:linear-gradient(135deg,#0E3D52,#0891B2);padding:20px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(8,145,178,.18);border-radius:50%;"></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+            <div>
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:#80DEEA;margin-bottom:4px;">BATCH #H2O-012 · Reclaimed Water</div>
+              <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;line-height:1.2;">EU Class B<br>Reclaimed Water</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#80DEEA;">€0.8</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.6);">/m³</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="badge viable">Available</span>
+            <span style="font-size:10px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:2px 7px;border-radius:4px;">EU 2020/741 Class B</span>
+            <span style="font-size:10px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:2px 7px;border-radius:4px;">Irrigation ready</span>
+          </div>
+        </div>
+        <div style="padding:16px;">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+            <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Daily Volume</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--txt);">~30 m³/d</div></div>
+            <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">E. coli</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--g500);">&lt;10 CFU</div></div>
+            <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Process</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--txt);">Sand + UV</div></div>
+          </div>
+          <div style="background:linear-gradient(90deg,#EFF6FF,#CFFAFE);border:1px solid #BFDBFE;border-radius:9px;padding:12px 14px;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="width:24px;height:24px;background:var(--t500);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white" opacity=".9"/></svg>
+                </div>
+                <div><div style="font-size:11.5px;font-weight:600;color:var(--txt);">Circular Passport</div><div style="font-size:10px;color:var(--muted);">ID: CP-2025-H2O-012</div></div>
+              </div>
+              <button onclick="showPassport('h2o012')" style="background:var(--t500);color:#fff;border:none;padding:5px 11px;border-radius:6px;font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;">View Passport</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:10.5px;">
+              <div style="color:var(--muted);">✓ Regulatory: <span style="color:var(--t500);font-weight:500;">EU 2020/741 Class B</span></div>
+              <div style="color:var(--muted);">✓ Lab: <span style="color:var(--t500);font-weight:500;">ARPA Puglia tested</span></div>
+              <div style="color:var(--muted);">✓ Use: <span style="color:var(--t500);font-weight:500;">Irrigation + RAS reuse</span></div>
+              <div style="color:var(--muted);">✓ Monitoring: <span style="color:var(--t500);font-weight:500;">BioLink sensors 15min</span></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="showQR('H2O-012','EU Class B Reclaimed Water')" style="flex:1;background:var(--gray100);color:var(--txt2);border:1px solid var(--border);padding:8px;border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-weight:500;transition:background .15s;" onmouseover="this.style.background='var(--gray200)'" onmouseout="this.style.background='var(--gray100)'">
+              <svg width="13" height="13" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6"/><rect x="9" y="1" width="6" height="6"/><rect x="1" y="9" width="6" height="6"/><rect x="10" y="10" width="2" height="2" fill="currentColor"/><rect x="13" y="10" width="2" height="2" fill="currentColor"/><rect x="10" y="13" width="2" height="2" fill="currentColor"/><rect x="13" y="13" width="2" height="2" fill="currentColor"/></svg>
+              Scan QR
+            </button>
+            <button onclick="requestQuote('EU Class B Reclaimed Water')" style="flex:2;background:var(--t500);color:#fff;border:none;padding:8px;border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;transition:background .15s;" onmouseover="this.style.background='#0E7490'" onmouseout="this.style.background='var(--t500)'">Request Quote →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 4: Biogas (pending) -->
+      <div class="card" data-category="algae" style="overflow:visible;border:1.5px dashed var(--border);">
+        <div style="background:linear-gradient(135deg,#2D1B00,#92400E);padding:20px;position:relative;overflow:hidden;opacity:.9;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+            <div>
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:#FDE68A;margin-bottom:4px;">BATCH #BIO-001 · Biogas Energy · PENDING CERT</div>
+              <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;line-height:1.2;">Biomethane<br>Energy Credit</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#FDE68A;">€0.08</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.6);">/kWh</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="badge cond">Pending Cert.</span>
+            <span style="font-size:10px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);padding:2px 7px;border-radius:4px;">IED 2010/75/EU</span>
+          </div>
+        </div>
+        <div style="padding:16px;">
+          <div style="background:var(--a50);border:1px solid #FDE68A;border-radius:9px;padding:12px 14px;margin-bottom:12px;">
+            <div style="font-size:11.5px;font-weight:500;color:#92400E;margin-bottom:4px;">⏳ Circular Passport pending</div>
+            <div style="font-size:11px;color:#92400E;line-height:1.5;">Awaiting Bureau Veritas process audit (Phase 2, month 18). Lab analysis scheduled. Estimated certification: Q3 2026.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+            <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Est. Output</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--txt);">~180 kWh/d</div></div>
+            <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Feedstock</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--txt);">Cheese Whey</div></div>
+            <div style="background:var(--a50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Status</div><div style="font-size:12px;font-weight:500;color:var(--a500);">Pending</div></div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button disabled style="flex:1;background:var(--gray100);color:var(--muted);border:1px solid var(--border);padding:8px;border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:5px;">QR not yet issued</button>
+            <button onclick="requestQuote('Biomethane Energy Credit (pending cert)')" style="flex:2;background:var(--a500);color:#fff;border:none;padding:8px;border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;">Express Interest →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase roadmap strip -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">WasteMap Expansion Roadmap</div></div>
+      <div class="card-body" style="padding:16px;">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+          <div style="padding:12px;border-radius:8px;background:var(--g50);border:1.5px solid var(--g200);"><div style="font-size:10px;color:var(--g500);font-weight:600;text-transform:uppercase;margin-bottom:4px;">Phase 1 · Now</div><div style="font-size:12.5px;font-weight:500;color:var(--txt);margin-bottom:4px;">Massafra Pilot</div><div style="font-size:11px;color:var(--muted);">Giovanni as anchor node · 4 certified products · CircularIQ scoring live</div></div>
+          <div style="padding:12px;border-radius:8px;background:var(--gray50);border:1px solid var(--border);"><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px;">Phase 3 · Months 18–36</div><div style="font-size:12.5px;font-weight:500;color:var(--txt);margin-bottom:4px;">Puglia Network</div><div style="font-size:11px;color:var(--muted);">3–5 operators · Bureau Veritas audit · WasteMap soft launch</div></div>
+          <div style="padding:12px;border-radius:8px;background:var(--gray50);border:1px solid var(--border);"><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px;">Phase 4 · Year 3+</div><div style="font-size:12.5px;font-weight:500;color:var(--txt);margin-bottom:4px;">Mediterranean MENA</div><div style="font-size:11px;color:var(--muted);">Tunisia, Morocco expansion · PRIMA/Horizon funding · SaaS model</div></div>
+          <div style="padding:12px;border-radius:8px;background:var(--b50);border:1px solid #BFDBFE;"><div style="font-size:10px;color:var(--b500);font-weight:600;text-transform:uppercase;margin-bottom:4px;">Future · ESPR</div><div style="font-size:12.5px;font-weight:500;color:var(--txt);margin-bottom:4px;">EU Digital Passport</div><div style="font-size:11px;color:var(--muted);">Mandatory ESPR compliance · Circularise platform · full traceability</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 6: Settings stub -->
+<div class="page" id="page-settings">
+  <div class="topbar"><button class="hamburger" onclick="toggleSidebar()" aria-label="Menu"><span></span><span></span><span></span></button><div><div class="page-title">Settings</div><div class="page-sub">Platform configuration · user management · scoring weights</div></div></div>
+  <div class="page-scroll"><div class="content"><div class="card"><div class="empty-state"><div class="empty-icon"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg></div><div class="empty-title">Settings panel</div><div class="empty-sub">Manage scoring weights, market prices, user roles, and API configuration. Coming in MVP Phase 2.</div></div></div></div></div></div>
+
+<!-- ═══════════ NOTIFICATION PANEL ═══════════ -->
+<div id="notif-overlay" onclick="closeNotif()" style="display:none;position:fixed;inset:0;z-index:290;"></div>
+<div id="notif-panel" style="display:none;position:fixed;top:58px;right:20px;width:360px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.14);z-index:300;overflow:hidden;animation:fadeUp .2s ease;">
+  <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--txt);">Notifications</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:10.5px;background:var(--r100);color:var(--r500);padding:2px 7px;border-radius:10px;font-weight:600;">5 new</span>
+      <button onclick="markAllRead()" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:4px;transition:background .15s;" onmouseover="this.style.background='var(--gray100)'" onmouseout="this.style.background='none'">Mark all read</button>
+    </div>
+  </div>
+  <div style="max-height:420px;overflow-y:auto;" id="notif-list">
+    <!-- notif items injected by JS -->
+  </div>
+  <div style="padding:10px 16px;border-top:1px solid var(--border);text-align:center;">
+    <button style="font-size:12px;color:var(--g500);background:none;border:none;cursor:pointer;font-weight:500;" onclick="closeNotif()">View all activity →</button>
+  </div>
+</div>
+
+<!-- ═══════════ CONSULTATION SUCCESS MODAL ═══════════ -->
+<div id="consult-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:none;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:36px;max-width:440px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.2);animation:fadeUp .3s ease;">
+    <div style="width:64px;height:64px;background:var(--g50);border:2px solid var(--g200);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
+      <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="var(--g500)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--txt);margin-bottom:8px;">Request Sent! ✓</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;">Your consultation request has been submitted to <strong style="color:var(--txt);">Giovanni Putignano &amp; Figli S.r.l.</strong> The team will contact you within <strong style="color:var(--g500);">2 business days</strong> with a custom proposal for your site.</div>
+    <div style="background:var(--g50);border:1px solid var(--g200);border-radius:10px;padding:14px;margin-bottom:20px;text-align:left;">
+      <div style="font-size:11px;font-weight:600;color:var(--g600);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Request Summary</div>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--txt2);">
+        <div><span style="color:var(--muted);">Company:</span> <span id="consult-company" style="font-weight:500;">Latteria Pugliese S.r.l.</span></div>
+        <div><span style="color:var(--muted);">Best pathway:</span> <span id="consult-pathway" style="font-weight:500;color:var(--g500);">Microalgae Production</span></div>
+        <div><span style="color:var(--muted);">Files attached:</span> <span id="consult-files" style="font-weight:500;">—</span></div>
+        <div><span style="color:var(--muted);">Reference #:</span> <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);" id="consult-ref">CIQ-2025-0048</span></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeConsultModal()" style="flex:1;background:var(--gray100);color:var(--txt2);border:1px solid var(--border);padding:10px;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;">Close</button>
+      <button onclick="closeConsultModal()" style="flex:2;background:var(--g500);color:#fff;border:none;padding:10px;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;">Back to Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ QR CODE MODAL ═══════════ -->
+<div id="qr-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:28px;max-width:340px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.2);animation:fadeUp .25s ease;">
+    <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--txt);margin-bottom:4px;" id="qr-title">Scan QR Code</div>
+    <div style="font-size:11.5px;color:var(--muted);margin-bottom:18px;" id="qr-product-name">Chlorella vulgaris Dried Biomass</div>
+    <!-- SVG QR placeholder — stylised pattern -->
+    <div style="background:var(--gray50);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;display:inline-block;">
+      <svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg" id="qr-svg">
+        <!-- QR frame corners -->
+        <rect x="8" y="8" width="44" height="44" rx="4" fill="none" stroke="#0F2518" stroke-width="4"/>
+        <rect x="16" y="16" width="28" height="28" rx="2" fill="#0F2518"/>
+        <rect x="108" y="8" width="44" height="44" rx="4" fill="none" stroke="#0F2518" stroke-width="4"/>
+        <rect x="116" y="16" width="28" height="28" rx="2" fill="#0F2518"/>
+        <rect x="8" y="108" width="44" height="44" rx="4" fill="none" stroke="#0F2518" stroke-width="4"/>
+        <rect x="16" y="116" width="28" height="28" rx="2" fill="#0F2518"/>
+        <!-- Data dots pattern (simulated) -->
+        <g fill="#0F2518">
+          <rect x="62" y="8" width="8" height="8"/><rect x="72" y="8" width="8" height="8"/><rect x="82" y="8" width="8" height="8"/>
+          <rect x="62" y="20" width="8" height="8"/><rect x="82" y="20" width="8" height="8"/>
+          <rect x="62" y="32" width="8" height="8"/><rect x="72" y="32" width="8" height="8"/><rect x="82" y="32" width="8" height="8"/>
+          <rect x="8" y="62" width="8" height="8"/><rect x="20" y="62" width="8" height="8"/>
+          <rect x="36" y="62" width="8" height="8"/><rect x="50" y="62" width="8" height="8"/>
+          <rect x="62" y="62" width="8" height="8"/><rect x="74" y="62" width="8" height="8"/>
+          <rect x="88" y="62" width="8" height="8"/><rect x="100" y="62" width="8" height="8"/>
+          <rect x="114" y="62" width="8" height="8"/><rect x="128" y="62" width="8" height="8"/>
+          <rect x="8" y="74" width="8" height="8"/><rect x="24" y="74" width="8" height="8"/>
+          <rect x="40" y="74" width="8" height="8"/><rect x="62" y="74" width="8" height="8"/>
+          <rect x="80" y="74" width="8" height="8"/><rect x="96" y="74" width="8" height="8"/>
+          <rect x="112" y="74" width="8" height="8"/><rect x="130" y="74" width="8" height="8"/>
+          <rect x="8" y="86" width="8" height="8"/><rect x="18" y="86" width="8" height="8"/>
+          <rect x="50" y="86" width="8" height="8"/><rect x="64" y="86" width="8" height="8"/>
+          <rect x="78" y="86" width="8" height="8"/><rect x="92" y="86" width="8" height="8"/>
+          <rect x="108" y="86" width="8" height="8"/><rect x="120" y="86" width="8" height="8"/><rect x="144" y="86" width="8" height="8"/>
+          <rect x="62" y="108" width="8" height="8"/><rect x="76" y="108" width="8" height="8"/>
+          <rect x="90" y="108" width="8" height="8"/><rect x="108" y="108" width="8" height="8"/>
+          <rect x="124" y="108" width="8" height="8"/><rect x="140" y="108" width="8" height="8"/>
+          <rect x="62" y="120" width="8" height="8"/><rect x="80" y="120" width="8" height="8"/>
+          <rect x="100" y="120" width="8" height="8"/><rect x="116" y="120" width="8" height="8"/>
+          <rect x="62" y="132" width="8" height="8"/><rect x="74" y="132" width="8" height="8"/><rect x="86" y="132" width="8" height="8"/>
+          <rect x="104" y="132" width="8" height="8"/><rect x="120" y="132" width="8" height="8"/><rect x="136" y="132" width="8" height="8"/>
+          <rect x="62" y="144" width="8" height="8"/><rect x="78" y="144" width="8" height="8"/>
+          <rect x="94" y="144" width="8" height="8"/><rect x="110" y="144" width="8" height="8"/>
+        </g>
+        <!-- CircularIQ logo centre -->
+        <rect x="68" y="44" width="24" height="24" rx="6" fill="var(--g500)"/>
+        <text x="80" y="61" text-anchor="middle" font-size="14" font-weight="bold" fill="white" font-family="sans-serif">C</text>
+      </svg>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:6px;" id="qr-batch-id">Batch: ALG-007</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:18px;">Scan to access full Circular Passport, lab reports, chain-of-custody, and ARPA certification documents.</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeQR()" style="flex:1;background:var(--gray100);color:var(--txt2);border:1px solid var(--border);padding:9px;border-radius:8px;font-size:12.5px;font-family:'DM Sans',sans-serif;cursor:pointer;">Close</button>
+      <button style="flex:2;background:var(--g500);color:#fff;border:none;padding:9px;border-radius:8px;font-size:12.5px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;" onclick="closeQR()">Download QR Image</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CIRCULAR PASSPORT MODAL ═══════════ -->
+<div id="passport-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;max-width:520px;width:92%;box-shadow:0 24px 64px rgba(0,0,0,.2);animation:fadeUp .25s ease;overflow:hidden;">
+    <div style="background:linear-gradient(135deg,#0F2518,#2D7D46);padding:22px 24px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" fill="white" opacity=".9"/><path d="M8 5.5L10.5 7V10L8 11.5L5.5 10V7L8 5.5Z" fill="#0F2518"/></svg>
+        </div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;">Circular Passport</div>
+          <div style="font-size:11px;color:var(--g200);opacity:.8;" id="pp-id">ID: CP-2025-ALG-007</div>
+        </div>
+        <button onclick="closePassport()" style="margin-left:auto;background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:14px;">✕</button>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;" id="pp-name">Chlorella vulgaris Dried Biomass</div>
+      <div style="font-size:11.5px;color:var(--g200);opacity:.85;" id="pp-origin">Origin: RAS Tank Effluent · BioLink Pilot · Massafra, Puglia · Giovanni Putignano &amp; Figli S.r.l.</div>
+    </div>
+    <div style="padding:18px 22px;max-height:420px;overflow-y:auto;">
+      <!-- 4 certification layers -->
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">4-Layer Certification</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;">
+        <div style="background:var(--g50);border:1px solid var(--g200);border-radius:9px;padding:12px 14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <div style="font-size:12px;font-weight:600;color:var(--txt);">Layer 1 · Regulatory Compliance</div>
+            <span style="font-size:10px;background:#DCFCE7;color:#166534;padding:2px 7px;border-radius:10px;font-weight:600;">✓ Compliant</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);" id="pp-reg">EU 2020/741 (water reuse) · Feed Hygiene Reg. 183/2005 · Novel Feed 2017/893 · IED 2010/75/EU</div>
+        </div>
+        <div style="background:var(--b50);border:1px solid #BFDBFE;border-radius:9px;padding:12px 14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <div style="font-size:12px;font-weight:600;color:var(--txt);">Layer 2 · Process Audit</div>
+            <span style="font-size:10px;background:var(--b100);color:#1A4E7A;padding:2px 7px;border-radius:10px;font-weight:600;">✓ Audited</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);">LUM University + CIHEAM Bari (pilot phase) · Bureau Veritas at scale · Audit ref: LUM-2025-BL-007</div>
+        </div>
+        <div style="background:var(--a50);border:1px solid #FDE68A;border-radius:9px;padding:12px 14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <div style="font-size:12px;font-weight:600;color:var(--txt);">Layer 3 · Circular Economy Claim</div>
+            <span style="font-size:10px;background:var(--a100);color:#92400E;padding:2px 7px;border-radius:10px;font-weight:600;">✓ Certified</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);">ICEA certified organic · Ecocert circular claim · Fishmeal displacement verified · Carbon footprint: −2.4 tCO₂eq/t</div>
+        </div>
+        <div style="background:var(--gray50);border:1px solid var(--border);border-radius:9px;padding:12px 14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <div style="font-size:12px;font-weight:600;color:var(--txt);">Layer 4 · Digital Traceability</div>
+            <span style="font-size:10px;background:var(--gray100);color:var(--gray600);padding:2px 7px;border-radius:10px;font-weight:600;">✓ On-chain</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);">CircularIQ-generated PDF · Circularise blockchain record · EU ESPR DPP-ready · Hash: 0x3f8a…c2d1</div>
+        </div>
+      </div>
+      <!-- Key parameters -->
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Batch Parameters</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:16px;" id="pp-params">
+        <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Protein</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--g500);">61%</div></div>
+        <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Moisture</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;">8.2%</div></div>
+        <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Batch size</div><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;">2.4 t</div></div>
+        <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Produced</div><div style="font-family:'DM Mono',monospace;font-size:12px;font-weight:500;">28 Apr 2025</div></div>
+        <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Expires</div><div style="font-family:'DM Mono',monospace;font-size:12px;font-weight:500;">Oct 2026</div></div>
+        <div style="background:var(--gray50);border-radius:7px;padding:9px;text-align:center;"><div style="font-size:9.5px;color:var(--muted);margin-bottom:3px;">Lab ref</div><div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;">ARPA-PG-2025-0441</div></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="closePassport()" style="flex:1;background:var(--gray100);color:var(--txt2);border:1px solid var(--border);padding:10px;border-radius:8px;font-size:12.5px;font-family:'DM Sans',sans-serif;cursor:pointer;">Close</button>
+        <button style="flex:2;background:var(--g500);color:#fff;border:none;padding:10px;border-radius:8px;font-size:12.5px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;" onclick="closePassport()">Download PDF Passport</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ QUOTE REQUEST MODAL ═══════════ -->
+<div id="quote-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:28px;max-width:400px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,.2);animation:fadeUp .25s ease;">
+    <div id="quote-form-view">
+      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--txt);margin-bottom:4px;">Request a Quote</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:18px;" id="quote-product-label">Chlorella vulgaris Dried Biomass</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+        <div><label style="font-size:11.5px;font-weight:500;color:var(--txt2);display:block;margin-bottom:4px;">Your Company</label><input class="form-input" type="text" placeholder="Azienda Agricola..." id="q-company"></div>
+        <div><label style="font-size:11.5px;font-weight:500;color:var(--txt2);display:block;margin-bottom:4px;">Email</label><input class="form-input" type="email" placeholder="name@company.it" id="q-email"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div><label style="font-size:11.5px;font-weight:500;color:var(--txt2);display:block;margin-bottom:4px;">Volume needed (t or m³)</label><input class="form-input" type="text" placeholder="e.g. 0.5t" id="q-vol"></div>
+          <div><label style="font-size:11.5px;font-weight:500;color:var(--txt2);display:block;margin-bottom:4px;">Frequency</label><select class="form-select" id="q-freq"><option>One-time</option><option>Monthly</option><option>Quarterly</option></select></div>
+        </div>
+        <div><label style="font-size:11.5px;font-weight:500;color:var(--txt2);display:block;margin-bottom:4px;">Message (optional)</label><textarea class="form-input" rows="2" placeholder="Intended use, delivery location, certification requirements..." style="resize:none;"></textarea></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="closeQuote()" style="flex:1;background:var(--gray100);color:var(--txt2);border:1px solid var(--border);padding:10px;border-radius:8px;font-size:12.5px;font-family:'DM Sans',sans-serif;cursor:pointer;">Cancel</button>
+        <button onclick="submitQuote()" style="flex:2;background:var(--g500);color:#fff;border:none;padding:10px;border-radius:8px;font-size:12.5px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;">Send Quote Request</button>
+      </div>
+    </div>
+    <div id="quote-success-view" style="display:none;text-align:center;">
+      <div style="width:56px;height:56px;background:var(--g50);border:2px solid var(--g200);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="var(--g500)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--txt);margin-bottom:6px;">Quote Request Sent!</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:18px;">Giovanni Putignano &amp; Figli S.r.l. will respond within 2 business days with availability and pricing. A notification has been sent to the admin team.</div>
+      <button onclick="closeQuote()" style="width:100%;background:var(--g500);color:#fff;border:none;padding:10px;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;">Done</button>
+    </div>
+  </div>
+</div></div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ─── NAVIGATION ───
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if(el) el.classList.add('active');
+  // init charts when needed
+  if(name==='streams' && !trendChartInst) initTrendChart();
+  if(name==='pathways' && !radarChartInst) initRadarChart();
+}
+
+// ─── DATA ───
+const labels30 = Array.from({length:30},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(29-i));return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});});
+
+function makeData(base, noise, trend=0) {
+  return Array.from({length:30},(_,i)=>{
+    const t = trend * (i/29);
+    return +(base + t + (Math.random()-0.5)*noise).toFixed(1);
+  });
+}
+
+const streamSeries = [
+  {label:'RAS Effluent', color:'#2D7D46', data: makeData(35,4,5), borderDash:[]},
+  {label:'Cheese Whey', color:'#1A6FA8', data: makeData(12,2.5,1), borderDash:[]},
+  {label:'CIP Washdown', color:'#D97706', data: makeData(8,2,0), borderDash:[]},
+  {label:'RAS Sludge', color:'#7C3AED', data: makeData(2.5,.5,.4), borderDash:[]},
+  {label:'Cheese Brine', color:'#DC2626', data: makeData(2,.3,0), borderDash:[4,4]},
+];
+
+let trendChartInst = null;
+function initTrendChart() {
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  trendChartInst = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:labels30,
+      datasets: streamSeries.map(s=>({
+        label:s.label, data:s.data, borderColor:s.color,
+        backgroundColor:s.color+'18', fill:true, tension:.4,
+        pointRadius:0, pointHoverRadius:5, borderWidth:2,
+        borderDash: s.borderDash
+      }))
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:t=>t[0].label+' 2025'}}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#8F9A8F',font:{size:10},maxTicksLimit:10,autoSkip:true}},
+        y:{grid:{color:'#EEF0EE'},ticks:{color:'#8F9A8F',font:{size:10}},title:{display:true,text:'m³/day',color:'#8F9A8F',font:{size:10}}}
+      }
+    }
+  });
+}
+
+// ─── STREAM TABS ───
+function switchStreamTab(el, sector) {
+  document.querySelectorAll('.stream-tabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.stream-card').forEach(c=>{
+    if(sector==='all') c.style.display='';
+    else c.style.display = c.dataset.sector===sector?'':'none';
+  });
+}
+// fix: add class to tabs in streams page (they use different elements)
+document.addEventListener('DOMContentLoaded',()=>{
+  const t=document.querySelectorAll('#page-streams .tabs');
+  // already handled by onclick
+});
+
+// ─── PATHWAY CHART ───
+let radarChartInst = null;
+function initRadarChart() {
+  const ctx = document.getElementById('pathwayRadar').getContext('2d');
+  radarChartInst = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:['Economic (40%)','Technical (30%)','Regulatory (20%)','Logistics (10%)'],
+      datasets:[
+        {label:'Microalgae', data:[9.1,7.8,8.5,7.2], backgroundColor:'#2D7D4699', borderColor:'#2D7D46', borderWidth:1.5},
+        {label:'Struvite', data:[8.2,8.0,9.0,6.5], backgroundColor:'#1A6FA899', borderColor:'#1A6FA8', borderWidth:1.5},
+        {label:'Biogas', data:[7.5,7.2,8.0,6.8], backgroundColor:'#D9770699', borderColor:'#D97706', borderWidth:1.5},
+        {label:'Water Rec.', data:[5.8,7.0,7.5,5.2], backgroundColor:'#8B5CF699', borderColor:'#8B5CF6', borderWidth:1.5},
+        {label:'WPC Protein', data:[9.5,4.5,6.0,8.0], backgroundColor:'#0891B299', borderColor:'#0891B2', borderWidth:1.5},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#8F9A8F',font:{size:11}}},
+        y:{min:0,max:10,grid:{color:'#EEF0EE'},ticks:{color:'#8F9A8F',font:{size:10}}}
+      }
+    }
+  });
+}
+
+// ─── PATHWAY TABS ───
+function switchPathwayTab(el, filter) {
+  document.querySelectorAll('#page-pathways .tabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.pathway-card').forEach(c=>{
+    if(filter==='all') c.style.display='';
+    else if(filter==='viable') c.style.display = c.dataset.status==='viable'?'':'none';
+    else if(filter==='blocked') c.style.display = c.dataset.status==='blocked'?'':'none';
+  });
+}
+
+// ─── LIVE CHECK ───
+function liveCheck() {
+  const nacl = parseFloat(document.getElementById('p-nacl').value)||0;
+  const ph   = parseFloat(document.getElementById('p-ph').value)||7;
+  const vol  = parseFloat(document.getElementById('p-vol').value)||0;
+  const cod  = parseFloat(document.getElementById('p-cod').value)||0;
+  const tn   = parseFloat(document.getElementById('p-tn').value)||0;
+  const tp   = parseFloat(document.getElementById('p-tp').value)||0;
+  const vol2 = parseFloat(document.getElementById('p-vol2').value)||0;
+  const tp2  = parseFloat(document.getElementById('p-tp2').value)||0;
+  const tn2  = parseFloat(document.getElementById('p-tn2').value)||0;
+
+  const nf2 = document.getElementById('p-nacl');
+  const phf = document.getElementById('p-ph');
+
+  // Flag inputs
+  if(nacl>10){ document.getElementById('nacl-flag').style.display='block'; nf2.classList.add('flag'); nf2.classList.remove('ok'); }
+  else { document.getElementById('nacl-flag').style.display='none'; nf2.classList.remove('flag'); nf2.classList.add('ok'); }
+  if(ph<6||ph>9){ document.getElementById('ph-flag').style.display='block'; phf.classList.add('flag'); phf.classList.remove('ok'); }
+  else { document.getElementById('ph-flag').style.display='none'; phf.classList.remove('flag'); phf.classList.add('ok'); }
+
+  const box = document.getElementById('live-check-box');
+  const cnt = document.getElementById('live-check-content');
+  const checks = [];
+
+  if(vol > 0) {
+    const disp = Math.round(vol * 365 * MARKET.disposal);
+    checks.push(`💶 Disposal savings at €${MARKET.disposal}/m³: <strong>€${disp.toLocaleString()}/yr</strong>`);
+  }
+
+  if(nacl > 10) {
+    checks.push(`🚫 <strong>NaCl hard gate triggered</strong> (${nacl} g/L > 10 g/L limit) — algae, struvite, biogas, water reuse all blocked`);
+  } else {
+    // Microalgae hints
+    if(cod > 0 && cod < 600 && tn > 30 && ph >= 6.5 && ph <= 8.5)
+      checks.push(`✅ <strong>Microalgae: excellent</strong> — COD ${cod} mg/L + TN ${tn} mg/L + pH ${ph} all in ideal range`);
+    else if(cod > 0 && cod < 1500 && tn > 15)
+      checks.push(`⚡ Microalgae: <strong>viable</strong> — COD ${cod} mg/L acceptable; TN ${tn} mg/L supports cultivation`);
+    else if(cod >= 1500)
+      checks.push(`⚠️ COD ${cod.toLocaleString()} mg/L is high for algae — biogas may rank higher`);
+
+    // Struvite hints
+    const struviteTP = tp2 > 40 ? tp2 : tp;
+    const struviteVol = tp2 > 40 ? vol2 : vol * 0.07;
+    if(struviteTP > 60 && struviteVol > 0)
+      checks.push(`✅ <strong>Struvite: viable</strong> — TP ${struviteTP} mg/L · est. revenue €${Math.round(struviteVol*365*0.6*MARKET.struvite/1000)}K/yr`);
+    else if(struviteTP > 20)
+      checks.push(`⚡ Struvite: possible — TP ${struviteTP} mg/L is borderline (≥40 mg/L is ideal)`);
+
+    // Biogas hints
+    if(cod >= 5000) {
+      const kwhDay = (cod/1000)*vol*0.35*10*0.7;
+      checks.push(`✅ <strong>Biogas: strong</strong> — COD ${cod.toLocaleString()} mg/L yields ~${Math.round(kwhDay)} kWh/day · €${Math.round(kwhDay*365*MARKET.biogas/1000)}K/yr`);
+    }
+
+    // pH alert
+    if(ph < 6.5 || ph > 8.5)
+      checks.push(`⚠️ pH ${ph} — neutralisation required before algae or struvite pathways`);
+  }
+
+  if(checks.length > 0) { box.style.display='block'; cnt.innerHTML = checks.join('<br>'); }
+  else box.style.display = 'none';
+}
+
+// ─── SCORING ENGINE ───
+// Weights: Economic 40%, Technical 30%, Regulatory 20%, Logistics 10%
+const WEIGHTS = { eco: 0.40, tec: 0.30, reg: 0.20, log: 0.10 };
+
+// Market prices (€/unit)
+const MARKET = {
+  algae: 850,        // €/t dried biomass
+  struvite: 420,     // €/t CE-marked
+  biogas: 0.08,      // €/kWh
+  water: 0.80,       // €/m³ Class B
+  disposal: 20,      // €/m³ avoided (conservative)
+  fishmeal: 1400,    // €/t replaced by algae
+};
+
+// Score each sub-axis deterministically from inputs (0–10 scale)
+function scorePathway(name, params) {
+  const { vol, cod, tn, tp, ph, nacl, vol2, tn2, tp2 } = params;
+  const blocked = nacl > 10;
+
+  const pathways = {
+    'Microalgae Production': () => {
+      if (blocked) return null;
+      if (ph < 6.0 || ph > 9.0) return null;
+      // Economic: scales with volume, TN richness, low COD advantage
+      const codFactor   = cod < 200 ? 6 : cod < 600 ? 9.5 : cod < 1500 ? 7 : 4;
+      const tnFactor    = tn < 20 ? 5 : tn < 40 ? 7.5 : tn < 80 ? 9.5 : 8;
+      const volFactor   = vol < 5 ? 5 : vol < 20 ? 7 : vol < 50 ? 9 : 9.5;
+      const eco = Math.min(10, (codFactor + tnFactor + volFactor) / 3);
+      // Technical: COD must be low enough; pH neutral is best
+      const phScore     = ph >= 6.5 && ph <= 8.0 ? 9 : ph >= 6.0 && ph <= 9.0 ? 7 : 4;
+      const codTRL      = cod < 600 ? 9 : cod < 1500 ? 6.5 : 4;
+      const tec = Math.min(10, (phScore + codTRL) / 2);
+      // Regulatory: NaCl gate passed, standard pathway
+      const reg = nacl < 1 ? 9 : nacl < 5 ? 8 : 7;
+      // Logistics: local fishmeal buyers; high protein is marketable
+      const proteinProxy = tn > 50 ? 9 : tn > 30 ? 7.5 : 6;
+      const log = Math.min(10, (proteinProxy + 7) / 2);
+      const revenue = Math.round(vol * 365 * 0.7 * (MARKET.algae / 1000));
+      const fishmeal = Math.round(vol * 365 * 0.4 * (MARKET.fishmeal / 1000));
+      return { eco, tec, reg, log, revenue, primaryLabel: 'Biomass + fishmeal savings',
+        desc: `${vol} m³/day RAS effluent → Chlorella vulgaris · protein ~${tn > 50 ? 61 : 52}% · replaces imported fishmeal`,
+        regs: ['Feed Hyg. 183/2005', 'EU 2020/741', 'Novel Feed 2017/893'],
+        payback: vol > 30 ? '3–4 yr' : vol > 15 ? '4–5 yr' : '5–7 yr',
+        capex: vol > 30 ? '€130–200k' : vol > 15 ? '€80–130k' : '€40–80k' };
+    },
+    'Struvite Fertiliser': () => {
+      if (blocked) return null;
+      const hasGoodSludge = vol2 > 0 && tp2 > 40 && tn2 > 100;
+      const tpMain = tp > 10;
+      if (!hasGoodSludge && !tpMain) return null;
+      const tpSource = hasGoodSludge ? tp2 : tp;
+      const volSource = hasGoodSludge ? vol2 : vol * 0.07;
+      const eco = Math.min(10, 5 + (tpSource > 80 ? 4 : tpSource > 40 ? 3 : 1.5) + (volSource > 2 ? 1 : 0.5));
+      const tec = tpSource > 60 ? 8.5 : tpSource > 30 ? 7 : 5.5;
+      const reg = 9.0; // FPR 2019/1009 is clear
+      const log = 6.5; // niche fertiliser market
+      const revenue = Math.round(volSource * 365 * 0.6 * MARKET.struvite);
+      return { eco, tec, reg, log, revenue, primaryLabel: 'CE-marked struvite fertiliser',
+        desc: `TP-rich sludge (${Math.round(tpSource)} mg/L) → MgNH₄PO₄ slow-release fertiliser · FPR 2019/1009 CMC 4`,
+        regs: ['FPR 2019/1009 CMC 4', 'Nitrates 91/676'],
+        payback: '4–6 yr', capex: '€60–120k' };
+    },
+    'Biogas / Biomethane': () => {
+      if (blocked) return null;
+      if (cod < 2000) return null; // not worth it below this
+      const codScore = cod > 30000 ? 9.5 : cod > 10000 ? 8.5 : cod > 5000 ? 7 : 5;
+      const volScore = vol > 10 ? 8 : vol > 5 ? 6.5 : 4.5;
+      const eco = Math.min(10, (codScore + volScore) / 2);
+      const tec = cod > 10000 ? 8 : 7; // anaerobic digestion is proven
+      const reg = 8.0; // IED + ABP compliance needed but achievable
+      const phPenalty = ph < 5.5 || ph > 8.5 ? -1.5 : 0;
+      const log = 6.5 + phPenalty;
+      // Energy yield: 0.35 m³ CH4 per kg COD removed, 10 kWh/m³ CH4
+      const codKgPerDay = (cod / 1000) * vol;
+      const kwhPerDay   = codKgPerDay * 0.35 * 10 * 0.7;
+      const revenue     = Math.round(kwhPerDay * 365 * MARKET.biogas);
+      return { eco: Math.min(10, eco), tec, reg, log: Math.max(3, log), revenue,
+        primaryLabel: 'Energy offset (boiler replacement)',
+        desc: `COD ${cod.toLocaleString()} mg/L → anaerobic digestion · ~${Math.round(kwhPerDay)} kWh/day energy offset`,
+        regs: ['IED 2010/75/EU', 'ABP 1069/2009'],
+        payback: '4–6 yr', capex: '€80–150k' };
+    },
+    'Water Reclamation': () => {
+      if (blocked) return null;
+      if (ph < 5 || ph > 12) return null;
+      const volScore = vol > 20 ? 8 : vol > 10 ? 6.5 : 5;
+      const eco = Math.min(10, volScore * 0.8 + 2); // savings are modest
+      const tec = cod < 500 ? 8.5 : cod < 2000 ? 7 : 5.5;
+      const reg = 8.0; // EU 2020/741 is mature
+      const log = ph >= 6.5 && ph <= 8.5 ? 7 : 5.5;
+      const revenue = Math.round(vol * 0.8 * 365 * MARKET.water);
+      return { eco, tec, reg, log, revenue, primaryLabel: 'Freshwater savings (EU Class B)',
+        desc: `Post-treatment polishing → EU 2020/741 Class B reclaimed water · RAS reuse + irrigation`,
+        regs: ['EU 2020/741 Class B', 'ARPA Puglia'],
+        payback: '5–8 yr', capex: '€30–60k' };
+    },
+  };
+
+  const result = pathways[name] ? pathways[name]() : null;
+  if (!result) return null;
+
+  const score = +(result.eco * WEIGHTS.eco + result.tec * WEIGHTS.tec + result.reg * WEIGHTS.reg + result.log * WEIGHTS.log).toFixed(1);
+  return { ...result, score, name };
+}
+
+// ─── RUN ANALYSIS ───
+function runAnalysis() {
+  const params = {
+    vol:   parseFloat(document.getElementById('p-vol').value)   || 0,
+    cod:   parseFloat(document.getElementById('p-cod').value)   || 0,
+    tn:    parseFloat(document.getElementById('p-tn').value)    || 0,
+    tp:    parseFloat(document.getElementById('p-tp').value)    || 0,
+    ph:    parseFloat(document.getElementById('p-ph').value)    || 7,
+    nacl:  parseFloat(document.getElementById('p-nacl').value)  || 0,
+    vol2:  parseFloat(document.getElementById('p-vol2').value)  || 0,
+    tn2:   parseFloat(document.getElementById('p-tn2').value)   || 0,
+    tp2:   parseFloat(document.getElementById('p-tp2').value)   || 0,
+  };
+  const company = document.getElementById('f-company').value || 'Your Company';
+
+  const btn = document.querySelector('#page-customers .btn-primary:last-of-type');
+  btn.innerHTML = '<span style="display:inline-block;animation:spin .8s linear infinite;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;width:13px;height:13px;"></span> Analysing...';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    btn.innerHTML = '<svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>Run CircularIQ Analysis';
+    btn.disabled = false;
+
+    const pathwayNames = ['Microalgae Production','Struvite Fertiliser','Biogas / Biomethane','Water Reclamation'];
+    const results = pathwayNames.map(n => scorePathway(n, params)).filter(Boolean);
+    const blocked  = params.nacl > 10;
+
+    // Sort by score descending
+    results.sort((a, b) => b.score - a.score);
+
+    const best = results[0];
+
+    // Disposal savings (always positive if vol > 0)
+    const dispSavings   = Math.round(params.vol * 365 * MARKET.disposal);
+    const sludgeDisp    = Math.round(params.vol2 * 365 * MARKET.disposal * 2); // sludge costs more
+    const totalDisp     = dispSavings + sludgeDisp;
+
+    // Total revenue from all viable pathways (not double-counting same stream)
+    const primaryRev = best ? best.revenue : 0;
+    const totalRev   = results.reduce((sum, r, i) => i === 0 ? sum + r.revenue : sum + Math.round(r.revenue * 0.6), 0);
+
+    // Capex amortised over 20 years (rough mid-point of range)
+    const capexMid   = best ? (best.capex.includes('200') ? 165000 : best.capex.includes('150') ? 115000 : 70000) : 100000;
+    const capexAmort = Math.round(capexMid / 20);
+    const opex       = Math.round((params.vol * 365 * 1.2 + 15000)); // €1.2/m³/yr + fixed
+    const netAnnual  = totalDisp + totalRev - capexAmort - opex;
+
+    if (!best || blocked) {
+      // Blocked state
+      document.getElementById('res-company-name').textContent = 'for ' + company;
+      document.getElementById('res-pathway-name').textContent = 'No Viable Pathway';
+      document.getElementById('res-pathway-desc').textContent = blocked
+        ? `NaCl ${params.nacl} g/L exceeds 10 g/L hard gate — all biological pathways blocked`
+        : 'Insufficient data to score any pathway — please check your parameters';
+      document.getElementById('res-score').textContent = '0.0';
+      ['eco','tec','reg','log'].forEach(k => {
+        document.getElementById('rb-' + k).style.width = '0%';
+        document.getElementById('rv-' + k).textContent = '0.0';
+      });
+      document.getElementById('roi-net').textContent = '€0';
+      document.getElementById('roi-disp').textContent = '—';
+      document.getElementById('roi-rev').textContent = '—';
+      document.getElementById('roi-pb').textContent = 'N/A';
+      document.getElementById('roi-narrative').textContent = blocked
+        ? `NaCl gate triggered. Consider evaporation-crystallisation for brine (Phase 3). The stream must be isolated from all biological treatment.`
+        : `Please enter valid wastewater parameters to score pathways.`;
+    } else {
+      document.getElementById('res-company-name').textContent = 'for ' + company;
+      document.getElementById('res-pathway-name').textContent = best.name;
+      document.getElementById('res-pathway-desc').textContent = best.desc;
+      document.getElementById('res-score').textContent = best.score;
+
+      const axes = { eco: best.eco, tec: best.tec, reg: best.reg, log: best.log };
+      Object.entries(axes).forEach(([k, v]) => {
+        document.getElementById('rb-' + k).style.width = (v * 10) + '%';
+        document.getElementById('rv-' + k).textContent = v.toFixed(1);
+      });
+
+      const netStr  = (netAnnual >= 0 ? '+' : '') + '€' + Math.abs(Math.round(netAnnual / 1000)) + 'K';
+      const pbYears = netAnnual > 0 ? Math.ceil(capexMid / (netAnnual + capexAmort)) : '—';
+      const pbStr   = typeof pbYears === 'number' ? pbYears + '–' + (pbYears + 2) + ' yr' : '—';
+
+      document.getElementById('roi-net').textContent  = netStr;
+      document.getElementById('roi-pb').textContent   = pbStr;
+      document.getElementById('roi-disp').textContent = '−€' + Math.round(totalDisp / 1000) + 'K';
+      document.getElementById('roi-rev').textContent  = '+€' + Math.round(primaryRev / 1000) + 'K';
+
+      document.getElementById('roi-narrative').textContent =
+        `Based on ${params.vol} m³/day primary stream · COD ${params.cod.toLocaleString()} mg/L · TN ${params.tn} mg/L · NaCl ${params.nacl} g/L. ` +
+        `Disposal savings at €${MARKET.disposal}/m³. Primary output: ${best.primaryLabel}. ` +
+        (results.length > 1 ? `${results.length} viable pathways found — combine for maximum ROI.` : '');
+
+      // Rebuild the comparison table dynamically
+      const tbody = document.querySelector('#comp-table tbody');
+      const badgeMap = { 0:'best', 1:'rec', 2:'rec', 3:'viable' };
+      const labelMap = { 0:'Best', 1:'Recommended', 2:'Recommended', 3:'Viable' };
+      tbody.innerHTML = results.map((r, i) => `
+        <tr style="${i===0?'background:var(--g50)':''}">
+          <td>${i+1}</td>
+          <td style="font-weight:500">${r.name}</td>
+          <td><span class="mono" style="color:${i===0?'var(--g500)':'var(--b500)'}">${r.score}</span></td>
+          <td style="color:var(--g500)">+€${Math.round(r.revenue/1000)}K</td>
+          <td><span class="badge ${badgeMap[i]||'viable'}">${labelMap[i]||'Viable'}</span></td>
+        </tr>`).join('') +
+        (blocked ? `<tr style="opacity:.5"><td>—</td><td style="font-weight:500">All pathways</td><td><span class="mono" style="color:var(--r500)">0.0</span></td><td style="color:var(--r500)">—</td><td><span class="badge blocked">Blocked</span></td></tr>` : '');
+    }
+
+    // Update step indicators
+    document.getElementById('si3').className = 'step-num done';
+    document.getElementById('si3').textContent = '✓';
+    document.getElementById('sl3').className = 'step-label current';
+    document.getElementById('sline2').className = 'step-line done';
+
+    document.getElementById('results-placeholder').style.display = 'none';
+    document.getElementById('result-panel').classList.add('show');
+  }, 1800);
+}
+
+// ─── NOTIFICATIONS ───
+const notifications = [
+  {type:'customer', color:'#2D7D46', icon:'👤', title:'New customer registered', desc:'Azienda Agricola Rossi (Taranto) · dairy sector · just signed up', time:'2 min ago', unread:true},
+  {type:'consult', color:'#1A6FA8', icon:'💬', title:'New consultation request', desc:'Latteria Del Sud S.r.l. · 45 m³/day dairy · wants BioLink proposal', time:'18 min ago', unread:true},
+  {type:'product', color:'#D97706', icon:'📦', title:'New product listed', desc:'Batch STR-005 struvite ready · 1.3t available · awaiting passport sign-off', time:'1 hr ago', unread:true},
+  {type:'buy', color:'#7C3AED', icon:'🛒', title:'Buyer wants to purchase', desc:'Cooperativa Agricola Puglia wants 2t Chlorella · Batch ALG-007 · €1,700 offer', time:'3 hr ago', unread:true},
+  {type:'pathway', color:'#0891B2', icon:'⚡', title:'New pathway recommendation', desc:'WPC Protein upgraded to RECOMMENDED — new UF membrane pricing reduces capex 22%', time:'Yesterday', unread:true},
+  {type:'customer', color:'#2D7D46', icon:'👤', title:'Customer profile updated', desc:'Giovanni pilot site — RAS effluent COD measurement updated by operator', time:'Yesterday', unread:false},
+  {type:'consult', color:'#1A6FA8', icon:'💬', title:'Consultation completed', desc:'Masseria Biologica Bari — BioLink site visit scheduled for 15 May 2025', time:'2 days ago', unread:false},
+];
+
+function buildNotifList() {
+  const list = document.getElementById('notif-list');
+  list.innerHTML = notifications.map(n=>`
+    <div onclick="markRead(this)" style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;cursor:pointer;background:${n.unread?'#FAFFFE':'#fff'};transition:background .15s;" onmouseover="this.style.background='var(--gray50)'" onmouseout="this.style.background='${n.unread?'#FAFFFE':'#fff'}'">
+      <div style="width:34px;height:34px;background:${n.color}18;border:1px solid ${n.color}40;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">${n.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+          <div style="font-size:12.5px;font-weight:500;color:var(--txt);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${n.title}</div>
+          ${n.unread?`<span style="width:7px;height:7px;background:${n.color};border-radius:50%;flex-shrink:0;"></span>`:''}
+        </div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${n.desc}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px;">${n.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+let notifOpen = false;
+function toggleNotif(btn) {
+  notifOpen = !notifOpen;
+  const panel = document.getElementById('notif-panel');
+  const overlay = document.getElementById('notif-overlay');
+  if(notifOpen) {
+    buildNotifList();
+    panel.style.display='block';
+    overlay.style.display='block';
+  } else {
+    closeNotif();
+  }
+}
+function closeNotif() {
+  notifOpen=false;
+  document.getElementById('notif-panel').style.display='none';
+  document.getElementById('notif-overlay').style.display='none';
+}
+function markRead(el) {
+  el.style.background='#fff';
+  const dot = el.querySelector('span[style*="border-radius:50%"]');
+  if(dot) dot.remove();
+}
+function markAllRead() {
+  document.querySelectorAll('#notif-list > div').forEach(el=>{ el.style.background='#fff'; });
+  notifications.forEach(n=>n.unread=false);
+  document.getElementById('notif-dot').style.display='none';
+}
+
+// ─── FILE UPLOAD ───
+let uploadedFiles = [];
+function dzDragOver(e) { e.preventDefault(); document.getElementById('drop-zone').style.borderColor='var(--g500)'; document.getElementById('drop-zone').style.background='var(--g50)'; }
+function dzDragLeave(e) { document.getElementById('drop-zone').style.borderColor='var(--border)'; document.getElementById('drop-zone').style.background='var(--gray50)'; }
+function dzDrop(e) { e.preventDefault(); dzDragLeave(e); handleFiles(e.dataTransfer.files); }
+
+function handleFiles(files) {
+  const list = document.getElementById('file-list');
+  const icons = {pdf:'📄',xlsx:'📊',csv:'📋',jpg:'🖼',png:'🖼',docx:'📝'};
+  Array.from(files).forEach(f=>{
+    uploadedFiles.push(f.name);
+    const ext = f.name.split('.').pop().toLowerCase();
+    const icon = icons[ext]||'📎';
+    const size = f.size < 1024*1024 ? (f.size/1024).toFixed(0)+'KB' : (f.size/1024/1024).toFixed(1)+'MB';
+    const id = 'file-'+Date.now()+Math.random().toString(36).slice(2,5);
+    const div = document.createElement('div');
+    div.id=id;
+    div.style.cssText='display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--gray50);border:1px solid var(--border);border-radius:8px;animation:fadeUp .2s ease;';
+    div.innerHTML=`
+      <div style="font-size:18px;">${icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:500;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.name}</div>
+        <div style="font-size:10.5px;color:var(--muted);">${size} · ${ext.toUpperCase()}</div>
+      </div>
+      <div style="width:60px;height:4px;background:var(--gray200);border-radius:10px;overflow:hidden;flex-shrink:0;">
+        <div id="prog-${id}" style="height:100%;background:var(--g500);width:0%;border-radius:10px;transition:width 1.2s ease;"></div>
+      </div>
+      <button onclick="removeFile('${id}','${f.name}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;padding:2px;line-height:1;flex-shrink:0;" onmouseover="this.style.color='var(--r500)'" onmouseout="this.style.color='var(--muted)'">✕</button>
+    `;
+    list.appendChild(div);
+    setTimeout(()=>{ const p=document.getElementById('prog-'+id); if(p) p.style.width='100%'; },50);
+  });
+}
+function removeFile(id, name) {
+  const el=document.getElementById(id); if(el) el.remove();
+  uploadedFiles=uploadedFiles.filter(f=>f!==name);
+}
+
+// ─── CONSULTATION MODAL ───
+function showConsultationModal() {
+  const company = document.getElementById('f-company').value||'Your Company';
+  const pathway = document.getElementById('res-pathway-name').textContent||'—';
+  document.getElementById('consult-company').textContent=company;
+  document.getElementById('consult-pathway').textContent=pathway;
+  document.getElementById('consult-files').textContent=uploadedFiles.length>0?uploadedFiles.slice(0,2).join(', ')+(uploadedFiles.length>2?' +more':''):'None attached';
+  document.getElementById('consult-ref').textContent='CIQ-2025-'+Math.floor(1000+Math.random()*9000);
+  const m=document.getElementById('consult-modal');
+  m.style.display='flex';
+  // add to notifications
+  notifications.unshift({type:'consult',color:'#1A6FA8',icon:'💬',title:'New consultation request',desc:company+' · '+pathway+' pathway · files: '+(uploadedFiles.length||0),time:'Just now',unread:true});
+}
+function closeConsultModal() { document.getElementById('consult-modal').style.display='none'; }
+
+// ─── QR MODAL ───
+function showQR(batch, product) {
+  document.getElementById('qr-title').textContent='Circular Passport QR — '+batch;
+  document.getElementById('qr-product-name').textContent=product;
+  document.getElementById('qr-batch-id').textContent='Batch: '+batch;
+  const m=document.getElementById('qr-modal'); m.style.display='flex';
+}
+function closeQR() { document.getElementById('qr-modal').style.display='none'; }
+
+// ─── PASSPORT MODAL ───
+const passportData = {
+  alg007:{id:'CP-2025-ALG-007',name:'Chlorella vulgaris Dried Biomass',origin:'RAS Tank Effluent · BioLink Pilot · Massafra, Puglia',reg:'EU 2020/741 · Feed Hyg. 183/2005 · Novel Feed 2017/893'},
+  str004:{id:'CP-2025-STR-004',name:'CE-marked Struvite MgNH₄PO₄·6H₂O',origin:'RAS Sludge Concentrate · BioLink Pilot · Massafra, Puglia',reg:'FPR 2019/1009 CMC 4 · Nitrates Directive 91/676 · IED 2010/75/EU'},
+  h2o012:{id:'CP-2025-H2O-012',name:'EU Class B Reclaimed Water',origin:'Post-algae polishing (Sand + UV) · BioLink Pilot · Massafra',reg:'EU 2020/741 Class B · ARPA Puglia discharge permit'},
+};
+function showPassport(key) {
+  const d=passportData[key]||passportData.alg007;
+  document.getElementById('pp-id').textContent='ID: '+d.id;
+  document.getElementById('pp-name').textContent=d.name;
+  document.getElementById('pp-origin').textContent='Origin: '+d.origin;
+  document.getElementById('pp-reg').textContent=d.reg;
+  document.getElementById('passport-modal').style.display='flex';
+}
+function closePassport() { document.getElementById('passport-modal').style.display='none'; }
+
+// ─── QUOTE MODAL ───
+function requestQuote(product) {
+  document.getElementById('quote-product-label').textContent=product;
+  document.getElementById('quote-form-view').style.display='block';
+  document.getElementById('quote-success-view').style.display='none';
+  document.getElementById('quote-modal').style.display='flex';
+}
+function submitQuote() {
+  document.getElementById('quote-form-view').style.display='none';
+  document.getElementById('quote-success-view').style.display='block';
+  notifications.unshift({type:'buy',color:'#7C3AED',icon:'🛒',title:'New quote request',desc:(document.getElementById('q-company').value||'Anonymous buyer')+' · '+document.getElementById('quote-product-label').textContent,time:'Just now',unread:true});
+}
+function closeQuote() { document.getElementById('quote-modal').style.display='none'; }
+
+// ─── MARKET FILTER ───
+function filterMarket(el, cat) {
+  document.querySelectorAll('#page-market .tab').forEach(t=>{
+    t.style.background='none';t.style.color='var(--muted)';t.style.fontWeight='400';t.style.boxShadow='none';
+  });
+  el.style.background='#fff';el.style.color='var(--txt)';el.style.fontWeight='500';el.style.boxShadow='0 1px 4px rgba(0,0,0,.08)';
+  document.querySelectorAll('#market-grid > .card').forEach(c=>{
+    c.style.display=(cat==='all'||c.dataset.category===cat)?'':'none';
+  });
+}
+
+// close modals on ESC
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeConsultModal();closeQR();closePassport();closeQuote();closeNotif();} });
+
+
+function resetForm() {
+  document.getElementById('result-panel').classList.remove('show');
+  document.getElementById('results-placeholder').style.display='flex';
+  document.getElementById('si3').className='step-num pending';document.getElementById('si3').textContent='3';
+  document.getElementById('sl3').className='step-label';
+  document.getElementById('sline2').className='step-line';
+  document.getElementById('live-check-box').style.display='none';
+}
+
+// ─── SCORING BUTTON ───
+function animateScoring(btn) {
+  const orig = btn.innerHTML;
+  btn.innerHTML='<span style="display:inline-block;animation:spin .8s linear infinite;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;width:12px;height:12px;"></span> Scoring...';
+  btn.disabled=true;
+  setTimeout(()=>{btn.innerHTML=orig;btn.disabled=false;const ts=document.getElementById('last-scored-ts');if(ts){const now=new Date();ts.textContent='Last scored: '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})+' (just now)';}},2200);
+}
+
+// ─── INIT live check on load ───
+liveCheck();
+
+// ─── MOBILE SIDEBAR TOGGLE ───
+function toggleSidebar() {
+  const sidebar  = document.getElementById('sidebar');
+  const overlay  = document.getElementById('sidebar-overlay');
+  const btns     = document.querySelectorAll('.hamburger');
+  const isOpen   = sidebar.classList.contains('open');
+  if (isOpen) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+    btns.forEach(b => b.classList.remove('open'));
+  } else {
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+    btns.forEach(b => b.classList.add('open'));
+  }
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+  document.querySelectorAll('.hamburger').forEach(b => b.classList.remove('open'));
+}
+// Close sidebar when a nav item is tapped on mobile
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    if (window.innerWidth <= 900) closeSidebar();
+  });
+});
+
+// ─── REAL-TIME TIMESTAMP ───
+function updateDashboardTime() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+  const ts = document.getElementById('last-scored-ts');
+  if (ts && !ts.textContent.includes('just now')) {
+    ts.textContent = 'Last scored: ' + dateStr + ' ' + timeStr;
+  }
+}
+updateDashboardTime();
+setInterval(updateDashboardTime, 60000);
+</script>
+<!-- ═══════ LOGOUT MODAL ═══════ -->
+<div id="logout-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(6px);">
+  <div style="background:#fff;border-radius:16px;padding:32px;max-width:380px;width:92%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.2);animation:fadeUp .2s ease;">
+    <div style="width:56px;height:56px;background:#FEE2E2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+      <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="#DC2626" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+    </div>
+    <div style="font-family:'Syne',sans-serif;font-size:19px;font-weight:600;color:#0F2518;margin-bottom:7px;">Sign out?</div>
+    <div style="font-size:13px;color:#8F9A8F;line-height:1.6;margin-bottom:22px;">Your data is saved automatically. You'll be redirected to the CircularIQ homepage.</div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="closeLogout()" style="flex:1;background:#F0F4F1;color:#4A5C4A;border:1px solid #D9DDD9;padding:10px;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;">Cancel</button>
+      <button onclick="confirmLogout()" style="flex:2;background:#DC2626;color:#fff;border:none;padding:10px;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600;">Yes, sign out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ LOGIN SCREEN ═══════ -->
+<div id="login-screen" style="display:none;position:fixed;inset:0;background:#0A1A0F;z-index:1000;flex-direction:column;align-items:center;justify-content:center;">
+  <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:40px;width:380px;text-align:center;">
+    <div style="width:52px;height:52px;background:#2D7D46;border-radius:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
+      <svg width="26" height="26" viewBox="0 0 18 18" fill="none"><path d="M9 2L14.196 5V11L9 14L3.804 11V5L9 2Z" fill="white" fill-opacity=".9"/><path d="M9 5.5L11.5 7V10L9 11.5L6.5 10V7L9 5.5Z" fill="#0A1628"/></svg>
+    </div>
+    <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:5px;">Welcome back</div>
+    <div style="font-size:12.5px;color:rgba(255,255,255,.4);margin-bottom:24px;">Sign in to CircularIQ Admin</div>
+    <input id="ls-email" type="email" value="admin@circulariq.it" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:11px 14px;font-size:13px;font-family:'DM Sans',sans-serif;color:#fff;margin-bottom:10px;outline:none;">
+    <input id="ls-pass" type="password" value="••••••••" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:11px 14px;font-size:13px;font-family:'DM Sans',sans-serif;color:#fff;margin-bottom:14px;outline:none;">
+    <button onclick="doLogin()" style="width:100%;background:#2D7D46;color:#fff;border:none;padding:12px;border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;margin-bottom:12px;">Sign In →</button>
+    <a href="CircularIQ_Landing.html" style="font-size:12px;color:rgba(255,255,255,.3);text-decoration:none;">← Back to CircularIQ home</a>
+  </div>
+</div>
+
+<script>
+function openLogout(){document.getElementById('logout-modal').style.display='flex';}
+function closeLogout(){document.getElementById('logout-modal').style.display='none';}
+function confirmLogout(){
+  document.getElementById('logout-modal').style.display='none';
+  window.location.href = 'CircularIQ_Landing.html';
+}
+function doLogin(){document.getElementById('login-screen').style.display='none';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLogout();});
+</script>
+</body>
+</html>

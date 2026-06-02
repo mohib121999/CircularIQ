@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CircularIQ — Customer Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+/* ══════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════ */
+:root{
+  --navy:#0B1628; --navy2:#0F1E35; --navy3:#162843; --navy4:#1C3050;
+  --teal:#0E7C6B; --teal2:#12A088; --teal3:#1AC4A8; --teal-g:#D0F5EE;
+  --gold:#C9A84C; --gold2:#E8C96A; --gold-g:#FDF6E3;
+  --blue:#2B6CB0; --blue2:#3B82C4; --blue-g:#EBF4FF;
+  --amber:#D97706; --amber-g:#FFF7ED;
+  --red:#DC2626; --red-g:#FEF2F2;
+  --green:#16A34A; --green-g:#F0FDF4;
+  --purple:#7C3AED; --purple-g:#F5F3FF;
+  --txt:#1A2636; --txt2:#3D5166; --muted:#7A8FA6;
+  --border:#E2EAF0; --card:#FFFFFF; --bg:#F4F7FA;
+  --shadow:0 2px 16px rgba(11,22,40,.07);
+  --shadow2:0 8px 32px rgba(11,22,40,.13);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5;display:flex;min-height:0;}
+
+/* ══════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════ */
+.sidebar{
+  width:230px;height:100vh;
+  background:var(--navy);
+  display:flex;flex-direction:column;
+  flex-shrink:0;position:fixed;
+  top:0;left:0;bottom:0;z-index:200;
+  overflow:hidden;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.sidebar::-webkit-scrollbar{display:none;}
+.logo-area{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.07);}
+.logo-badge{display:flex;align-items:center;gap:9px;}
+.logo-icon{width:34px;height:34px;background:var(--teal);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-name{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:#fff;letter-spacing:-.3px;}
+.logo-sub{font-size:9.5px;color:var(--teal3);margin-top:3px;letter-spacing:.6px;text-transform:uppercase;}
+.company-strip{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);}
+.company-label{font-size:9.5px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px;}
+.company-name{font-size:12.5px;color:rgba(255,255,255,.85);font-weight:500;}
+.company-sector{display:inline-flex;align-items:center;gap:4px;margin-top:4px;background:rgba(26,196,168,.15);border:1px solid rgba(26,196,168,.2);border-radius:10px;padding:2px 8px;font-size:10px;color:var(--teal3);}
+.nav-section{padding:16px 10px;flex:1;overflow-y:auto;min-height:0;scrollbar-width:none;-ms-overflow-style:none;}
+.nav-section::-webkit-scrollbar{display:none;}
+.nav-group-label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.25);padding:0 8px;margin:14px 0 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,.45);font-size:13px;font-weight:400;transition:all .15s;margin-bottom:2px;user-select:none;position:relative;}
+.nav-item:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.06);}
+.nav-item.active{background:rgba(14,124,107,.25);color:var(--teal3);font-weight:500;border:1px solid rgba(26,196,168,.15);}
+.nav-item.active::before{content:'';position:absolute;left:0;top:7px;bottom:7px;width:3px;background:var(--teal3);border-radius:0 3px 3px 0;}
+.nav-icon{width:15px;height:15px;flex-shrink:0;opacity:.6;}
+.nav-item.active .nav-icon,.nav-item:hover .nav-icon{opacity:1;}
+.nav-badge{margin-left:auto;font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:9px;}
+.nb-green{background:rgba(26,196,168,.2);color:var(--teal3);}
+.nb-gold{background:rgba(201,168,76,.2);color:var(--gold2);}
+.nb-red{background:rgba(220,38,38,.2);color:#FC8181;}
+.sidebar-footer{padding:14px 10px;border-top:1px solid rgba(255,255,255,.07);}
+.score-footer{padding:10px 12px;background:rgba(255,255,255,.04);border-radius:8px;margin-bottom:10px;}
+.sf-label{font-size:9.5px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.sf-bar{height:4px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden;margin-bottom:4px;}
+.sf-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal3));border-radius:10px;width:74%;}
+.sf-val{font-family:'Fraunces',serif;font-size:14px;font-weight:600;color:var(--teal3);}
+.sf-sub{font-size:9.5px;color:rgba(255,255,255,.3);}
+.user-row{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;}
+.user-ava{width:30px;height:30px;background:var(--navy4);border:2px solid rgba(255,255,255,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:11px;font-weight:600;color:rgba(255,255,255,.7);flex-shrink:0;}
+.user-name{font-size:12px;color:rgba(255,255,255,.75);font-weight:500;}
+.user-role{font-size:10px;color:rgba(255,255,255,.3);}
+.logout-btn{display:flex;align-items:center;gap:6px;width:100%;background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.2);color:rgba(255,120,120,.8);padding:8px 12px;border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;transition:all .2s;margin-top:8px;justify-content:center;}
+.logout-btn:hover{background:rgba(220,38,38,.2);color:#FCA5A5;}
+
+/* ══════════════════════════════════════
+   MAIN LAYOUT
+══════════════════════════════════════ */
+.main{margin-left:230px;flex:1;display:flex;flex-direction:column;height:100vh;min-height:0;overflow:hidden;}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 26px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 1px 0 var(--border);z-index:10;}
+.tb-left{display:flex;flex-direction:column;}
+.page-title{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--txt);}
+.page-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.btn-primary{background:var(--teal);color:#fff;border:none;padding:8px 15px;border-radius:8px;font-size:12.5px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s;white-space:nowrap;}
+.btn-primary:hover{background:var(--teal2);}
+.btn-secondary{background:transparent;color:var(--txt2);border:1px solid var(--border);padding:7px 13px;border-radius:8px;font-size:12.5px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .15s;white-space:nowrap;}
+.btn-secondary:hover{background:var(--bg);}
+.live-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);padding:5px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;}
+.live-dot{width:6px;height:6px;background:var(--teal3);border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.icon-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:8px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;position:relative;}
+.icon-btn:hover{background:var(--bg);}
+.notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--red);border-radius:50%;border:2px solid #fff;}
+
+/* ══════════════════════════════════════
+   PAGE SYSTEM
+══════════════════════════════════════ */
+.page-scroll{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;-webkit-overflow-scrolling:touch;}
+.page{display:none;flex-direction:column;flex:1;min-height:0;}
+.page.active{display:flex;animation:fadeUp .3s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.content{padding:22px 26px;display:flex;flex-direction:column;gap:20px;padding-bottom:36px;}
+
+/* ══════════════════════════════════════
+   HERO STRIP (inside overview page)
+══════════════════════════════════════ */
+.hero-strip{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 50%,#0D2240 100%);padding:28px 26px;position:relative;overflow:hidden;flex-shrink:0;}
+.hero-strip::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='52' height='52' viewBox='0 0 52 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%230E7C6B' fill-opacity='0.05'%3E%3Cpath d='M26 0l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z'/%3E%3C/g%3E%3C/svg%3E");}
+.hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;}
+.hero-greeting{font-size:10.5px;color:var(--teal3);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:5px;}
+.hero-title{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:#fff;line-height:1.2;margin-bottom:6px;}
+.hero-title em{color:var(--teal3);font-style:italic;}
+.hero-sub{font-size:12.5px;color:rgba(255,255,255,.45);line-height:1.6;max-width:400px;}
+.insight-banner{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);border-radius:9px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-top:14px;}
+.ib-icon{width:30px;height:30px;background:rgba(201,168,76,.2);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ib-txt{font-size:12px;color:rgba(255,255,255,.75);line-height:1.5;}
+.ib-txt strong{color:var(--gold2);}
+
+/* ══════════════════════════════════════
+   KPI ROW
+══════════════════════════════════════ */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;min-width:0;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;transition:box-shadow .2s,transform .2s;cursor:default;min-width:0;}
+.kpi:hover{box-shadow:var(--shadow2);transform:translateY(-1px);}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0;}
+.kpi.t::after{background:var(--teal3);}
+.kpi.g::after{background:var(--green);}
+.kpi.gold::after{background:var(--gold);}
+.kpi.r::after{background:var(--red);}
+.kpi.b::after{background:var(--blue2);}
+.kpi.p::after{background:var(--purple);}
+.kpi-label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;}
+.kpi-val{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--txt);line-height:1;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.kpi-val.t{color:var(--teal);}
+.kpi-val.g{color:var(--green);}
+.kpi-val.r{color:var(--red);}
+.kpi-val.gold{color:var(--gold);}
+.kpi-meta{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.trend{font-size:10.5px;font-weight:600;padding:2px 6px;border-radius:4px;}
+.trend.up{background:#DCFCE7;color:#166534;}
+.trend.down{background:var(--red-g);color:var(--red);}
+.trend.warn{background:var(--amber-g);color:#92400E;}
+.trend.neu{background:var(--bg);color:var(--muted);}
+
+/* ══════════════════════════════════════
+   CARDS
+══════════════════════════════════════ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);}
+.card-head{padding:15px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.card-title{font-family:'Fraunces',serif;font-size:14px;font-weight:600;color:var(--txt);}
+.card-sub-txt{font-size:11px;color:var(--muted);margin-top:2px;}
+.card-body{padding:18px;}
+
+/* ══════════════════════════════════════
+   BADGES
+══════════════════════════════════════ */
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;}
+.badge-best{background:var(--teal-g);color:var(--teal);border:1px solid rgba(14,124,107,.2);}
+.badge-rec{background:var(--blue-g);color:var(--blue);border:1px solid rgba(43,108,176,.2);}
+.badge-viable{background:var(--purple-g);color:var(--purple);border:1px solid rgba(124,58,237,.15);}
+.badge-cond{background:var(--amber-g);color:#C2410C;border:1px solid rgba(217,119,6,.2);}
+.badge-blocked{background:var(--red-g);color:var(--red);border:1px solid rgba(220,38,38,.15);}
+.badge-gold{background:var(--gold-g);color:var(--gold);border:1px solid rgba(201,168,76,.2);}
+
+/* ══════════════════════════════════════
+   BEST OPPORTUNITY CARD
+══════════════════════════════════════ */
+.best-card{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 100%);border-radius:12px;padding:24px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(11,22,40,.18);min-width:0;}
+.best-card::before{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;background:radial-gradient(circle,rgba(14,124,107,.2) 0%,transparent 70%);}
+.best-card::after{content:'';position:absolute;bottom:-50px;left:35%;width:200px;height:200px;background:radial-gradient(circle,rgba(201,168,76,.08) 0%,transparent 70%);}
+.bc-tag{display:inline-flex;align-items:center;gap:5px;background:var(--teal);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;}
+.bc-name{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;}
+.bc-why{font-size:12.5px;color:rgba(255,255,255,.55);margin-bottom:18px;line-height:1.6;max-width:500px;}
+.bc-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;position:relative;z-index:1;min-width:0;}
+.bcm{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:13px 15px;min-width:0;}
+.bcm-label{font-size:9.5px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.bcm-val{font-family:'Fraunces',serif;font-size:20px;font-weight:600;line-height:1;}
+.bcm-val.gold{color:var(--gold2);}
+.bcm-val.teal{color:var(--teal3);}
+.bcm-val.white{color:#fff;}
+.bcm-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;}
+.score-axes{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:relative;z-index:1;min-width:0;}
+.sa-row{display:flex;align-items:center;gap:8px;}
+.sa-label{font-size:11px;color:rgba(255,255,255,.45);width:105px;flex-shrink:0;}
+.sa-bar{flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden;}
+.sa-fill{height:100%;border-radius:10px;transition:width 1.5s ease;}
+.sa-fill.t{background:var(--teal3);}
+.sa-fill.g{background:var(--gold2);}
+.sa-fill.b{background:#60A5FA;}
+.sa-fill.p{background:#C084FC;}
+.sa-val{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.5);width:24px;text-align:right;flex-shrink:0;}
+
+/* ══════════════════════════════════════
+   OPPORTUNITIES LIST
+══════════════════════════════════════ */
+.opp-row{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px 15px;display:flex;align-items:center;gap:12px;transition:all .18s;cursor:pointer;position:relative;min-width:0;}
+.opp-row:hover{border-color:var(--teal2);box-shadow:0 4px 18px rgba(14,124,107,.1);transform:translateX(3px);}
+.opp-row.best{border-color:var(--teal2);background:var(--teal-g);}
+.opp-row.blocked{opacity:.5;}
+.opp-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;}
+.opp-name{font-family:'Fraunces',serif;font-size:13.5px;font-weight:600;color:var(--txt);margin-bottom:2px;}
+.opp-desc{font-size:11px;color:var(--muted);}
+.opp-mini-bar{height:3px;background:var(--border);border-radius:10px;overflow:hidden;margin-top:4px;}
+.opp-mini-fill{height:100%;border-radius:10px;}
+.opp-score{text-align:center;width:54px;flex-shrink:0;}
+.opp-score-num{font-family:'Fraunces',serif;font-size:18px;font-weight:700;}
+.opp-score-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
+.opp-rev{text-align:right;width:90px;flex-shrink:0;}
+.opp-rev-val{font-family:'Fraunces',serif;font-size:14px;font-weight:600;}
+.opp-rev-lbl{font-size:10px;color:var(--muted);}
+
+/* ══════════════════════════════════════
+   PARAM CARDS (wastewater profile)
+══════════════════════════════════════ */
+.param-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-width:0;}
+.param-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px 15px;transition:box-shadow .15s,transform .15s;min-width:0;}
+.param-card:hover{box-shadow:var(--shadow2);transform:translateY(-1px);}
+.pc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.pc-name{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:500;}
+.pc-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:9px;text-transform:uppercase;letter-spacing:.3px;}
+.pcb-good{background:var(--green-g);color:var(--green);}
+.pcb-warn{background:var(--amber-g);color:#C2410C;}
+.pcb-bad{background:var(--red-g);color:var(--red);}
+.pcb-info{background:var(--blue-g);color:var(--blue);}
+.pc-val{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--txt);line-height:1;margin-bottom:2px;}
+.pc-unit{font-size:10px;color:var(--muted);margin-bottom:7px;}
+.pc-bar{height:4px;background:var(--border);border-radius:10px;overflow:hidden;}
+.pc-fill{height:100%;border-radius:10px;transition:width 1.5s ease;}
+.bar-g{background:linear-gradient(90deg,#16A34A,#4ADE80);}
+.bar-b{background:linear-gradient(90deg,#2B6CB0,#60A5FA);}
+.bar-a{background:linear-gradient(90deg,#D97706,#FBBF24);}
+.bar-r{background:linear-gradient(90deg,#DC2626,#F87171);}
+.pc-hint{font-size:10.5px;color:var(--muted);margin-top:7px;line-height:1.4;}
+
+/* ══════════════════════════════════════
+   FINANCIAL
+══════════════════════════════════════ */
+.waterfall{display:flex;flex-direction:column;gap:7px;min-width:0;}
+.wf-row{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:8px;transition:background .12s;}
+.wf-row:hover{background:var(--bg);}
+.wf-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+.wf-inner{flex:1;min-width:0;}
+.wf-label{font-size:12.5px;color:var(--txt2);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wf-bar{height:4px;background:var(--border);border-radius:10px;overflow:hidden;}
+.wf-val{font-family:'DM Mono',monospace;font-size:12.5px;font-weight:500;flex-shrink:0;width:82px;text-align:right;}
+.wf-val.pos{color:var(--green);}
+.wf-val.neg{color:var(--red);}
+.wf-divider{height:1px;background:var(--border);margin:2px 0;}
+.wf-total{background:linear-gradient(90deg,rgba(14,124,107,.08),rgba(14,124,107,.03));border:1.5px solid rgba(14,124,107,.2);border-radius:10px;padding:13px 15px;display:flex;justify-content:space-between;align-items:center;}
+.wf-total-label{font-size:12px;font-weight:500;color:var(--teal);}
+.wf-total-val{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--teal);}
+.scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-width:0;}
+.sc{border-radius:10px;padding:14px;border:1.5px solid;text-align:center;transition:transform .15s;}
+.sc:hover{transform:translateY(-2px);}
+.sc.cons{background:#FFF7ED;border-color:#FED7AA;}
+.sc.cons .sc-lbl{color:#C2410C;}
+.sc.cons .sc-val{color:#C2410C;}
+.sc.exp{background:var(--green-g);border-color:#86EFAC;}
+.sc.exp .sc-lbl{color:#15803D;}
+.sc.exp .sc-val{color:var(--green);}
+.sc.best-sc{background:var(--teal-g);border-color:rgba(14,124,107,.3);}
+.sc.best-sc .sc-lbl{color:var(--teal);}
+.sc.best-sc .sc-val{color:var(--teal);}
+.sc-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:5px;}
+.sc-val{font-family:'Fraunces',serif;font-size:20px;font-weight:700;margin-bottom:2px;}
+.sc-pb{font-size:10.5px;color:var(--muted);}
+.sc-desc{font-size:9.5px;color:var(--muted);margin-top:4px;}
+
+/* ══════════════════════════════════════
+   SUSTAINABILITY
+══════════════════════════════════════ */
+.sustain-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.sustain-item:last-child{border-bottom:none;}
+.si-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.si-label{flex:1;font-size:12.5px;color:var(--txt2);font-weight:500;}
+.si-sub{font-size:10.5px;color:var(--muted);}
+.si-val{font-family:'Fraunces',serif;font-size:15px;font-weight:600;flex-shrink:0;}
+.si-bar{height:3px;background:var(--border);border-radius:10px;overflow:hidden;margin-top:3px;}
+
+/* ══════════════════════════════════════
+   MARKET PRICES
+══════════════════════════════════════ */
+.price-item{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:9px;transition:all .15s;}
+.price-item:hover{border-color:var(--teal2);background:#fff;}
+.price-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.price-name{font-size:11.5px;color:var(--txt2);}
+.price-val{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--txt);}
+.price-unit{font-size:10px;color:var(--muted);}
+.price-trend{font-size:10.5px;font-weight:600;flex-shrink:0;}
+.price-trend.up{color:var(--green);}
+.price-trend.down{color:var(--red);}
+
+/* ══════════════════════════════════════
+   INTELLIGENCE FLOW
+══════════════════════════════════════ */
+.flow-step{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;transition:all .2s;}
+.flow-step:hover{background:#fff;box-shadow:var(--shadow);}
+.flow-step.highlight{border-color:var(--teal2);background:var(--teal-g);}
+.flow-step.highlight-gold{border-color:rgba(201,168,76,.3);background:var(--gold-g);}
+.fs-icon{font-size:20px;flex-shrink:0;}
+.fs-name{font-size:12.5px;font-weight:500;color:var(--txt);}
+.fs-desc{font-size:10.5px;color:var(--muted);}
+
+/* ══════════════════════════════════════
+   CTA PAGE
+══════════════════════════════════════ */
+.cta-hero{background:linear-gradient(135deg,var(--navy) 0%,#0D2A42 50%,var(--navy2) 100%);border-radius:14px;padding:32px;position:relative;overflow:hidden;min-width:0;}
+.cta-hero::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(14,124,107,.18) 0%,transparent 70%);}
+.cta-hero::after{content:'';position:absolute;bottom:-60px;left:-30px;width:250px;height:250px;background:radial-gradient(circle,rgba(201,168,76,.09) 0%,transparent 70%);}
+.cta-title{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.2;position:relative;z-index:1;}
+.cta-title em{color:var(--teal3);font-style:italic;}
+.cta-sub{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;max-width:500px;position:relative;z-index:1;margin-bottom:18px;}
+.trust-badges{display:flex;gap:7px;flex-wrap:wrap;position:relative;z-index:1;margin-bottom:22px;}
+.trust-b{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 10px;font-size:10.5px;color:rgba(255,255,255,.6);}
+.cta-btns{display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:1;}
+.cta-btn-p{background:var(--teal);color:#fff;border:none;padding:12px 22px;border-radius:9px;font-size:13.5px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;}
+.cta-btn-p:hover{background:var(--teal2);box-shadow:0 6px 20px rgba(14,124,107,.4);}
+.cta-btn-s{background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15);padding:11px 20px;border-radius:9px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;}
+.cta-btn-s:hover{background:rgba(255,255,255,.14);}
+.cta-btn-g{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);border:none;padding:11px 20px;border-radius:9px;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;}
+.cta-btn-g:hover{box-shadow:0 6px 20px rgba(201,168,76,.4);}
+.contact-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;min-width:0;}
+.contact-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;transition:all .2s;}
+.contact-card:hover{box-shadow:var(--shadow2);transform:translateY(-2px);}
+.cc-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 12px;}
+.cc-title{font-family:'Fraunces',serif;font-size:14px;font-weight:600;color:var(--txt);margin-bottom:5px;}
+.cc-sub{font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:14px;}
+
+/* ══════════════════════════════════════
+   MODALS
+══════════════════════════════════════ */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;animation:fadeUp .2s ease;}
+.modal-box{background:#fff;border-radius:16px;padding:32px;max-width:400px;width:92%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.2);}
+.modal-icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.modal-title{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--txt);margin-bottom:7px;}
+.modal-sub{font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:22px;}
+.modal-meta{background:var(--teal-g);border:1px solid rgba(14,124,107,.2);border-radius:9px;padding:12px;text-align:left;margin-bottom:18px;font-size:11.5px;color:var(--txt2);line-height:1.7;}
+.modal-btns{display:flex;gap:9px;}
+.mbtn-cancel{flex:1;background:var(--bg);color:var(--txt2);border:1px solid var(--border);padding:10px;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;}
+.mbtn-cancel:hover{background:var(--border);}
+.mbtn-confirm{flex:2;background:var(--red);color:#fff;border:none;padding:10px;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600;}
+.mbtn-confirm:hover{background:#B91C1C;}
+
+/* login screen */
+.login-screen{display:none;position:fixed;inset:0;background:var(--navy);z-index:1000;flex-direction:column;align-items:center;justify-content:center;}
+.login-screen.show{display:flex;animation:fadeUp .4s ease;}
+.login-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:40px;width:380px;text-align:center;}
+.lb-logo{width:52px;height:52px;background:var(--teal);border-radius:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.lb-title{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:#fff;margin-bottom:5px;}
+.lb-sub{font-size:12.5px;color:rgba(255,255,255,.4);margin-bottom:26px;}
+.lb-input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:11px 14px;font-size:13px;font-family:'DM Sans',sans-serif;color:#fff;margin-bottom:10px;outline:none;transition:border-color .15s;}
+.lb-input:focus{border-color:var(--teal3);}
+.lb-input::placeholder{color:rgba(255,255,255,.25);}
+.lb-btn{width:100%;background:var(--teal);color:#fff;border:none;padding:12px;border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;margin-top:4px;}
+.lb-btn:hover{background:var(--teal2);}
+.lb-hint{font-size:10.5px;color:rgba(255,255,255,.2);margin-top:14px;}
+
+/* ══════════════════════════════════════
+   LAYOUT HELPERS
+══════════════════════════════════════ */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;min-width:0;}
+.grid2-wide{display:grid;grid-template-columns:2fr 1fr;gap:16px;min-width:0;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;min-width:0;}
+.gap-col{display:flex;flex-direction:column;gap:14px;min-width:0;min-height:0;}
+.mono{font-family:'DM Mono',monospace;font-size:12px;}
+.divider{height:1px;background:var(--border);margin:4px 0;}
+.section-eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-bottom:3px;}
+.section-title{font-family:'Fraunces',serif;font-size:17px;font-weight:600;color:var(--txt);margin-bottom:2px;}
+.section-sub{font-size:12px;color:var(--muted);}
+.chart-wrap{position:relative;}
+
+/* ─── HAMBURGER ─── */
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;cursor:pointer;padding:8px;flex-shrink:0;}
+.hamburger span{display:block;height:2px;background:rgba(255,255,255,.8);border-radius:2px;transition:all .25s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:190;backdrop-filter:blur(2px);}
+.sidebar-overlay.show{display:block;}
+
+/* ══════════════════════════════════════
+   RESPONSIVE — CUSTOMER DASHBOARD
+══════════════════════════════════════ */
+@media (max-width: 900px) {
+  .sidebar{transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .hamburger{display:flex;}
+
+  /* Topbar */
+  .topbar{padding:0 14px;gap:8px;}
+  .tb-right{gap:6px;}
+  .tb-right .btn-secondary{display:none;}
+  .page-sub{display:none;}
+
+  /* KPI → 2 columns */
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+
+  /* All multi-col grids → 1-2 col */
+  .grid2{grid-template-columns:1fr;}
+  .grid2-wide{grid-template-columns:1fr;}
+  .grid3{grid-template-columns:1fr 1fr;}
+  .param-grid{grid-template-columns:1fr 1fr;}
+  .scenario-grid{grid-template-columns:1fr 1fr 1fr;}
+  .contact-cards{grid-template-columns:1fr;}
+  .bc-metrics{grid-template-columns:1fr 1fr;}
+  .score-axes{grid-template-columns:1fr;}
+
+  /* Best card hero stack */
+  .best-card .bc-metrics{grid-template-columns:1fr 1fr 1fr;}
+
+  /* Content */
+  .content{padding:14px 14px 40px;}
+
+  /* Opp rows */
+  .opp-rev{display:none;}
+}
+
+@media (max-width: 600px) {
+  /* KPI → 2 col (tight) */
+  .kpi-row{grid-template-columns:1fr 1fr;}
+  .kpi-val{font-size:18px;}
+  .kpi{padding:12px 14px;}
+
+  /* Grids → 1 col */
+  .grid2{grid-template-columns:1fr;}
+  .grid2-wide{grid-template-columns:1fr;}
+  .grid3{grid-template-columns:1fr;}
+  .param-grid{grid-template-columns:1fr 1fr;}
+  .scenario-grid{grid-template-columns:1fr;}
+  .contact-cards{grid-template-columns:1fr;}
+  .bc-metrics{grid-template-columns:1fr 1fr;}
+
+  /* Hero strip */
+  .hero-strip{padding:20px 16px;}
+  .hero-inner{grid-template-columns:1fr;gap:16px;}
+  .hero-inner > svg{display:none;}
+  .hero-title{font-size:20px;}
+  .hero-sub{font-size:12px;}
+  .insight-banner{display:none;}
+
+  /* Topbar */
+  .topbar{height:52px;padding:0 12px;}
+  .page-title{font-size:13px;}
+  .btn-primary{padding:7px 10px;font-size:12px;}
+
+  /* Tables scroll */
+  .card-body{overflow-x:auto;}
+  table{min-width:560px;}
+
+  /* Pathways list compact */
+  .opp-row{padding:10px 10px;}
+  .opp-icon{width:32px;height:32px;}
+
+  /* Content */
+  .content{padding:10px 10px 40px;gap:14px;}
+
+  /* Best card */
+  .best-card{padding:16px;}
+  .bc-name{font-size:17px;}
+  .score-axes{grid-template-columns:1fr;}
+  .sa-label{width:90px;font-size:10px;}
+
+  /* CTA page */
+  .cta-hero{padding:20px 16px;}
+  .cta-btns{flex-direction:column;}
+  .cta-btn-p,.cta-btn-s,.cta-btn-g{width:100%;justify-content:center;}
+  .trust-badges{gap:5px;}
+  .trust-b{font-size:9.5px;padding:3px 7px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════════ -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <div class="lb-logo">
+      <svg width="26" height="26" viewBox="0 0 18 18" fill="none"><path d="M9 2L14.196 5V11L9 14L3.804 11V5L9 2Z" fill="white" fill-opacity=".9"/><path d="M9 5.5L11.5 7V10L9 11.5L6.5 10V7L9 5.5Z" fill="#0A1628"/></svg>
+    </div>
+    <div class="lb-title">Welcome back</div>
+    <div class="lb-sub">Sign in to your CircularIQ portal</div>
+    <input class="lb-input" type="email" placeholder="Email address" value="mgmt@latteriapugliese.it">
+    <input class="lb-input" type="password" placeholder="Password" value="••••••••">
+    <button class="lb-btn" onclick="doLogin()">Sign In →</button>
+    <div class="lb-hint">CircularIQ · CIHEAM Bari × LUM University · Massafra, Puglia</div>
+    <div style="margin-top:12px;"><a href="CircularIQ_Landing.html" style="font-size:11.5px;color:rgba(255,255,255,.2);text-decoration:none;">← Back to CircularIQ home</a></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     LOGOUT MODAL
+════════════════════════════════════════ -->
+<div class="modal-overlay" id="logout-modal">
+  <div class="modal-box">
+    <div class="modal-icon" style="background:var(--red-g);">
+      <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="var(--red)" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+    </div>
+    <div class="modal-title">Sign out?</div>
+    <div class="modal-sub">Your data is saved automatically. You can sign back in at any time.</div>
+    <div class="modal-btns">
+      <button class="mbtn-cancel" onclick="closeLogout()">Cancel</button>
+      <button class="mbtn-confirm" onclick="confirmLogout()">Yes, sign out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     CTA SUCCESS MODAL
+════════════════════════════════════════ -->
+<div class="modal-overlay" id="cta-modal">
+  <div class="modal-box">
+    <div class="modal-icon" style="background:var(--teal-g);">
+      <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="var(--teal)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div class="modal-title" id="cta-title">Request Sent!</div>
+    <div class="modal-meta" id="cta-meta"></div>
+    <div class="modal-sub" id="cta-sub"></div>
+    <div class="modal-btns"><button class="mbtn-cancel" style="flex:2;" onclick="closeCTA()">Done</button></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════ -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="logo-area">
+    <div class="logo-badge">
+      <div class="logo-icon">
+        <svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M9 2L14.196 5V11L9 14L3.804 11V5L9 2Z" fill="white" fill-opacity=".9"/><path d="M9 5.5L11.5 7V10L9 11.5L6.5 10V7L9 5.5Z" fill="#0A1628"/></svg>
+      </div>
+      <div>
+        <div class="logo-name">CircularIQ</div>
+        <div class="logo-sub">Customer Portal</div>
+      </div>
+    </div>
+  </div>
+  <div class="company-strip">
+    <div class="company-label">My Company</div>
+    <div class="company-name">Latteria Pugliese S.r.l.</div>
+    <div class="company-sector">🐄 Dairy + Aquaculture</div>
+  </div>
+
+  <nav class="nav-section">
+    <div class="nav-group-label">My Dashboard</div>
+    <div class="nav-item active" data-page="overview" onclick="showPage('overview',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Overview
+    </div>
+    <div class="nav-item" data-page="profile" onclick="showPage('profile',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M1 5c2-2 4-2 6 0s4 2 6 0M1 11c2-2 4-2 6 0s4 2 6 0"/></svg>
+      Wastewater Profile
+      <span class="nav-badge nb-green">5 streams</span>
+    </div>
+    <div class="nav-item" data-page="pathways" onclick="showPage('pathways',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z"/></svg>
+      Opportunities
+    </div>
+    <div class="nav-item" data-page="financial" onclick="showPage('financial',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M2 13V6l6-4 6 4v7H2z"/><path d="M6 13V9h4v4"/></svg>
+      Financial Impact
+      <span class="nav-badge nb-gold">+€217K</span>
+    </div>
+    <div class="nav-item" data-page="sustainability" onclick="showPage('sustainability',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg>
+      Sustainability
+    </div>
+    <div class="nav-group-label">Actions</div>
+    <div class="nav-item" data-page="consultation" onclick="showPage('consultation',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M2 2h12v10H9l-3 3v-3H2z"/></svg>
+      Get Started
+      <span class="nav-badge nb-red">New</span>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="score-footer">
+      <div class="sf-label">Sustainability Score</div>
+      <div class="sf-bar"><div class="sf-fill"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <div><span class="sf-val">74</span><span style="font-size:10px;color:rgba(255,255,255,.3);">/100</span></div>
+        <div class="sf-sub">Good · improving</div>
+      </div>
+    </div>
+    <div class="user-row">
+      <div class="user-ava">LP</div>
+      <div>
+        <div class="user-name">Latteria Pugliese</div>
+        <div class="user-role">Customer · Massafra</div>
+      </div>
+    </div>
+    <a href="CircularIQ_Landing.html" style="display:flex;align-items:center;gap:6px;width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);padding:8px 12px;border-radius:7px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s;margin-top:8px;justify-content:center;text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      CircularIQ Home
+    </a>
+    <button class="logout-btn" onclick="openLogout()">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      Sign out
+    </button>
+  </div>
+</aside>
+
+<!-- ════════════════════════════════════════
+     MAIN
+════════════════════════════════════════ -->
+<main class="main">
+
+<!-- ════════════════════════════════
+     PAGE 1 — OVERVIEW
+════════════════════════════════ -->
+<div class="page active" id="page-overview">
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="tb-left"><div class="page-title">Overview</div><div class="page-sub">Your wastewater intelligence · last updated <span id="last-updated-ts">today 08:15</span></div></div>
+    <div class="tb-right">
+      <div class="live-pill"><span class="live-dot"></span>Live data</div>
+      <button class="btn-secondary" onclick="showCTA('report')">📄 Download Report</button>
+      <button class="btn-primary" onclick="showPage('consultation', document.querySelector('[data-page=consultation]'))">Get Started →</button>
+    </div>
+  </div>
+  <div class="page-scroll">
+    <!-- Hero strip -->
+    <div class="hero-strip">
+      <div class="hero-inner">
+        <div>
+          <div class="hero-greeting">Good morning, Latteria Pugliese</div>
+          <div class="hero-title">Your wastewater is worth<br><em>€217,000 per year.</em></div>
+          <div class="hero-sub">Right now you're paying to dispose of it. CircularIQ shows you exactly how to turn that cost into revenue — step by step.</div>
+          <div class="insight-banner">
+            <div class="ib-icon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--gold2)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div>
+            <div class="ib-txt">You spend <strong>€120,000/year</strong> on disposal. Switching to microalgae + struvite recovery generates <strong>+€217,000 net annually</strong> — a <strong>€337,000 reversal</strong> in value.</div>
+          </div>
+        </div>
+        <!-- Gauge SVG -->
+        <div style="text-align:center;flex-shrink:0;">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            <defs><linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#DC2626"/><stop offset="40%" style="stop-color:#D97706"/><stop offset="80%" style="stop-color:#0E7C6B"/><stop offset="100%" style="stop-color:#1AC4A8"/></linearGradient></defs>
+            <circle cx="80" cy="80" r="62" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="12" stroke-dasharray="313 391" stroke-dashoffset="-39" stroke-linecap="round"/>
+            <circle cx="80" cy="80" r="62" fill="none" stroke="url(#gGrad)" stroke-width="12" stroke-dasharray="232 391" stroke-dashoffset="-39" stroke-linecap="round"/>
+            <circle cx="80" cy="80" r="48" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+            <text x="80" y="74" text-anchor="middle" font-family="Fraunces,serif" font-size="28" font-weight="600" fill="white">74</text>
+            <text x="80" y="89" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9.5" fill="rgba(255,255,255,.4)" letter-spacing="1">SCORE / 100</text>
+            <text x="80" y="103" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9.5" fill="#1AC4A8" font-weight="500">Good · Improving</text>
+            <line x1="80" y1="80" x2="128" y2="50" stroke="white" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+            <circle cx="80" cy="80" r="3.5" fill="white" opacity=".8"/>
+          </svg>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);">Sustainability Index</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- KPI row -->
+      <div class="kpi-row">
+        <div class="kpi t"><div class="kpi-label">Daily Volume</div><div class="kpi-val">60.5 m³</div><div class="kpi-meta"><span class="trend up">4 active streams</span></div></div>
+        <div class="kpi r"><div class="kpi-label">Current Disposal Cost</div><div class="kpi-val r">−€120K</div><div class="kpi-meta"><span class="trend down">per year</span></div></div>
+        <div class="kpi gold"><div class="kpi-label">Potential Annual Value</div><div class="kpi-val gold">+€217K</div><div class="kpi-meta"><span class="trend up">Year 2 full op.</span></div></div>
+        <div class="kpi t"><div class="kpi-label">Best Pathway Score</div><div class="kpi-val">8.4<span style="font-size:14px;font-weight:400;color:var(--muted)">/10</span></div><div class="kpi-meta" style="color:var(--teal)">Microalgae production</div></div>
+      </div>
+
+      <!-- Best opportunity + ranked list -->
+      <div class="grid2-wide">
+        <div>
+          <div style="margin-bottom:12px;">
+            <div class="section-eyebrow" style="color:var(--gold);">Your best move right now</div>
+            <div class="section-title">Top Recommendation</div>
+          </div>
+          <div class="best-card">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;">
+              <div style="flex:1;">
+                <div class="bc-tag"><svg width="8" height="8" viewBox="0 0 9 9" fill="white"><polygon points="4.5,0.5 5.6,3.3 8.5,3.4 6.3,5.2 7.1,8 4.5,6.4 1.9,8 2.7,5.2 0.5,3.4 3.4,3.3"/></svg>#1 Best Pathway</div>
+                <div class="bc-name">Microalgae Production</div>
+                <div class="bc-why">Your RAS effluent (35 m³/day, COD 380 mg/L) is ideal for <em>Chlorella vulgaris</em>. The algae replaces your fishmeal purchases, closing your most expensive cost loop. No pre-treatment needed. Pilot ready in 6 months.</div>
+              </div>
+              <svg width="110" height="110" viewBox="0 0 110 110" style="flex-shrink:0;">
+                <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>
+                <circle cx="55" cy="55" r="46" fill="none" stroke="var(--teal3)" stroke-width="10" stroke-dasharray="243 289" stroke-linecap="round" stroke-dashoffset="72"/>
+                <text x="55" y="50" text-anchor="middle" font-family="Fraunces,serif" font-size="26" font-weight="700" fill="white">8.4</text>
+                <text x="55" y="65" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(255,255,255,.35)">SCORE/10</text>
+                <text x="55" y="78" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="var(--teal3)" font-weight="500">BEST ★</text>
+              </svg>
+            </div>
+            <div class="bc-metrics">
+              <div class="bcm"><div class="bcm-label">Annual Revenue</div><div class="bcm-val gold">€52,000</div><div class="bcm-sub">Biomass + fishmeal savings</div></div>
+              <div class="bcm"><div class="bcm-label">Payback Period</div><div class="bcm-val teal">3–5 yrs</div><div class="bcm-sub">Capex €130–200k</div></div>
+              <div class="bcm"><div class="bcm-label">Protein Content</div><div class="bcm-val white">61%</div><div class="bcm-sub">€600–1,800/t market</div></div>
+            </div>
+            <div class="score-axes">
+              <div class="sa-row"><span class="sa-label">💰 Economic (40%)</span><div class="sa-bar"><div class="sa-fill t" style="width:91%"></div></div><span class="sa-val">9.1</span></div>
+              <div class="sa-row"><span class="sa-label">⚙️ Technical (30%)</span><div class="sa-bar"><div class="sa-fill g" style="width:78%"></div></div><span class="sa-val">7.8</span></div>
+              <div class="sa-row"><span class="sa-label">📋 Regulatory (20%)</span><div class="sa-bar"><div class="sa-fill b" style="width:85%"></div></div><span class="sa-val">8.5</span></div>
+              <div class="sa-row"><span class="sa-label">🚚 Logistics (10%)</span><div class="sa-bar"><div class="sa-fill p" style="width:72%"></div></div><span class="sa-val">7.2</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gap-col">
+          <div class="card">
+            <div class="card-head"><div class="card-title">All Pathways</div><span class="badge badge-best">6 evaluated</span></div>
+            <div class="card-body" style="padding:14px;">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div class="opp-row best" style="padding:10px 12px;">
+                  <div class="opp-icon" style="background:rgba(14,124,107,.12);">🌿</div>
+                  <div style="flex:1;"><div class="opp-name" style="font-size:12.5px;">Microalgae</div><div class="opp-mini-bar"><div class="opp-mini-fill" style="width:84%;background:var(--teal);"></div></div></div>
+                  <div class="opp-score"><div class="opp-score-num" style="color:var(--teal);font-size:16px;">8.4</div></div>
+                  <div class="opp-rev"><div class="opp-rev-val" style="color:var(--green);font-size:12.5px;">+€52K</div></div>
+                  <span class="badge badge-best">Best</span>
+                </div>
+                <div class="opp-row" style="padding:10px 12px;">
+                  <div class="opp-icon" style="background:rgba(43,108,176,.1);">💎</div>
+                  <div style="flex:1;"><div class="opp-name" style="font-size:12.5px;">Struvite</div><div class="opp-mini-bar"><div class="opp-mini-fill" style="width:79%;background:var(--blue2);"></div></div></div>
+                  <div class="opp-score"><div class="opp-score-num" style="color:var(--blue2);font-size:16px;">7.9</div></div>
+                  <div class="opp-rev"><div class="opp-rev-val" style="color:var(--green);font-size:12.5px;">+€28K</div></div>
+                  <span class="badge badge-rec">Rec.</span>
+                </div>
+                <div class="opp-row" style="padding:10px 12px;">
+                  <div class="opp-icon" style="background:rgba(217,119,6,.1);">🔥</div>
+                  <div style="flex:1;"><div class="opp-name" style="font-size:12.5px;">Biogas</div><div class="opp-mini-bar"><div class="opp-mini-fill" style="width:72%;background:var(--amber);"></div></div></div>
+                  <div class="opp-score"><div class="opp-score-num" style="color:var(--amber);font-size:16px;">7.2</div></div>
+                  <div class="opp-rev"><div class="opp-rev-val" style="color:var(--green);font-size:12.5px;">+€18K</div></div>
+                  <span class="badge badge-rec">Rec.</span>
+                </div>
+                <div class="opp-row" style="padding:10px 12px;opacity:.5;">
+                  <div class="opp-icon" style="background:rgba(220,38,38,.08);">🧂</div>
+                  <div style="flex:1;"><div class="opp-name" style="font-size:12.5px;color:var(--red);">Cheese Brine</div><div class="opp-mini-bar"><div class="opp-mini-fill" style="width:100%;background:var(--red);"></div></div></div>
+                  <div class="opp-score"><div class="opp-score-num" style="color:var(--red);font-size:16px;">0.0</div></div>
+                  <div class="opp-rev"><div class="opp-rev-val" style="color:var(--red);font-size:12.5px;">—</div></div>
+                  <span class="badge badge-blocked">Blocked</span>
+                </div>
+                <button onclick="showPage('pathways', document.querySelector('[data-page=pathways]'))" class="btn-secondary" style="width:100%;justify-content:center;display:flex;margin-top:4px;">View all 6 pathways →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue chart + current vs potential -->
+      <div class="grid2">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Revenue by Pathway</div><div class="card-sub-txt">Annual € per valorisation route</div></div>
+          <div class="card-body"><div class="chart-wrap" style="height:210px;"><canvas id="ov-rev-chart" role="img" aria-label="Revenue by pathway bar chart"></canvas></div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Cost vs Value Potential</div><div class="card-sub-txt">Where you are vs. where you could be</div></div>
+          <div class="card-body"><div class="chart-wrap" style="height:210px;"><canvas id="ov-donut-chart" role="img" aria-label="Cost vs value donut chart"></canvas></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     PAGE 2 — WASTEWATER PROFILE
+════════════════════════════════ -->
+<div class="page" id="page-profile">
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="tb-left"><div class="page-title">Wastewater Profile</div><div class="page-sub">5 streams · 4 active · 1 blocked · Massafra site</div></div>
+    <div class="tb-right"><div class="live-pill"><span class="live-dot"></span>Sensor live</div></div>
+  </div>
+  <div class="page-scroll"><div class="content">
+    <div style="margin-bottom:4px;">
+      <div class="section-eyebrow" style="color:var(--teal);">Step 1 — Know Your Waste</div>
+      <div class="section-title">What's in your wastewater?</div>
+      <div class="section-sub">Each parameter tells us which valorisation pathways are possible — and which are blocked</div>
+    </div>
+    <!-- Stream selector tabs -->
+    <div class="card">
+      <div class="card-head">
+        <div><div class="card-title">Stream Analysis — RAS Tank Effluent (primary)</div><div class="card-sub-txt">35 m³/day · COD 380 mg/L · pH 7.1 · NaCl 0.5 g/L</div></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span style="font-size:10.5px;background:var(--green-g);color:var(--green);border:1px solid #86EFAC;padding:3px 8px;border-radius:9px;font-weight:600;">4 streams active</span>
+          <span style="font-size:10.5px;background:var(--red-g);color:var(--red);border:1px solid #FECACA;padding:3px 8px;border-radius:9px;font-weight:600;">1 blocked (brine)</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="param-grid">
+          <div class="param-card"><div class="pc-top"><span class="pc-name">COD</span><span class="pc-badge pcb-good">Low ✓</span></div><div class="pc-val">380</div><div class="pc-unit">mg/L · Chemical Oxygen Demand</div><div class="pc-bar"><div class="pc-fill bar-g" style="width:19%"></div></div><div class="pc-hint">✓ Ideal for algae. No pre-treatment needed. Range 200–600 mg/L is optimal for <em>Chlorella vulgaris</em>.</div></div>
+          <div class="param-card"><div class="pc-top"><span class="pc-name">TN — Total Nitrogen</span><span class="pc-badge pcb-good">Good ✓</span></div><div class="pc-val">55</div><div class="pc-unit">mg/L · nutrient driving algae protein</div><div class="pc-bar"><div class="pc-fill bar-g" style="width:55%"></div></div><div class="pc-hint">✓ Your 55 mg/L TN supports 61% protein content in your algae biomass — premium feed grade.</div></div>
+          <div class="param-card"><div class="pc-top"><span class="pc-name">TP — Total Phosphorus</span><span class="pc-badge pcb-good">Good ✓</span></div><div class="pc-val">14</div><div class="pc-unit">mg/L · struvite precursor</div><div class="pc-bar"><div class="pc-fill bar-b" style="width:47%"></div></div><div class="pc-hint">✓ Combined with sludge TP (95 mg/L), struvite recovery is highly viable at €420/t — CE-certified.</div></div>
+          <div class="param-card"><div class="pc-top"><span class="pc-name">pH</span><span class="pc-badge pcb-good">Optimal ✓</span></div><div class="pc-val">7.1</div><div class="pc-unit">neutral · no adjustment needed</div><div class="pc-bar"><div class="pc-fill bar-g" style="width:71%"></div></div><div class="pc-hint">✓ Target range 6.5–8.5 for all pathways. pH 7.1 is perfect — no neutralisation chemicals required.</div></div>
+          <div class="param-card"><div class="pc-top"><span class="pc-name">Salinity (NaCl)</span><span class="pc-badge pcb-good">Safe ✓</span></div><div class="pc-val">0.5</div><div class="pc-unit">g/L · well below 10 g/L hard gate</div><div class="pc-bar"><div class="pc-fill bar-g" style="width:5%"></div></div><div class="pc-hint">✓ No brine gate triggered. All 5 biological pathways remain open. (Cheese brine stream is isolated separately.)</div></div>
+          <div class="param-card" style="border-color:#FECACA;background:#FFF5F5;"><div class="pc-top"><span class="pc-name">Cheese Brine (Stream 3)</span><span class="pc-badge pcb-bad">Blocked ✗</span></div><div class="pc-val" style="color:var(--red);">150</div><div class="pc-unit">g/L NaCl · limit is 10 g/L</div><div class="pc-bar"><div class="pc-fill bar-r" style="width:100%"></div></div><div class="pc-hint" style="color:var(--red);">✗ Stream isolated. High salt destroys microorganisms. Phase 3 option: evaporation-crystallisation for salt recovery at €80–150/t.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- All 5 streams summary -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">All 5 Streams — Daily Load Summary</div><div class="card-sub-txt">Total volume · key parameters · recommended pathway per stream</div></div>
+      <div class="card-body" style="padding:0;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr style="border-bottom:1px solid var(--border);">
+            <th style="padding:10px 16px;text-align:left;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Stream</th>
+            <th style="padding:10px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Volume</th>
+            <th style="padding:10px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">COD</th>
+            <th style="padding:10px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">TN</th>
+            <th style="padding:10px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">pH</th>
+            <th style="padding:10px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Best Pathway</th>
+            <th style="padding:10px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;">Status</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border);transition:background .1s;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''"><td style="padding:12px 16px;font-size:13px;font-weight:500;">🐟 RAS Tank Effluent</td><td class="mono" style="padding:12px;color:var(--teal);">35 m³/d</td><td class="mono" style="padding:12px;">380</td><td class="mono" style="padding:12px;">55</td><td class="mono" style="padding:12px;">7.1</td><td style="padding:12px;font-size:12px;color:var(--teal);font-weight:500;">Microalgae</td><td style="padding:12px;"><span class="badge badge-best">Active</span></td></tr>
+            <tr style="border-bottom:1px solid var(--border);transition:background .1s;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''"><td style="padding:12px 16px;font-size:13px;font-weight:500;">🐟 RAS Sludge</td><td class="mono" style="padding:12px;color:var(--blue2);">2.5 m³/d</td><td class="mono" style="padding:12px;">1,200</td><td class="mono" style="padding:12px;color:var(--amber);">320</td><td class="mono" style="padding:12px;">7.3</td><td style="padding:12px;font-size:12px;color:var(--blue2);font-weight:500;">Struvite</td><td style="padding:12px;"><span class="badge badge-best">Active</span></td></tr>
+            <tr style="border-bottom:1px solid var(--border);transition:background .1s;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''"><td style="padding:12px 16px;font-size:13px;font-weight:500;">🧀 Cheese Whey</td><td class="mono" style="padding:12px;color:var(--amber);">12 m³/d</td><td class="mono" style="padding:12px;color:var(--red);">55,000</td><td class="mono" style="padding:12px;">180</td><td class="mono" style="padding:12px;color:var(--amber);">4.5</td><td style="padding:12px;font-size:12px;color:var(--amber);font-weight:500;">Biogas / WPC</td><td style="padding:12px;"><span class="badge badge-rec">Active</span></td></tr>
+            <tr style="border-bottom:1px solid var(--border);transition:background .1s;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''"><td style="padding:12px 16px;font-size:13px;font-weight:500;">🧹 CIP Washdown</td><td class="mono" style="padding:12px;">8 m³/d</td><td class="mono" style="padding:12px;">4,500</td><td class="mono" style="padding:12px;">40</td><td class="mono" style="padding:12px;color:var(--red);">11.2</td><td style="padding:12px;font-size:12px;color:var(--muted);font-weight:500;">Cost elimination</td><td style="padding:12px;"><span class="badge badge-viable">Caution</span></td></tr>
+            <tr style="transition:background .1s;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''"><td style="padding:12px 16px;font-size:13px;font-weight:500;">🧂 Cheese Brine</td><td class="mono" style="padding:12px;">2 m³/d</td><td class="mono" style="padding:12px;">800</td><td class="mono" style="padding:12px;">20</td><td class="mono" style="padding:12px;">6.8</td><td style="padding:12px;font-size:12px;color:var(--red);font-weight:500;">Isolated (Phase 3)</td><td style="padding:12px;"><span class="badge badge-blocked">Blocked</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 30-day trend chart -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">30-Day Volume Trends</div><div class="card-sub-txt">Daily m³ per stream</div></div>
+      <div class="card-body"><div class="chart-wrap" style="height:220px;"><canvas id="profile-trend-chart" role="img" aria-label="30-day volume trend line chart"></canvas></div></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ════════════════════════════════
+     PAGE 3 — OPPORTUNITIES
+════════════════════════════════ -->
+<div class="page" id="page-pathways">
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="tb-left"><div class="page-title">Valorisation Opportunities</div><div class="page-sub">6 pathways evaluated · ranked by CircularIQ score</div></div>
+    <div class="tb-right"><button class="btn-primary" onclick="showPage('consultation', document.querySelector('[data-page=consultation]'))">Request Consultation →</button></div>
+  </div>
+  <div class="page-scroll"><div class="content">
+    <div class="card" style="overflow:visible;">
+      <div class="card-body" style="padding:12px 18px;">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <div style="font-size:11.5px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;">Scoring Formula:</div>
+          <div class="mono" style="background:var(--bg);padding:7px 14px;border-radius:7px;border:1px solid var(--border);font-size:12.5px;">
+            Score = <span style="color:var(--teal)">Economic×0.40</span> + <span style="color:var(--blue2)">Technical×0.30</span> + <span style="color:var(--amber)">Regulatory×0.20</span> + <span style="color:var(--purple)">Logistics×0.10</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);">Any blocked regulation → score = 0 (removed from ranking)</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+
+      <!-- Pathway 1 -->
+      <div style="background:linear-gradient(135deg,var(--navy),var(--navy3));border-radius:13px;padding:20px;box-shadow:0 6px 24px rgba(11,22,40,.16);">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:20px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <span style="font-size:11px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.4);padding:2px 8px;border-radius:4px;font-family:DM Mono,monospace;">#1</span>
+              <span class="bc-tag"><svg width="8" height="8" viewBox="0 0 9 9" fill="white"><polygon points="4.5,0.5 5.6,3.3 8.5,3.4 6.3,5.2 7.1,8 4.5,6.4 1.9,8 2.7,5.2 0.5,3.4 3.4,3.3"/></svg>Best Pathway</span>
+            </div>
+            <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:3px;">🌿 Microalgae Production</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:16px;"><em>Chlorella vulgaris</em> · from RAS effluent · protein 61% · replaces fishmeal at €1,200–1,800/t</div>
+            <div class="bc-metrics" style="grid-template-columns:repeat(4,1fr);">
+              <div class="bcm"><div class="bcm-label">Revenue /yr</div><div class="bcm-val gold">€52K</div></div>
+              <div class="bcm"><div class="bcm-label">Market price</div><div class="bcm-val white" style="font-size:15px;">€600–1,800/t</div></div>
+              <div class="bcm"><div class="bcm-label">TRL Level</div><div class="bcm-val teal">6</div></div>
+              <div class="bcm"><div class="bcm-label">Payback</div><div class="bcm-val white" style="font-size:15px;">3–5 yr</div></div>
+            </div>
+            <div class="score-axes">
+              <div class="sa-row"><span class="sa-label">💰 Economic (40%)</span><div class="sa-bar"><div class="sa-fill t" style="width:91%"></div></div><span class="sa-val">9.1</span></div>
+              <div class="sa-row"><span class="sa-label">⚙️ Technical (30%)</span><div class="sa-bar"><div class="sa-fill g" style="width:78%"></div></div><span class="sa-val">7.8</span></div>
+              <div class="sa-row"><span class="sa-label">📋 Regulatory (20%)</span><div class="sa-bar"><div class="sa-fill b" style="width:85%"></div></div><span class="sa-val">8.5</span></div>
+              <div class="sa-row"><span class="sa-label">🚚 Logistics (10%)</span><div class="sa-bar"><div class="sa-fill p" style="width:72%"></div></div><span class="sa-val">7.2</span></div>
+            </div>
+          </div>
+          <div style="text-align:center;"><svg width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="38" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="9"/><circle cx="45" cy="45" r="38" fill="none" stroke="var(--teal3)" stroke-width="9" stroke-dasharray="201 238" stroke-linecap="round" stroke-dashoffset="60"/><text x="45" y="41" text-anchor="middle" font-family="Fraunces,serif" font-size="22" font-weight="700" fill="white">8.4</text><text x="45" y="55" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8.5" fill="var(--teal3)">BEST</text></svg>
+          <div style="font-size:9px;color:rgba(255,255,255,.25);margin-top:4px;">out of 6 pathways</div></div>
+        </div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+          <span style="font-size:10.5px;color:rgba(255,255,255,.3);">Regulations:</span>
+          <span style="font-size:10px;background:rgba(26,196,168,.15);border:1px solid rgba(26,196,168,.2);color:var(--teal3);padding:2px 7px;border-radius:4px;font-family:'DM Mono',monospace;">Feed Hyg. 183/2005</span>
+          <span style="font-size:10px;background:rgba(26,196,168,.15);border:1px solid rgba(26,196,168,.2);color:var(--teal3);padding:2px 7px;border-radius:4px;font-family:'DM Mono',monospace;">EU 2020/741</span>
+          <span style="font-size:10px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.2);color:var(--gold2);padding:2px 7px;border-radius:4px;font-family:'DM Mono',monospace;">Novel Feed 2017/893</span>
+        </div>
+      </div>
+
+      <!-- Pathways 2-5 compact -->
+      <div class="grid2">
+        <div class="card">
+          <div class="card-head"><div><div class="card-title">#2 · 💎 Struvite Fertiliser</div><div class="card-sub-txt">CE-marked MgNH₄PO₄ · FPR 2019/1009 · RAS sludge</div></div><span class="badge badge-rec">7.9/10</span></div>
+          <div class="card-body" style="padding:14px;">
+            <div class="score-axes" style="grid-template-columns:1fr;gap:6px;margin-bottom:12px;">
+              <div class="sa-row" style="--sa-c:var(--txt2)"><span class="sa-label" style="color:var(--muted);font-size:10.5px;">Economic (40%)</span><div class="sa-bar" style="background:var(--border);"><div style="height:100%;border-radius:10px;background:var(--teal);width:82%;transition:width 1.5s ease;"></div></div><span class="sa-val" style="color:var(--txt);">8.2</span></div>
+              <div class="sa-row"><span class="sa-label" style="color:var(--muted);font-size:10.5px;">Technical (30%)</span><div class="sa-bar" style="background:var(--border);"><div style="height:100%;border-radius:10px;background:var(--blue2);width:80%;transition:width 1.5s ease;"></div></div><span class="sa-val" style="color:var(--txt);">8.0</span></div>
+              <div class="sa-row"><span class="sa-label" style="color:var(--muted);font-size:10.5px;">Regulatory (20%)</span><div class="sa-bar" style="background:var(--border);"><div style="height:100%;border-radius:10px;background:var(--amber);width:90%;transition:width 1.5s ease;"></div></div><span class="sa-val" style="color:var(--txt);">9.0</span></div>
+            </div>
+            <div class="grid2" style="gap:8px;">
+              <div style="background:var(--bg);border-radius:7px;padding:9px;"><div style="font-size:10px;color:var(--muted);">Revenue /yr</div><div style="font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--green);">+€28,000</div></div>
+              <div style="background:var(--bg);border-radius:7px;padding:9px;"><div style="font-size:10px;color:var(--muted);">Market price</div><div style="font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--txt);">€420/t</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div><div class="card-title">#3 · 🔥 Biogas / Biomethane</div><div class="card-sub-txt">High-COD whey → anaerobic digestion · boiler offset</div></div><span class="badge badge-rec">7.2/10</span></div>
+          <div class="card-body" style="padding:14px;">
+            <div class="score-axes" style="grid-template-columns:1fr;gap:6px;margin-bottom:12px;">
+              <div class="sa-row"><span class="sa-label" style="color:var(--muted);font-size:10.5px;">Economic (40%)</span><div class="sa-bar" style="background:var(--border);"><div style="height:100%;border-radius:10px;background:var(--teal);width:75%;transition:width 1.5s ease;"></div></div><span class="sa-val" style="color:var(--txt);">7.5</span></div>
+              <div class="sa-row"><span class="sa-label" style="color:var(--muted);font-size:10.5px;">Technical (30%)</span><div class="sa-bar" style="background:var(--border);"><div style="height:100%;border-radius:10px;background:var(--blue2);width:72%;transition:width 1.5s ease;"></div></div><span class="sa-val" style="color:var(--txt);">7.2</span></div>
+              <div class="sa-row"><span class="sa-label" style="color:var(--muted);font-size:10.5px;">Regulatory (20%)</span><div class="sa-bar" style="background:var(--border);"><div style="height:100%;border-radius:10px;background:var(--amber);width:80%;transition:width 1.5s ease;"></div></div><span class="sa-val" style="color:var(--txt);">8.0</span></div>
+            </div>
+            <div class="grid2" style="gap:8px;">
+              <div style="background:var(--bg);border-radius:7px;padding:9px;"><div style="font-size:10px;color:var(--muted);">Energy offset /yr</div><div style="font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--green);">+€18,000</div></div>
+              <div style="background:var(--bg);border-radius:7px;padding:9px;"><div style="font-size:10px;color:var(--muted);">Price</div><div style="font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--txt);">€0.08/kWh</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div><div class="card-title">#4 · 💧 Water Reclamation</div><div class="card-sub-txt">EU 2020/741 Class B · sand + UV · RAS reuse</div></div><span class="badge badge-viable">6.1/10</span></div>
+          <div class="card-body" style="padding:14px;">
+            <div class="grid2" style="gap:8px;margin-bottom:12px;">
+              <div style="background:var(--bg);border-radius:7px;padding:9px;"><div style="font-size:10px;color:var(--muted);">Savings /yr</div><div style="font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--green);">+€14,000</div></div>
+              <div style="background:var(--bg);border-radius:7px;padding:9px;"><div style="font-size:10px;color:var(--muted);">Price</div><div style="font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--txt);">€0.80/m³</div></div>
+            </div>
+            <div style="font-size:11.5px;color:var(--muted);line-height:1.5;">Post-algae polishing returns clean Class B water to your RAS tanks, reducing freshwater purchase. Also usable for olive/vegetable irrigation.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div><div class="card-title">#5 · 🧀 WPC Protein</div><div class="card-sub-txt">Whey protein concentrate · Phase 2 · UF membrane needed</div></div><span class="badge badge-cond">7.1/10 · Phase 2</span></div>
+          <div class="card-body" style="padding:14px;">
+            <div style="background:var(--amber-g);border:1px solid rgba(217,119,6,.2);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:11.5px;color:#92400E;">⏳ Requires ultrafiltration membrane — not in Phase 1 scope. Technical score 4.5/10 (TRL 4). Potential: +€95,000/yr once operational.</div>
+            <div class="grid2" style="gap:8px;">
+              <div style="background:var(--bg);border-radius:7px;padding:9px;"><div style="font-size:10px;color:var(--muted);">Potential /yr</div><div style="font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--amber);">+€95,000</div></div>
+              <div style="background:var(--bg);border-radius:7px;padding:9px;"><div style="font-size:10px;color:var(--muted);">Price range</div><div style="font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:var(--txt);">€800–4,000/t</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blocked -->
+      <div class="card" style="border:1.5px dashed #FECACA;opacity:.65;">
+        <div class="card-head" style="background:var(--red-g);"><div><div class="card-title" style="color:var(--red);">🚫 #6 · Cheese Brine Recovery — HARD GATE TRIGGERED</div><div class="card-sub-txt" style="color:#F87171;">NaCl 150 g/L exceeds limit of 10 g/L · Stream isolated · All biological pathways blocked</div></div><span class="badge badge-blocked">Score: 0.0</span></div>
+        <div class="card-body"><div style="font-size:12.5px;color:var(--muted);line-height:1.6;max-width:700px;"><strong style="color:var(--txt);">Why:</strong> Salt above 10 g/L kills the microorganisms needed for algae, biogas, struvite, and water reuse. <strong style="color:var(--txt);">Phase 3 option:</strong> Electrodialysis or evaporation-crystallisation could recover food-grade NaCl at €80–150/t — requires separate €40–80k investment.</div></div>
+      </div>
+
+    </div>
+
+    <!-- Comparison chart -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">Pathway Comparison — All 4 Axes</div><div class="card-sub-txt">Economic · Technical · Regulatory · Logistics</div></div>
+      <div class="card-body"><div class="chart-wrap" style="height:260px;"><canvas id="pathway-radar-chart" role="img" aria-label="Pathway comparison bar chart"></canvas></div></div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ════════════════════════════════
+     PAGE 4 — FINANCIAL IMPACT
+════════════════════════════════ -->
+<div class="page" id="page-financial">
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="tb-left"><div class="page-title">Financial Impact</div><div class="page-sub">Full ROI breakdown · Year 2 full operation</div></div>
+    <div class="tb-right"><button class="btn-secondary" onclick="showCTA('report')">📄 Download Report</button></div>
+  </div>
+  <div class="page-scroll"><div class="content">
+    <div class="kpi-row">
+      <div class="kpi g"><div class="kpi-label">Net Annual Value</div><div class="kpi-val g">+€217K</div><div class="kpi-meta"><span class="trend up">Year 2 projection</span></div></div>
+      <div class="kpi r"><div class="kpi-label">Disposal Avoided</div><div class="kpi-val">€120K</div><div class="kpi-meta">saved per year</div></div>
+      <div class="kpi gold"><div class="kpi-label">Total Revenue</div><div class="kpi-val gold">€112K</div><div class="kpi-meta">algae + struvite + biogas</div></div>
+      <div class="kpi t"><div class="kpi-label">Payback Period</div><div class="kpi-val">3–5 yr</div><div class="kpi-meta">Capex €130–200k</div></div>
+    </div>
+
+    <div class="grid2">
+      <!-- Waterfall -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Value Waterfall</div><div class="card-sub-txt">Every revenue and cost line — Year 2</div></div>
+        <div class="card-body">
+          <div class="waterfall">
+            <div class="wf-row"><div class="wf-dot" style="background:#4ADE80;"></div><div class="wf-inner"><div class="wf-label">Disposal costs avoided</div><div class="wf-bar"><div style="height:100%;width:55%;background:linear-gradient(90deg,#16A34A,#4ADE80);border-radius:10px;"></div></div></div><div class="wf-val pos">+€120,000</div></div>
+            <div class="wf-row"><div class="wf-dot" style="background:var(--teal3);"></div><div class="wf-inner"><div class="wf-label">Algae biomass sales</div><div class="wf-bar"><div style="height:100%;width:24%;background:linear-gradient(90deg,var(--teal),var(--teal3));border-radius:10px;"></div></div></div><div class="wf-val pos">+€52,000</div></div>
+            <div class="wf-row"><div class="wf-dot" style="background:#60A5FA;"></div><div class="wf-inner"><div class="wf-label">Struvite fertiliser</div><div class="wf-bar"><div style="height:100%;width:13%;background:linear-gradient(90deg,var(--blue),#60A5FA);border-radius:10px;"></div></div></div><div class="wf-val pos">+€28,000</div></div>
+            <div class="wf-row"><div class="wf-dot" style="background:#FBBF24;"></div><div class="wf-inner"><div class="wf-label">Biogas energy offset</div><div class="wf-bar"><div style="height:100%;width:8%;background:linear-gradient(90deg,var(--amber),#FBBF24);border-radius:10px;"></div></div></div><div class="wf-val pos">+€18,000</div></div>
+            <div class="wf-row"><div class="wf-dot" style="background:#C084FC;"></div><div class="wf-inner"><div class="wf-label">Reclaimed water savings</div><div class="wf-bar"><div style="height:100%;width:6%;background:linear-gradient(90deg,#7C3AED,#C084FC);border-radius:10px;"></div></div></div><div class="wf-val pos">+€14,000</div></div>
+            <div class="wf-row"><div class="wf-dot" style="background:var(--green);"></div><div class="wf-inner"><div class="wf-label">WasteMap transaction fees</div><div class="wf-bar"><div style="height:100%;width:7%;background:linear-gradient(90deg,#15803D,#4ADE80);border-radius:10px;"></div></div></div><div class="wf-val pos">+€15,000</div></div>
+            <div class="wf-divider"></div>
+            <div class="wf-row"><div class="wf-dot" style="background:#F87171;"></div><div class="wf-inner"><div class="wf-label">Capex amortised (20yr)</div><div class="wf-bar"><div style="height:100%;width:8%;background:linear-gradient(90deg,var(--red),#F87171);border-radius:10px;"></div></div></div><div class="wf-val neg">−€18,000</div></div>
+            <div class="wf-row"><div class="wf-dot" style="background:#FCA5A5;"></div><div class="wf-inner"><div class="wf-label">Opex (energy + labour)</div><div class="wf-bar"><div style="height:100%;width:19%;background:linear-gradient(90deg,var(--red),#FCA5A5);border-radius:10px;"></div></div></div><div class="wf-val neg">−€42,000</div></div>
+            <div class="wf-divider"></div>
+            <div class="wf-total"><div class="wf-total-label">🎯 Net Annual Value (Year 2)</div><div class="wf-total-val">+€217,000</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenarios + 5yr chart -->
+      <div class="gap-col">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Scenario Analysis</div></div>
+          <div class="card-body">
+            <div class="scenario-grid">
+              <div class="sc cons"><div class="sc-lbl">Conservative</div><div class="sc-val">€140K</div><div class="sc-pb">Payback: 5–7 yr</div><div class="sc-desc">Algae only · low prices</div></div>
+              <div class="sc exp" style="transform:scale(1.04);"><div class="sc-lbl">✓ Expected</div><div class="sc-val">€217K</div><div class="sc-pb">Payback: 3–5 yr</div><div class="sc-desc">All 4 pathways</div></div>
+              <div class="sc best-sc"><div class="sc-lbl">Best Case</div><div class="sc-val">€312K</div><div class="sc-pb">Payback: 2–3 yr</div><div class="sc-desc">+WPC Phase 2</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">5-Year Projection</div></div>
+          <div class="card-body" style="padding:14px;"><div class="chart-wrap" style="height:180px;"><canvas id="fin-proj-chart" role="img" aria-label="5-year projection line chart"></canvas></div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Revenue Mix</div></div>
+          <div class="card-body" style="padding:14px;"><div class="chart-wrap" style="height:180px;"><canvas id="fin-mix-chart" role="img" aria-label="Revenue mix donut chart"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ════════════════════════════════
+     PAGE 5 — SUSTAINABILITY
+════════════════════════════════ -->
+<div class="page" id="page-sustainability">
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="tb-left"><div class="page-title">Sustainability</div><div class="page-sub">Environmental impact · circular economy score · intelligence loop</div></div>
+  </div>
+  <div class="page-scroll"><div class="content">
+    <div class="kpi-row">
+      <div class="kpi t"><div class="kpi-label">CO₂ Avoided</div><div class="kpi-val">−42 t</div><div class="kpi-meta">per year vs. disposal</div></div>
+      <div class="kpi b"><div class="kpi-label">Water Recycled</div><div class="kpi-val">10,950 m³</div><div class="kpi-meta">per year · Class B</div></div>
+      <div class="kpi gold"><div class="kpi-label">Fishmeal Displaced</div><div class="kpi-val">30 t</div><div class="kpi-meta">per year · algae biomass</div></div>
+      <div class="kpi g"><div class="kpi-label">Nutrients Recovered</div><div class="kpi-val">2.3 t</div><div class="kpi-meta">N+P per year · struvite</div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Environmental Gains</div><div class="card-sub-txt">What going circular means for the planet</div></div>
+        <div class="card-body">
+          <div>
+            <div class="sustain-item"><div class="si-icon" style="background:var(--green-g);">🌱</div><div style="flex:1;"><div class="si-label">CO₂ Emissions Avoided</div><div class="si-sub">vs. conventional wastewater disposal + fishmeal production</div><div class="si-bar"><div style="height:100%;width:78%;background:var(--green);border-radius:10px;"></div></div></div><div class="si-val" style="color:var(--green);">−42 t/yr</div></div>
+            <div class="sustain-item"><div class="si-icon" style="background:var(--blue-g);">💧</div><div style="flex:1;"><div class="si-label">Freshwater Recycled</div><div class="si-sub">EU 2020/741 Class B · RAS tanks + irrigation</div><div class="si-bar"><div style="height:100%;width:86%;background:var(--blue2);border-radius:10px;"></div></div></div><div class="si-val" style="color:var(--blue2);">10,950 m³</div></div>
+            <div class="sustain-item"><div class="si-icon" style="background:rgba(201,168,76,.15);">🐟</div><div style="flex:1;"><div class="si-label">Fishmeal Import Displaced</div><div class="si-sub">Algae biomass replaces ocean-sourced feed</div><div class="si-bar"><div style="height:100%;width:65%;background:var(--gold);border-radius:10px;"></div></div></div><div class="si-val" style="color:var(--gold);">30 t/yr</div></div>
+            <div class="sustain-item"><div class="si-icon" style="background:var(--teal-g);">♻️</div><div style="flex:1;"><div class="si-label">Nutrients Recovered (N+P)</div><div class="si-sub">Struvite slow-release fertiliser · FPR 2019/1009</div><div class="si-bar"><div style="height:100%;width:72%;background:var(--teal);border-radius:10px;"></div></div></div><div class="si-val" style="color:var(--teal);">2.3 t/yr</div></div>
+            <div class="sustain-item"><div class="si-icon" style="background:var(--amber-g);">⚡</div><div style="flex:1;"><div class="si-label">Fossil Energy Offset</div><div class="si-sub">Biogas → dairy boilers · avoids natural gas purchase</div><div class="si-bar"><div style="height:100%;width:45%;background:var(--amber);border-radius:10px;"></div></div></div><div class="si-val" style="color:var(--amber);">~180 kWh/d</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="gap-col">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Sustainability Score</div><div class="card-sub-txt">74/100 · Good · improving</div></div>
+          <div class="card-body" style="display:flex;align-items:center;justify-content:center;">
+            <svg width="180" height="180" viewBox="0 0 180 180">
+              <defs><linearGradient id="sGrad2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#DC2626"/><stop offset="35%" style="stop-color:#D97706"/><stop offset="70%" style="stop-color:#0E7C6B"/><stop offset="100%" style="stop-color:#1AC4A8"/></linearGradient></defs>
+              <circle cx="90" cy="90" r="72" fill="none" stroke="var(--border)" stroke-width="14" stroke-dasharray="362 453" stroke-dashoffset="-45" stroke-linecap="round"/>
+              <circle cx="90" cy="90" r="72" fill="none" stroke="url(#sGrad2)" stroke-width="14" stroke-dasharray="268 453" stroke-dashoffset="-45" stroke-linecap="round"/>
+              <circle cx="90" cy="90" r="56" fill="var(--teal-g)" stroke="var(--border)" stroke-width="1"/>
+              <text x="90" y="84" text-anchor="middle" font-family="Fraunces,serif" font-size="34" font-weight="700" fill="var(--txt)">74</text>
+              <text x="90" y="100" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="var(--muted)" letter-spacing="1">SCORE / 100</text>
+              <text x="90" y="116" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="var(--teal)" font-weight="600">Good · Improving</text>
+            </svg>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Market Prices <span id="mkt-as-of" style="font-size:10px;color:var(--muted);font-weight:400;font-family:'DM Sans',sans-serif;"></span></div></div>
+          <div class="card-body" style="padding:14px;">
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div class="price-item"><div class="price-icon" style="background:var(--teal-g);">🌿</div><div style="flex:1;"><div class="price-name">Algae Biomass (Chlorella)</div><div class="price-val" id="mp-algae">€850<span class="price-unit">/t</span></div></div><div class="price-trend" id="mt-algae">↑ +4%</div></div>
+              <div class="price-item"><div class="price-icon" style="background:var(--blue-g);">💎</div><div style="flex:1;"><div class="price-name">Struvite Fertiliser (CE)</div><div class="price-val" id="mp-struvite">€420<span class="price-unit">/t</span></div></div><div class="price-trend" id="mt-struvite">↑ +8%</div></div>
+              <div class="price-item"><div class="price-icon" style="background:var(--amber-g);">🔥</div><div style="flex:1;"><div class="price-name">Biomethane</div><div class="price-val" id="mp-biogas">€0.08<span class="price-unit">/kWh</span></div></div><div class="price-trend" id="mt-biogas">↓ −2%</div></div>
+              <div class="price-item"><div class="price-icon" style="background:var(--blue-g);">💧</div><div style="flex:1;"><div class="price-name">Reclaimed Water (Class B)</div><div class="price-val" id="mp-water">€0.80<span class="price-unit">/m³</span></div></div><div class="price-trend" id="mt-water">Stable</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Intelligence loop -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">The CircularIQ Intelligence Loop</div><div class="card-sub-txt">How all 4 components connect and learn together</div></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:center;">
+          <div class="flow-step highlight"><div class="fs-icon">🏭</div><div><div class="fs-name">Your Waste Streams</div><div class="fs-desc">5 streams · 60 m³/day · sensor data every 15 min</div></div></div>
+          <div style="text-align:center;color:var(--teal);font-size:20px;">→</div>
+          <div class="flow-step highlight"><div class="fs-icon">⚗️</div><div><div class="fs-name">BioLink Pilot Unit</div><div class="fs-desc">On-site algae ponds + struvite reactor · Massafra</div></div></div>
+          <div style="text-align:center;color:var(--teal);font-size:20px;">→</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:center;margin-top:10px;">
+          <div class="flow-step"><div class="fs-icon">📊</div><div><div class="fs-name">CircularIQ Scoring</div><div class="fs-desc">Pathways ranked · recommendations updated daily</div></div></div>
+          <div style="text-align:center;color:var(--gold);font-size:20px;">→</div>
+          <div class="flow-step highlight-gold"><div class="fs-icon">🏷️</div><div><div class="fs-name">Circular Passport + WasteMap</div><div class="fs-desc">QR-certified output · B2B sale · price feeds back into scoring</div></div></div>
+          <div style="text-align:center;color:var(--gold);font-size:16px;font-weight:600;">↩ learns</div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ════════════════════════════════
+     PAGE 6 — GET STARTED / CTA
+════════════════════════════════ -->
+<div class="page" id="page-consultation">
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <div class="tb-left"><div class="page-title">Get Started</div><div class="page-sub">Request your free consultation · download reports · contact Giovanni</div></div>
+  </div>
+  <div class="page-scroll"><div class="content">
+
+    <div class="cta-hero">
+      <div style="position:relative;z-index:1;">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,.18);border:1px solid rgba(201,168,76,.28);border-radius:20px;padding:4px 13px;font-size:10px;color:var(--gold2);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px;">Ready to act?</div>
+        <div class="cta-title">Turn your waste into<br><em>your most profitable asset.</em></div>
+        <div class="cta-sub">The Giovanni Putignano &amp; Figli team will design, build, and certify your BioLink pilot unit — from concept to your first certified batch in 6 months. No technical expertise required on your side.</div>
+        <div class="trust-badges">
+          <div class="trust-b"><svg width="11" height="11" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z"/><path d="M5.5 8l2 2 3-3"/></svg>CIHEAM Bari certified</div>
+          <div class="trust-b"><svg width="11" height="11" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5.5 8l2 2 3-3"/></svg>LUM University partner</div>
+          <div class="trust-b"><svg width="11" height="11" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5.5 8l2 2 3-3"/></svg>FPR 2019/1009 compliant</div>
+          <div class="trust-b"><svg width="11" height="11" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M4 4h8v8H4z"/></svg>EU ESPR passport ready</div>
+          <div class="trust-b"><svg width="11" height="11" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M8 2L14 14H2L8 2z"/><line x1="8" y1="7" x2="8" y2="10"/></svg>ARPA Puglia ISO 17025</div>
+        </div>
+        <div class="cta-btns">
+          <button class="cta-btn-p" onclick="showCTA('consult')"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Request Free Consultation</button>
+          <button class="cta-btn-s" onclick="showCTA('report')"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download Full Report</button>
+          <button class="cta-btn-g" onclick="showCTA('contact')"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Email Giovanni Team</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-cards">
+      <div class="contact-card">
+        <div class="cc-icon" style="background:var(--teal-g);">💬</div>
+        <div class="cc-title">Free Site Assessment</div>
+        <div class="cc-sub">Our engineers visit your Massafra facility, measure all 5 streams, and deliver a full CircularIQ analysis in 2 weeks. No cost.</div>
+        <button class="btn-primary" style="width:100%;justify-content:center;" onclick="showCTA('consult')">Book Assessment</button>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:var(--gold-g);">📋</div>
+        <div class="cc-title">BioLink Proposal</div>
+        <div class="cc-sub">Receive a tailored BioLink design, cost estimate (€130–200k), funding guidance (PRIMA/LIFE), and ROI model for your site.</div>
+        <button class="btn-secondary" style="width:100%;" onclick="showCTA('proposal')">Request Proposal</button>
+      </div>
+      <div class="contact-card">
+        <div class="cc-icon" style="background:var(--blue-g);">📞</div>
+        <div class="cc-title">Talk to an Expert</div>
+        <div class="cc-sub">Speak directly with the CircularIQ team at Giovanni Putignano &amp; Figli. Available Mon–Fri 9–17 CET.</div>
+        <button class="btn-secondary" style="width:100%;" onclick="showCTA('contact')">Schedule a Call</button>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+</main>
+
+<script>
+// ════════════════════════════════════════
+// PAGE NAVIGATION
+// ════════════════════════════════════════
+const chartInstances = {};
+
+function showPage(name, el) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  // Show target
+  const page = document.getElementById('page-' + name);
+  if (page) {
+    page.classList.add('active');
+    // Scroll to top
+    const scroll = page.querySelector('.page-scroll');
+    if (scroll) scroll.scrollTop = 0;
+  }
+  // Activate nav item
+  if (el) el.classList.add('active');
+  else {
+    const nav = document.querySelector('[data-page="' + name + '"]');
+    if (nav) nav.classList.add('active');
+  }
+  // Init charts lazily — only once
+  if (name === 'overview' && !chartInstances.ovRev) initOverviewCharts();
+  if (name === 'profile' && !chartInstances.profileTrend) initProfileCharts();
+  if (name === 'pathways' && !chartInstances.pathwayRadar) initPathwayCharts();
+  if (name === 'financial' && !chartInstances.finProj) initFinancialCharts();
+}
+
+// ════════════════════════════════════════
+// CHARTS
+// ════════════════════════════════════════
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#7A8FA6';
+
+function initOverviewCharts() {
+  chartInstances.ovRev = new Chart(document.getElementById('ov-rev-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['Algae', 'Struvite', 'Biogas', 'Water', 'WasteMap', 'WPC*'],
+      datasets: [{ data: [52, 28, 18, 14, 15, 0], backgroundColor: ['rgba(14,124,107,.75)', 'rgba(43,108,176,.75)', 'rgba(217,119,6,.75)', 'rgba(124,58,237,.75)', 'rgba(22,163,74,.75)', 'rgba(156,163,175,.4)'], borderRadius: 7, borderSkipped: false }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '€' + c.raw + 'K/yr' } } }, scales: { x: { grid: { display: false } }, y: { grid: { color: '#E2EAF0' }, ticks: { callback: v => '€' + v + 'K' } } } }
+  });
+  chartInstances.ovDonut = new Chart(document.getElementById('ov-donut-chart'), {
+    type: 'doughnut',
+    data: { labels: ['Current disposal cost', 'Potential net value'], datasets: [{ data: [120, 217], backgroundColor: ['rgba(220,38,38,.7)', 'rgba(14,124,107,.75)'], borderWidth: 0, hoverOffset: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { font: { size: 10.5 }, padding: 10, usePointStyle: true } }, tooltip: { callbacks: { label: c => '€' + c.raw + 'K/yr' } } } }
+  });
+}
+
+function initProfileCharts() {
+  const labels = Array.from({length:30},(_,i)=>{ const d=new Date(); d.setDate(d.getDate()-(29-i)); return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}); });
+  function makeData(base, noise, trend=0){ return Array.from({length:30},(_,i)=>+(base+(trend*i/29)+(Math.random()-.5)*noise).toFixed(1)); }
+  chartInstances.profileTrend = new Chart(document.getElementById('profile-trend-chart'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'RAS Effluent', data: makeData(35,4,5), borderColor: 'var(--teal)', backgroundColor: 'rgba(14,124,107,.08)', fill: true, tension: .4, pointRadius: 0, borderWidth: 2 },
+      { label: 'Cheese Whey', data: makeData(12,2,1), borderColor: 'var(--blue2)', backgroundColor: 'transparent', tension: .4, pointRadius: 0, borderWidth: 1.5 },
+      { label: 'CIP Washdown', data: makeData(8,2,0), borderColor: 'var(--amber)', backgroundColor: 'transparent', tension: .4, pointRadius: 0, borderWidth: 1.5 },
+      { label: 'RAS Sludge', data: makeData(2.5,.5,.4), borderColor: 'var(--purple)', backgroundColor: 'transparent', tension: .4, pointRadius: 0, borderWidth: 1.5 },
+      { label: 'Cheese Brine (blocked)', data: makeData(2,.3,0), borderColor: 'rgba(220,38,38,.5)', backgroundColor: 'transparent', borderDash: [4,4], tension: .4, pointRadius: 0, borderWidth: 1.5 },
+    ]},
+    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { font: { size: 10.5 }, usePointStyle: true, padding: 12 } } }, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 8 } }, y: { grid: { color: '#E2EAF0' }, title: { display: true, text: 'm³/day', font: { size: 10 } } } } }
+  });
+}
+
+function initPathwayCharts() {
+  chartInstances.pathwayRadar = new Chart(document.getElementById('pathway-radar-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['Economic (40%)', 'Technical (30%)', 'Regulatory (20%)', 'Logistics (10%)'],
+      datasets: [
+        { label: 'Microalgae', data: [9.1,7.8,8.5,7.2], backgroundColor: 'rgba(14,124,107,.7)', borderColor: 'var(--teal)', borderWidth: 1.5, borderRadius: 5 },
+        { label: 'Struvite', data: [8.2,8.0,9.0,6.5], backgroundColor: 'rgba(43,108,176,.7)', borderColor: 'var(--blue2)', borderWidth: 1.5, borderRadius: 5 },
+        { label: 'Biogas', data: [7.5,7.2,8.0,6.8], backgroundColor: 'rgba(217,119,6,.7)', borderColor: 'var(--amber)', borderWidth: 1.5, borderRadius: 5 },
+        { label: 'Water Rec.', data: [5.8,7.0,7.5,5.2], backgroundColor: 'rgba(124,58,237,.6)', borderColor: 'var(--purple)', borderWidth: 1.5, borderRadius: 5 },
+        { label: 'WPC (Phase 2)', data: [9.5,4.5,6.0,8.0], backgroundColor: 'rgba(201,168,76,.6)', borderColor: 'var(--gold)', borderWidth: 1.5, borderRadius: 5 },
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { font: { size: 10.5 }, usePointStyle: true, padding: 12 } } }, scales: { x: { grid: { display: false } }, y: { min: 0, max: 10, grid: { color: '#E2EAF0' } } } }
+  });
+}
+
+function initFinancialCharts() {
+  chartInstances.finProj = new Chart(document.getElementById('fin-proj-chart'), {
+    type: 'line',
+    data: {
+      labels: ['Now', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5'],
+      datasets: [
+        { label: 'Conservative', data: [0,60,140,220,300,380], borderColor: 'rgba(217,119,6,.6)', backgroundColor: 'transparent', borderDash: [4,4], tension: .4, pointRadius: 2 },
+        { label: 'Expected', data: [0,80,217,350,480,610], borderColor: 'var(--teal)', backgroundColor: 'rgba(14,124,107,.08)', fill: true, tension: .4, pointRadius: 3, borderWidth: 2.5 },
+        { label: 'Best Case', data: [0,120,312,520,730,950], borderColor: 'rgba(201,168,76,.7)', backgroundColor: 'transparent', borderDash: [6,3], tension: .4, pointRadius: 2 },
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { font: { size: 9.5 }, usePointStyle: true, padding: 8 } }, tooltip: { callbacks: { label: c => c.dataset.label + ': €' + c.raw + 'K' } } }, scales: { x: { grid: { display: false } }, y: { grid: { color: '#E2EAF0' }, ticks: { callback: v => '€' + v + 'K' } } } }
+  });
+  chartInstances.finMix = new Chart(document.getElementById('fin-mix-chart'), {
+    type: 'doughnut',
+    data: { labels: ['Disposal savings', 'Algae biomass', 'Struvite', 'Biogas', 'Water', 'WasteMap'], datasets: [{ data: [120,52,28,18,14,15], backgroundColor: ['rgba(22,163,74,.75)','rgba(14,124,107,.75)','rgba(43,108,176,.75)','rgba(217,119,6,.75)','rgba(124,58,237,.65)','rgba(8,145,178,.65)'], borderWidth: 0, hoverOffset: 5 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { font: { size: 9.5 }, usePointStyle: true, padding: 8 } }, tooltip: { callbacks: { label: c => '€' + c.raw + 'K/yr' } } } }
+  });
+}
+
+// init overview charts after DOM is ready
+document.addEventListener('DOMContentLoaded', () => { initOverviewCharts(); });
+
+// ════════════════════════════════════════
+// MODALS
+// ════════════════════════════════════════
+function openLogout() { document.getElementById('logout-modal').classList.add('show'); }
+function closeLogout() { document.getElementById('logout-modal').classList.remove('show'); }
+function confirmLogout() {
+  document.getElementById('logout-modal').classList.remove('show');
+  window.location.href = 'CircularIQ_Landing.html';
+}
+function doLogin() { document.getElementById('login-screen').classList.remove('show'); }
+
+const ctaMsgs = {
+  consult: { title: 'Consultation Requested ✓', meta: '📋 Company: Latteria Pugliese S.r.l.\n🌿 Best pathway: Microalgae Production\n📅 Expected response: within 2 business days\n🔖 Reference: CIQ-2025-LP-0031', sub: 'The Giovanni Putignano & Figli team will contact you with a custom BioLink proposal for your Massafra site.' },
+  report: { title: 'Report Ready ✓', meta: '📄 File: CircularIQ_Assessment_LP_2025.pdf\n📊 Includes: full pathway scores, ROI model, regulations\n📅 Generated: today\n🔖 Reference: RPT-2025-LP-0031', sub: 'Your full assessment report is ready. Download will start shortly.' },
+  contact: { title: 'Message Sent ✓', meta: '📧 Sent to: info@giovanniputignano.it\n⏱️ Response time: within 1 business day\n📞 Also available: +39 099 XXX XXXX\n🔖 Reference: MSG-2025-LP-0031', sub: "The Giovanni team at Massafra will reply within 1 business day." },
+  proposal: { title: 'Proposal Requested ✓', meta: '🏗️ Type: BioLink Pilot Design Proposal\n💶 Estimated capex range: €130–200k\n📅 Delivery: within 5 business days\n🔖 Reference: PROP-2025-LP-0031', sub: 'A tailored BioLink proposal including site design, cost breakdown, and PRIMA/LIFE funding guidance will be prepared for your site.' },
+};
+
+function showCTA(type) {
+  const m = ctaMsgs[type] || ctaMsgs.consult;
+  // Update modal date reference to today
+  const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const meta  = m.meta.replace('Generated: today', 'Generated: ' + today);
+  document.getElementById('cta-title').textContent = m.title;
+  document.getElementById('cta-meta').innerHTML = meta.split('\n').join('<br>');
+  document.getElementById('cta-sub').textContent = m.sub;
+  document.getElementById('cta-modal').classList.add('show');
+  // For report type: actually open the PDF after a short delay
+  if (type === 'report') {
+    setTimeout(() => {
+      const a = document.createElement('a');
+      a.href = 'CircularIQ_Assessment_Report.pdf';
+      a.target = '_blank';
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }, 600);
+  }
+}
+function closeCTA() { document.getElementById('cta-modal').classList.remove('show'); }
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLogout(); closeCTA(); } });
+
+// ════════════════════════════════════════
+// ─── MOBILE SIDEBAR TOGGLE ───
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const btns    = document.querySelectorAll('.hamburger');
+  const isOpen  = sidebar.classList.contains('open');
+  if (isOpen) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+    btns.forEach(b => b.classList.remove('open'));
+  } else {
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+    btns.forEach(b => b.classList.add('open'));
+  }
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+  document.querySelectorAll('.hamburger').forEach(b => b.classList.remove('open'));
+}
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => { if (window.innerWidth <= 900) closeSidebar(); });
+});
+
+// REAL-TIME CLOCK + MARKET PRICE ENGINE
+// ════════════════════════════════════════
+// Base prices (mid-market references)
+const BASE_PRICES = {
+  algae:    { base: 850,  unit: '/t',    decimals: 0, fmt: v => '€'+Math.round(v) },
+  struvite: { base: 420,  unit: '/t',    decimals: 0, fmt: v => '€'+Math.round(v) },
+  biogas:   { base: 0.08, unit: '/kWh',  decimals: 3, fmt: v => '€'+v.toFixed(3) },
+  water:    { base: 0.80, unit: '/m³',   decimals: 2, fmt: v => '€'+v.toFixed(2) },
+};
+
+// Seeded pseudo-random so prices are stable within a session but vary per page load
+const SEED = Date.now() % 10000;
+function seededRand(i) {
+  const x = Math.sin(SEED + i) * 10000;
+  return x - Math.floor(x);
+}
+
+// Generate ±3% variation, seeded per product
+function variedPrice(key, i) {
+  const cfg = BASE_PRICES[key];
+  const pct  = (seededRand(i) - 0.5) * 0.06; // −3% to +3%
+  return { value: cfg.base * (1 + pct), pct };
+}
+
+function updateMarketPrices() {
+  const entries = [
+    { key: 'algae',    elVal: 'mp-algae',    elTrend: 'mt-algae',    unit: '/t'   },
+    { key: 'struvite', elVal: 'mp-struvite', elTrend: 'mt-struvite', unit: '/t'   },
+    { key: 'biogas',   elVal: 'mp-biogas',   elTrend: 'mt-biogas',   unit: '/kWh' },
+    { key: 'water',    elVal: 'mp-water',    elTrend: 'mt-water',    unit: '/m³'  },
+  ];
+  entries.forEach((e, i) => {
+    const el_val   = document.getElementById(e.elVal);
+    const el_trend = document.getElementById(e.elTrend);
+    if (!el_val || !el_trend) return;
+    const { value, pct } = variedPrice(e.key, i * 7);
+    const cfg = BASE_PRICES[e.key];
+    el_val.innerHTML = cfg.fmt(value) + `<span class="price-unit">${e.unit}</span>`;
+    const pctStr = (pct >= 0 ? '+' : '') + (pct * 100).toFixed(1) + '%';
+    if (Math.abs(pct) < 0.005) {
+      el_trend.textContent = 'Stable';
+      el_trend.className = 'price-trend neu';
+    } else if (pct > 0) {
+      el_trend.textContent = '↑ ' + pctStr;
+      el_trend.className = 'price-trend up';
+    } else {
+      el_trend.textContent = '↓ ' + pctStr;
+      el_trend.className = 'price-trend down';
+    }
+  });
+
+  // Update market card "as of" label
+  const asOf = document.getElementById('mkt-as-of');
+  if (asOf) {
+    const now = new Date();
+    asOf.textContent = '· as of ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  }
+}
+
+function updateTimestamps() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+
+  const ts = document.getElementById('last-updated-ts');
+  if (ts) ts.textContent = dateStr + ' ' + timeStr;
+}
+
+// Run on load and every 60 seconds
+document.addEventListener('DOMContentLoaded', () => {
+  updateMarketPrices();
+  updateTimestamps();
+  setInterval(() => { updateMarketPrices(); updateTimestamps(); }, 60000);
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CircularIQ — Get Started</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   DESIGN TOKENS — matches CircularIQ
+══════════════════════════════════════ */
+:root{
+  --g950:#06120A;--g900:#0A1A0F;--g800:#0F2518;--g700:#163320;
+  --g600:#1E4529;--g500:#2D7D46;--g400:#3DA05C;--g300:#5DC278;
+  --g200:#A8E4BC;--g100:#D4F5E0;--g50:#EEF9F2;
+  --b500:#1A6FA8;--b400:#2589CC;--b100:#D4EAF8;--b50:#EFF6FF;
+  --a500:#D97706;--a100:#FEF3C7;
+  --r500:#DC2626;--r50:#FFF5F5;
+  --aqua:#0891B2;--aqua-l:#CFFAFE;
+  --txt:#0F2518;--txt2:#4A5C4A;--muted:#6B7C6B;
+  --border:#D9DDD9;--bg:#F0F4F1;--card:#fff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
+
+/* ══════════════════════════════════════
+   NAVBAR
+══════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:68px;padding:0 40px;
+  display:flex;align-items:center;gap:16px;
+  background:rgba(6,18,10,.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(93,194,120,.1);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-icon{width:34px;height:34px;background:var(--g500);border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.nav-logo-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:-.3px;}
+.nav-spacer{flex:1;}
+.nav-back{
+  display:flex;align-items:center;gap:7px;
+  color:rgba(255,255,255,.55);font-size:13.5px;
+  padding:7px 14px;border-radius:8px;
+  border:1px solid rgba(255,255,255,.12);
+  background:transparent;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  text-decoration:none;transition:all .18s;
+}
+.nav-back:hover{color:rgba(255,255,255,.9);border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.06);}
+.nav-login{
+  color:rgba(255,255,255,.7);font-size:13.5px;
+  padding:7px 16px;border:1px solid rgba(255,255,255,.15);
+  border-radius:8px;cursor:pointer;background:transparent;
+  font-family:'DM Sans',sans-serif;transition:all .15s;
+}
+.nav-login:hover{border-color:rgba(255,255,255,.35);color:#fff;}
+
+/* ══════════════════════════════════════
+   PAGE HERO STRIP
+══════════════════════════════════════ */
+.page-hero{
+  padding:120px 40px 72px;
+  text-align:center;
+  background:linear-gradient(160deg,var(--g950) 0%,var(--g900) 40%,#0D2818 70%,var(--g800) 100%);
+  position:relative;overflow:hidden;
+}
+.page-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 120%,rgba(45,125,70,.18) 0%,transparent 60%);
+  pointer-events:none;
+}
+/* animated grid lines */
+.page-hero::after{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='52' height='52' viewBox='0 0 52 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%232D7D46' fill-opacity='0.04'%3E%3Cpath d='M26 0l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;
+}
+.page-hero-inner{position:relative;z-index:1;max-width:620px;margin:0 auto;}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(93,194,120,.12);border:1px solid rgba(93,194,120,.22);
+  border-radius:20px;padding:5px 14px;
+  font-size:11.5px;color:var(--g300);font-weight:600;
+  letter-spacing:.8px;text-transform:uppercase;margin-bottom:18px;
+}
+.hero-dot{width:6px;height:6px;background:var(--g300);border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.page-hero h1{
+  font-family:'Syne',sans-serif;font-size:clamp(36px,5vw,56px);
+  font-weight:800;color:#fff;line-height:1.08;
+  letter-spacing:-1.5px;margin-bottom:14px;
+}
+.page-hero p{font-size:17px;color:rgba(255,255,255,.5);line-height:1.7;}
+
+/* ══════════════════════════════════════
+   MAIN CONTENT
+══════════════════════════════════════ */
+.page-content{
+  flex:1;padding:64px 40px 80px;
+  max-width:1100px;margin:0 auto;width:100%;
+}
+
+/* ══════════════════════════════════════
+   PATH CARDS
+══════════════════════════════════════ */
+.paths-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:24px;margin-bottom:56px;
+}
+.path-card{
+  background:var(--card);
+  border:1.5px solid var(--border);
+  border-radius:20px;
+  padding:40px 36px 36px;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;
+  transition:all .28s cubic-bezier(.4,0,.2,1);
+  cursor:default;position:relative;overflow:hidden;
+}
+.path-card::before{
+  content:'';position:absolute;inset:0;opacity:0;
+  border-radius:20px;transition:opacity .28s;
+}
+.path-card.green::before{background:radial-gradient(ellipse at 50% 0%,rgba(45,125,70,.06) 0%,transparent 70%);}
+.path-card.blue::before{background:radial-gradient(ellipse at 50% 0%,rgba(26,111,168,.06) 0%,transparent 70%);}
+.path-card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(10,26,15,.13);border-color:transparent;}
+.path-card.green:hover{border-color:var(--g300);}
+.path-card.blue:hover{border-color:#93C5FD;}
+.path-card:hover::before{opacity:1;}
+
+/* Top accent bar */
+.path-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  border-radius:20px 20px 0 0;opacity:0;transition:opacity .28s;
+}
+.path-card.green::after{background:linear-gradient(90deg,var(--g500),var(--g300));}
+.path-card.blue::after{background:linear-gradient(90deg,var(--b500),#60A5FA);}
+.path-card:hover::after{opacity:1;}
+
+.path-icon{
+  width:80px;height:80px;border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;margin-bottom:26px;
+  position:relative;z-index:1;
+  transition:transform .28s;
+}
+.path-card:hover .path-icon{transform:scale(1.08) translateY(-2px);}
+.path-icon.green{background:var(--g50);border:1.5px solid var(--g200);}
+.path-icon.blue{background:var(--b50);border:1.5px solid var(--b100);}
+
+.path-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;margin-bottom:14px;
+  position:relative;z-index:1;
+}
+.path-badge.green{background:var(--g50);color:var(--g600);border:1px solid var(--g200);}
+.path-badge.blue{background:var(--b50);color:var(--b500);border:1px solid var(--b100);}
+
+.path-title{
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:700;
+  color:var(--txt);line-height:1.2;margin-bottom:14px;
+  position:relative;z-index:1;
+}
+.path-desc{
+  font-size:14.5px;color:var(--muted);line-height:1.7;
+  margin-bottom:28px;flex:1;position:relative;z-index:1;
+}
+
+/* Feature pills */
+.path-features{
+  display:flex;flex-wrap:wrap;gap:7px;justify-content:center;
+  margin-bottom:28px;position:relative;z-index:1;
+}
+.feat-pill{
+  font-size:11px;padding:4px 11px;border-radius:20px;
+  font-weight:500;
+}
+.feat-pill.green{background:var(--g50);color:var(--g600);border:1px solid var(--g100);}
+.feat-pill.blue{background:var(--b50);color:var(--b500);border:1px solid var(--b100);}
+
+.path-btn{
+  width:100%;padding:14px 20px;border-radius:12px;
+  font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .22s;position:relative;z-index:1;
+}
+.path-btn.green{background:var(--g500);color:#fff;}
+.path-btn.green:hover{background:var(--g400);box-shadow:0 8px 28px rgba(45,125,70,.4);}
+.path-btn.blue{background:var(--b500);color:#fff;}
+.path-btn.blue:hover{background:var(--b400);box-shadow:0 8px 28px rgba(26,111,168,.35);}
+
+/* ══════════════════════════════════════
+   DIVIDER
+══════════════════════════════════════ */
+.or-divider{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:48px;color:var(--muted);font-size:13px;
+}
+.or-divider::before,.or-divider::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+/* ══════════════════════════════════════
+   TRUST STRIP
+══════════════════════════════════════ */
+.trust-strip{
+  background:linear-gradient(135deg,var(--g900),var(--g800));
+  border-radius:16px;padding:28px 32px;
+  display:flex;align-items:center;gap:32px;flex-wrap:wrap;
+  margin-bottom:48px;
+}
+.trust-strip-label{
+  font-size:11.5px;font-weight:700;color:var(--g300);
+  text-transform:uppercase;letter-spacing:.8px;flex-shrink:0;
+}
+.trust-badges{display:flex;gap:10px;flex-wrap:wrap;flex:1;}
+.trust-badge{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;padding:7px 13px;
+  font-size:12px;color:rgba(255,255,255,.65);
+}
+.trust-badge svg{flex-shrink:0;}
+
+/* ══════════════════════════════════════
+   PROCESS STEPS
+══════════════════════════════════════ */
+.section-label{
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:700;
+  color:var(--txt);margin-bottom:20px;
+}
+.section-sub{font-size:14px;color:var(--muted);margin-bottom:32px;margin-top:-14px;}
+.steps-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:var(--border);
+  border-radius:14px;overflow:hidden;
+  margin-bottom:56px;
+}
+.step-box{
+  background:var(--card);padding:24px 20px;
+  text-align:center;position:relative;
+  transition:background .18s;
+}
+.step-box:hover{background:var(--g50);}
+.step-num{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--g500);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:700;
+  margin:0 auto 14px;
+  box-shadow:0 4px 12px rgba(45,125,70,.3);
+}
+.step-icon{font-size:24px;margin-bottom:10px;}
+.step-title{font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700;color:var(--txt);margin-bottom:6px;}
+.step-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+/* connector arrows between steps */
+.step-box:not(:last-child)::after{
+  content:'→';
+  position:absolute;right:-14px;top:50%;transform:translateY(-50%);
+  color:var(--g300);font-size:16px;font-weight:700;
+  z-index:1;
+}
+
+/* ══════════════════════════════════════
+   MINI FAQ
+══════════════════════════════════════ */
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:56px;}
+.faq-item{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:20px 22px;
+  cursor:pointer;transition:all .18s;
+}
+.faq-item:hover{border-color:var(--g300);box-shadow:0 6px 24px rgba(45,125,70,.08);}
+.faq-q{
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:600;
+  color:var(--txt);margin-bottom:8px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+}
+.faq-q::after{
+  content:'+';color:var(--g500);font-size:20px;font-weight:400;
+  flex-shrink:0;line-height:1;transition:transform .2s;
+}
+.faq-item.open .faq-q::after{transform:rotate(45deg);}
+.faq-a{
+  font-size:13px;color:var(--muted);line-height:1.65;
+  max-height:0;overflow:hidden;transition:max-height .3s ease;
+}
+.faq-item.open .faq-a{max-height:200px;}
+
+/* ══════════════════════════════════════
+   BOTTOM CTA
+══════════════════════════════════════ */
+.bottom-cta{
+  background:linear-gradient(135deg,var(--g900) 0%,var(--g800) 50%,var(--g700) 100%);
+  border-radius:20px;padding:48px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.bottom-cta::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:280px;height:280px;
+  background:radial-gradient(circle,rgba(45,125,70,.2) 0%,transparent 70%);
+}
+.bottom-cta::after{
+  content:'';position:absolute;bottom:-60px;left:-40px;
+  width:240px;height:240px;
+  background:radial-gradient(circle,rgba(8,145,178,.1) 0%,transparent 70%);
+}
+.bottom-cta-inner{position:relative;z-index:1;}
+.bottom-cta h2{
+  font-family:'Syne',sans-serif;font-size:clamp(24px,3.5vw,36px);
+  font-weight:700;color:#fff;margin-bottom:12px;letter-spacing:-.8px;
+}
+.bottom-cta p{font-size:15px;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:28px;max-width:500px;margin-left:auto;margin-right:auto;}
+.bottom-cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-p{background:var(--g500);color:#fff;padding:13px 26px;border-radius:10px;font-size:14.5px;font-weight:600;font-family:'DM Sans',sans-serif;border:none;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;}
+.btn-p:hover{background:var(--g400);box-shadow:0 8px 28px rgba(45,125,70,.45);transform:translateY(-1px);}
+.btn-s{background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);padding:12px 24px;border-radius:10px;font-size:14.5px;font-family:'DM Sans',sans-serif;border:1px solid rgba(255,255,255,.18);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;}
+.btn-s:hover{background:rgba(255,255,255,.14);}
+
+/* ══════════════════════════════════════
+   BACK LINK
+══════════════════════════════════════ */
+.back-link{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  margin-top:40px;color:var(--muted);font-size:14px;
+  text-decoration:none;transition:color .15s;cursor:pointer;
+}
+.back-link:hover{color:var(--g500);}
+
+/* ══════════════════════════════════════
+   SUCCESS MODAL
+══════════════════════════════════════ */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.modal-overlay.show{display:flex;animation:fadeUp .2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.modal-box{background:#fff;border-radius:20px;padding:40px;max-width:440px;width:92%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.2);}
+.modal-icon{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.modal-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--txt);margin-bottom:8px;}
+.modal-sub{font-size:13.5px;color:var(--muted);line-height:1.65;margin-bottom:22px;}
+.modal-ref{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--muted);background:var(--bg);padding:8px 14px;border-radius:8px;margin-bottom:22px;display:block;}
+.modal-close{background:var(--g500);color:#fff;border:none;padding:12px 28px;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:background .15s;}
+.modal-close:hover{background:var(--g400);}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 900px) {
+  .paths-grid{grid-template-columns:1fr;}
+  .trust-strip{flex-direction:column;align-items:flex-start;gap:16px;}
+  .steps-row{grid-template-columns:1fr 1fr;}
+  .step-box:nth-child(2)::after{display:none;}
+  .faq-grid{grid-template-columns:1fr;}
+  .page-content{padding:48px 24px 64px;}
+  .page-hero{padding:100px 24px 56px;}
+}
+@media (max-width: 600px) {
+  nav{padding:0 16px;height:60px;}
+  .page-hero{padding:84px 16px 44px;}
+  .page-hero h1{font-size:clamp(28px,8vw,40px);}
+  .page-hero p{font-size:15px;}
+  .page-content{padding:36px 16px 56px;}
+  .path-card{padding:28px 22px 28px;}
+  .path-icon{width:64px;height:64px;font-size:28px;}
+  .steps-row{grid-template-columns:1fr;}
+  .step-box::after{display:none;}
+  .bottom-cta{padding:32px 20px;}
+  .bottom-cta-btns{flex-direction:column;}
+  .btn-p,.btn-s{justify-content:center;}
+  .trust-strip{padding:20px;}
+  .faq-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ NAVBAR ═══════ -->
+<nav>
+  <a href="CircularIQ_Landing.html" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L14.196 5V11L9 14L3.804 11V5L9 2Z" fill="white" fill-opacity=".9"/><path d="M9 5.5L11.5 7V10L9 11.5L6.5 10V7L9 5.5Z" fill="#0A1628"/></svg>
+    </div>
+    <span class="nav-logo-name">CircularIQ</span>
+  </a>
+  <div style="flex:1;"></div>
+  <a href="CircularIQ_Landing.html" class="nav-back">
+    <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
+    Back to Home
+  </a>
+</nav>
+
+<!-- ═══════ HERO ═══════ -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="hero-eyebrow"><span class="hero-dot"></span>Choose your path</div>
+    <h1>How can we help?</h1>
+    <p>Choose your path to circular economy solutions — whether you're a producer turning waste into value, or a buyer looking for certified circular products.</p>
+  </div>
+</div>
+
+<!-- ═══════ MAIN CONTENT ═══════ -->
+<div class="page-content">
+
+  <!-- PATH CARDS -->
+  <div class="paths-grid">
+
+    <!-- CARD 1: Transform Waste -->
+    <div class="path-card green">
+      <div class="path-icon green">🌿</div>
+      <div class="path-badge green">
+        <svg width="9" height="9" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M3 12C3 8 6 4 12 3c-1 3-2 6-5 8s-4 1-4 1z"/></svg>
+        For Producers
+      </div>
+      <div class="path-title">Transform Your Waste<br>Into Value</div>
+      <div class="path-desc">Turn your wastewater into revenue. Sell your waste streams or get expert consultation on treatment solutions. Our CircularIQ engine scores every pathway — algae, struvite, biogas, reclaimed water — and tells you exactly which one pays most.</div>
+      <div class="path-features">
+        <span class="feat-pill green">🔬 Pathway scoring</span>
+        <span class="feat-pill green">💶 ROI simulation</span>
+        <span class="feat-pill green">📋 EU compliance check</span>
+        <span class="feat-pill green">🏷️ Circular Passport</span>
+        <span class="feat-pill green">🌿 Algae · Struvite · Biogas</span>
+      </div>
+      <button class="path-btn green" onclick="window.location.href='CircularIQ_WhatToDo.html'">
+        Get Started
+        <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </button>
+    </div>
+
+    <!-- CARD 2: Buy What You Need -->
+    <div class="path-card blue">
+      <div class="path-icon blue">🛒</div>
+      <div class="path-badge blue">
+        <svg width="9" height="9" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5.5 8l2 2 3-3"/></svg>
+        For Buyers
+      </div>
+      <div class="path-title">Buy What You Need</div>
+      <div class="path-desc">Browse certified circular products. Fertilisers, biomass, reclaimed water and more — with full traceability. Every product comes with a QR-coded Circular Passport covering regulatory, lab, organic, and digital certification layers.</div>
+      <div class="path-features">
+        <span class="feat-pill blue">💎 CE-marked struvite</span>
+        <span class="feat-pill blue">🌿 Chlorella biomass</span>
+        <span class="feat-pill blue">💧 EU Class B water</span>
+        <span class="feat-pill blue">🔥 Biomethane credits</span>
+        <span class="feat-pill blue">📦 Full traceability</span>
+      </div>
+      <button class="path-btn blue" onclick="window.location.href='CircularIQ_WasteMap.html'">
+        Browse Products
+        <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- OR DIVIDER -->
+  <div class="or-divider">Not sure which path? <strong style="color:var(--txt)">Contact us</strong> — we'll guide you.</div>
+
+  <!-- TRUST STRIP -->
+  <div class="trust-strip">
+    <div class="trust-strip-label">Trusted by</div>
+    <div class="trust-badges">
+      <div class="trust-badge">
+        <svg width="13" height="13" fill="none" viewBox="0 0 16 16" stroke="var(--g300)" stroke-width="1.5"><path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z"/><path d="M5.5 8l2 2 3-3"/></svg>
+        CIHEAM Bari certified
+      </div>
+      <div class="trust-badge">
+        <svg width="13" height="13" fill="none" viewBox="0 0 16 16" stroke="var(--g300)" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5.5 8l2 2 3-3"/></svg>
+        LUM University partner
+      </div>
+      <div class="trust-badge">
+        <svg width="13" height="13" fill="none" viewBox="0 0 16 16" stroke="var(--g300)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5.5 8l2 2 3-3"/></svg>
+        FPR 2019/1009 compliant
+      </div>
+      <div class="trust-badge">
+        <svg width="13" height="13" fill="none" viewBox="0 0 16 16" stroke="var(--g300)" stroke-width="1.5"><path d="M4 4h8v8H4z"/></svg>
+        EU ESPR passport ready
+      </div>
+      <div class="trust-badge">
+        <svg width="13" height="13" fill="none" viewBox="0 0 16 16" stroke="var(--g300)" stroke-width="1.5"><path d="M8 2L14 14H2L8 2z"/><line x1="8" y1="7" x2="8" y2="10"/></svg>
+        ARPA Puglia ISO 17025
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS STEPS -->
+  <div class="section-label">How it works</div>
+  <div class="section-sub">From your first contact to certified circular revenue — in four steps.</div>
+  <div class="steps-row">
+    <div class="step-box">
+      <div class="step-num">1</div>
+      <div class="step-icon">📋</div>
+      <div class="step-title">Submit your profile</div>
+      <div class="step-desc">Tell us about your waste streams or buying needs. Takes under 5 minutes.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">2</div>
+      <div class="step-icon">🧠</div>
+      <div class="step-title">CircularIQ scores</div>
+      <div class="step-desc">Our engine ranks every valorisation pathway and returns a full ROI model.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">3</div>
+      <div class="step-icon">⚗️</div>
+      <div class="step-title">BioLink pilot</div>
+      <div class="step-desc">Giovanni P&F builds and certifies your on-site pilot unit in 6 months.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">4</div>
+      <div class="step-icon">🏷️</div>
+      <div class="step-title">Sell on WasteMap</div>
+      <div class="step-desc">Certified outputs listed on the B2B marketplace — with Circular Passport QR.</div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section-label">Common questions</div>
+  <div class="faq-grid" id="faq-grid">
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Is the site assessment really free?</div>
+      <div class="faq-a">Yes — the initial site visit, stream measurement, and CircularIQ analysis are provided at no cost. You receive a full report within 2 weeks with no obligation to proceed.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What if my salinity is too high?</div>
+      <div class="faq-a">Streams with NaCl above 10 g/L trigger a hard gate that blocks biological pathways. We isolate those streams and scope Phase 3 evaporation-crystallisation options for salt recovery at €80–150/t.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How long does it take to see revenue?</div>
+      <div class="faq-a">The BioLink pilot unit is typically operational within 6 months. First certified algae batches can be listed on WasteMap at month 8. Full Year 2 net annual value is reached once all pathways stabilise.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What funding is available for the capex?</div>
+      <div class="faq-a">Several EU programmes apply: PRIMA (Mediterranean agrifood), LIFE (environment), Horizon Europe (green tech), and Italian PNRR funds. We help you identify and apply for the most suitable programme as part of the proposal.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What certifications do products carry?</div>
+      <div class="faq-a">Every certified output carries a 4-layer Circular Passport: regulatory compliance (EU 2020/741, FPR 2019/1009), process audit (LUM/CIHEAM or Bureau Veritas), circular economy claim (ICEA/Ecocert), and digital traceability (Circularise blockchain).</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Can I buy without being a Puglia producer?</div>
+      <div class="faq-a">Absolutely. WasteMap is open to any verified buyer — farmers, aquaculture operators, energy users, municipalities — across Italy and the Mediterranean. Delivery logistics are coordinated by Giovanni P&F.</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM CTA -->
+  <div class="bottom-cta">
+    <div class="bottom-cta-inner">
+      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(93,194,120,.15);border:1px solid rgba(93,194,120,.25);border-radius:20px;padding:4px 13px;font-size:10.5px;color:var(--g300);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:16px;">Still have questions?</div>
+      <h2>Talk to the CircularIQ team.</h2>
+      <p>The Giovanni Putignano & Figli team is available Monday–Friday 9:00–17:00 CET. No sales pressure — just honest guidance on whether CircularIQ is the right fit for your site.</p>
+      <div class="bottom-cta-btns">
+        <button class="btn-p" onclick="window.location.href='CircularIQ_WhatToDo.html'">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          Email the Team
+        </button>
+        <button class="btn-s" onclick="window.location.href='CircularIQ_Customer_Dashboard.html'">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+          Open Dashboard Demo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BACK LINK -->
+  <a href="CircularIQ_Landing.html" class="back-link">
+    <svg width="14" height="14" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.8"><path d="M10 3L5 8l5 5"/></svg>
+    ← Back to Home
+  </a>
+
+</div><!-- /page-content -->
+
+<!-- ═══════ SUCCESS MODAL ═══════ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon" style="background:var(--g50);border:2px solid var(--g200);">
+      <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="var(--g500)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <div class="modal-title" id="modal-title">Request Sent!</div>
+    <div class="modal-sub" id="modal-sub">The CircularIQ team will contact you within 2 business days.</div>
+    <span class="modal-ref" id="modal-ref">Reference: CIQ-2025-GS-0000</span>
+    <button class="modal-close" onclick="closeModal()">Done</button>
+  </div>
+</div>
+
+<script>
+// ─── FAQ TOGGLE ───
+function toggleFaq(el) {
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) el.classList.add('open');
+}
+
+// ─── MODAL ───
+const MODAL_CONTENT = {
+  producer: {
+    icon:  { bg:'var(--g50)', border:'var(--g200)', color:'var(--g500)' },
+    title: 'Assessment Request Sent ✓',
+    sub:   'The Giovanni Putignano & Figli team will contact you within 2 business days with a tailored BioLink pilot proposal for your site. A confirmation has been sent to your email.',
+    ref:   'CIQ-PRODUCER',
+  },
+  buyer: {
+    icon:  { bg:'var(--b50)', border:'var(--b100)', color:'var(--b500)' },
+    title: 'Browse Request Received ✓',
+    sub:   'We\'ll send you the latest WasteMap product catalogue with certified algae, struvite, reclaimed water, and biomethane listings — with full Circular Passport documentation for each batch.',
+    ref:   'CIQ-BUYER',
+  },
+  contact: {
+    icon:  { bg:'var(--g50)', border:'var(--g200)', color:'var(--g500)' },
+    title: 'Message Sent ✓',
+    sub:   'A team member at Giovanni Putignano & Figli S.r.l. will reply within 1 business day. You can also reach us directly at info@circulariq.io or +39 099 XXX XXXX (Mon–Fri 9–17 CET).',
+    ref:   'CIQ-CONTACT',
+  },
+};
+
+function showModal(type) {
+  const cfg = MODAL_CONTENT[type] || MODAL_CONTENT.contact;
+  const ref = cfg.ref + '-' + Math.floor(1000 + Math.random() * 9000);
+
+  const icon = document.getElementById('modal-icon');
+  icon.style.background = cfg.icon.bg;
+  icon.style.borderColor = cfg.icon.border;
+  icon.querySelector('svg').setAttribute('stroke', cfg.icon.color);
+
+  document.getElementById('modal-title').textContent = cfg.title;
+  document.getElementById('modal-sub').textContent   = cfg.sub;
+  document.getElementById('modal-ref').textContent   = 'Reference: ' + ref;
+  document.getElementById('modal-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ─── SCROLL REVEAL ───
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.path-card, .step-box, .faq-item, .trust-strip, .bottom-cta').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(18px)';
+  el.style.transition = 'opacity .55s ease, transform .55s ease';
+  observer.observe(el);
+});
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.path-card, .step-box, .faq-item, .trust-strip, .bottom-cta').forEach((el, i) => {
+    setTimeout(() => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, i * 60);
+  });
+});
+</script>
+</body>
+</html>
